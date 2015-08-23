@@ -1,0 +1,70 @@
+　Linux 内核支持读写Fat、NTFS、Vfat、Fat32、Hfs 等文件系统（至少可以读），因此在 Linux 下访问 Windows 要比在 Windows 下访问 Linux 方面的多，不需要使用专门的软件，直接使用 Linux 命令即可。 
+
+　　Fat/Fat32分区时 Linux 访问 Windows 分区 
+　　Linux 将系统中所有的设备都看作文件，所以在 Linux 下访问 Windows 分区非常方便，只要使用 mount 命令将 Windows 分区挂接成 Linux 的一个文件夹即可。 
+　　mount 命令的使用格式是（必须以 root 用户身份登陆）： 
+　　mount [-afFhnrvVm] [-　<标签>] [-o<选项>] [-t<文件系统>] [设备名称] [挂接点] 
+　　若我们要将 Windows 的某一分区（如D盘）挂接到 Linux 的 /mnt/win 这个目录下，首先请在 /mnt下建立 win 文件夹，然后启动 Console 终端模式，输入命令“mount /dev/hda5 /mnt/win”，再进入 /mnt/win 目录，您就能看到 Windows 中 D 盘的内容了。 
+　　可能有的朋友要问了，为何要输入上面的命令，特别是那个 /dev/hda5 是什么东西呢？这是 Linux 下分区的一种表示方式，在 Linux 下看 Windows 分区一般是：hda1 为C盘，hda5为D盘，hda6为E盘，以此类推。。。 
+　　不过用上面的方法加载 Windows 分区后，另一个麻烦的事情出现了，就是 Windows 中所有的中文文件名和文件夹名全部显示为问号，英文却能正常显示，这计算机也有民族歧视啊！反对这种歧视，就要充分利用我们手中的武器，在 mount 命令中加入一些参数让它正确显示中文。这时，只要将上述命令改为“mount -t vfat -o iocharset=cp936 /dev/hda5 /mnt/win”，运行就可以了。 
+　　加载了这个分区，在不使用时我们还可以将它卸除，而卸除的命令为 umoun，若是卸除上述分区，只要输入“umount /mnt/win”即可。 
+　　另外，我们还可以让 Linux 在启动时自动加载分区，这样就不用每次使用 Windows 分区时都要输入命令加载了。 
+　　首先请以 root 用户登陆，进入图形界面后通过 Linux 的文件管理器找到 /etc 目录下的 fstab 文件，单击右键选择一个文字编辑软件打开此文件，在内容的最下方添加一行命令“/dev/hda5 /mnt/win vfat codepage=936,iocharset=cp936 1 1”，然后在 /mnt 目录下建立 win 文件夹，重新启动计算机后，再访问 /mnt/win 目录就是 Windows 分区的内容了。您也可以通过此种方法加载多个分区，而编辑时也可以在命令行方式下使用 vi 等编辑器。 
+
+　　NTFS 分区时 Linux 访问 Windows 分区 
+　　若是使用 Mandrake 或者红旗 Linux，并且在安装时硬盘中已经存在 NTFS 分区，则安装后不需要重新编译内核就可以实现对硬盘 NTFS 分区的访问；若是安装时硬盘中没有 NTFS 分区，或者使用的是 RedHat Linux，则必须重新编译内核，添加 NTFS 模块才能正常访问 NTFS 分区。 
+
+　　首先以 root 用户登陆，然后将 RedHat Linux 的第二张安装盘插入光驱中，在 /redhat/RPMS 目录下找到 kernel-source-2.4.xx-x.i386.rpm（这里x代表数字）文件，若是图形界面，直接双击安装，若是命令行，请输入“rpm -ivh kernel-source-2.4.xx-x.i386.rpm”命令。 
+
+　　再进入 /usr/src/linux-2.4.xx-x/configs 目录，这里有许多编译内核需要的培植文件，一般选择“kernel-source-2.4.xx-x.i686.config”即可。将此文件复制到 /usr/src/linux2.4.xx-x　目录，用文本编辑器打开，将“#CONFIG_NTFS_FS is not set”行改为“CONFIG_NTFS_FS=m”。 
+
+　　在终端模式下，进入 /usr/src/linux-2.4.xx-3 目录，运行“make modules”命令来编译想要的 NTFS 模块，在编译的过程中不需要理会与 NTFS 模块，在编译的过程中不需要理会与 NTFS 无关的内容，编译完成后，在 /usr/src/linux-2.4.xx-x/fs/ntf 目录下可以找到一个 ntfs.o 文件，将其复制到 /lib/modules/2.4.xx-x/kernel/fs 目录，然后回到 /usr/src/linux-2.4.xx-3 目录，输入命令： 
+　　#depmod 
+　　#modprobe ntfs 
+　　剩下的工作和前面 Fat/Fat32分区时 Linux 访问 Windows 分区相同。 
+　　［问题］这个方法不能向ntfs格式的磁盘写入数据，如果有弟兄们有问题可向刘先生发电子信。
+　　［操作环境］ 
+　　RedHat7.2(Engma)；Kernel 2.4.7-10 
+　　［正文］ 
+　　1、在/usr/src/linux-2.4.7-10/configs目录下有若干编译内核所用的配置。选择我们想要的配置，如果你的机器是i686的，你就要选择kernel-2.4.7-i686.config， 
+　　并把它复制到/usr/src/linux-2.4.7-10目录下，改名为.config。 
+　　[注] 如果你的机器是其它的，你就要选相应的了。这个可以在你关机时，或启动机器时就能看到。在关机时，有一个i686的，那你就选i686吧。如果是i386 的，你就选择i386,其它的以此类推。因为我还不知道怎么来选择相应的文件，所以就用这个比较笨的办法了。如果你也不知道，那你就 
+　　也用这个方法吧。哈。。。。。。。。。。 
+
+　　2、修改.config文件，去掉不用的模块，加上自己想要的模块。 
+　　打开.config，有许多XXXX=m的项，这些都是要被编译为模块的项，因为我们不希望编译这些模块，所以要把XXXX=m的项统统去掉。然后再加上我们想要的模块，将 
+　　# CONFIG_NTFS_FS is not set 改为 
+　　CONFIG_NTFS_FS=m 
+　　CONFIG_NTFS_RW=m 
+　　［注］记住要把＃号也去掉，这个步聚可用编辑器来修改，当然，可以用你熟悉的工具来做这件事。 
+
+　　3、编译NTFS模块。 
+　　在/usr/src/linux-2.4.7-10目录下运行命令，来编译我们想要的NTFS模块。 
+　　＃make modules 
+　　注意：千万不能运行命令make modules_install，否则将带来严重的后果，它会删除你系统中的所有模块。 
+
+　　4、安装NTFS模块。 
+　　编译后得到的ntfs.o在/usr/src/linux-2.4.7-10/fs/ntfs目录下，手动将它复制到/lib/modules/2.4.7-10/kernel/fs目录下。 
+
+　　5、载入NTFS模块； 
+　　在这个目录下/usr/src/linux2.4.7-10，运行命令： 
+　　＃depmod 
+　　＃modprobe nfts 
+
+　　6、修改/etc/fstab文件，这个只好以我的机器上的配制方法来说了，请按如下方法填加，这样做的目的是机器启动时就能自己加载分区。 
+　　/dev/hdc1 /mnt/WinC ntfs iocharset=cp936 0 0 
+　　/dev/hdc5 /mnt/WinD ntfs iocharset=cp936 0 0 
+　　/dev/hdc6 /mnt/WinE ntfs iocharset=cp936 0 0 
+　　/dev/hdc7 /mnt/WinF ntfs iocharset=cp936 0 0 
+　　7、在/mnt/目录下创建文件夹：在／mnt中创建文件夹，要和加载的分区一样的文件夹，以我的机器的为例。 
+　　WinC 
+　　WinD 
+　　WinE 
+　　WinF 
+　　[注］注意大小写。 
+
+　　8、重新启动机器。如果在桌面上没有你要加载的分区，象硬盘一样的图标，你可以按下面的方法做； 
+　　在KDE下的桌面的空白处按鼠标的右键，选择[新建]-》[硬盘]-》 
+　　在[常规]中取一个与加载的硬盘机对应的名字。然后在[设备]中选择你要加载的分区。 
+
+　　9、如果不想加载到桌面上，你可以直接到/mnt/下访问你的ntfs格式的磁盘。

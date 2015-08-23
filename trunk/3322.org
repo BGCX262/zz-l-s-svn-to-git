@@ -1,0 +1,1 @@
+*/10 * * * * /usr/bin/lynx -mime_header -auth=zezhang1015:whoareyou "http://www.3322.org/dyndns/update?system=dyndns&hostname=zezhang1015.3322.org" > /root/3322.org.log

@@ -1,0 +1,61 @@
+使用GRUB命令手动加载内核和启动
+
+
+2005年4月18号 星期一
+重装系统，可是光盘有问题，装了一半退出来了
+grub无法引导
+只好手动加载内核和启动：
+
+
+让我们输入 root 分区。在提示中输入 root，但不要按 Enter 键： 
+grub> root ( 
+现在，按一次 Tab 键。如果系统中有多个硬盘，GRUB 将显示可能完成的列表，从 "hd0" 开始。如果只有一个硬盘，GRUB 将插入 "hd0,"。如果有多个硬盘，继续进行，在 ("hd2") 中输入名称并在名称后紧跟着输入逗号，但不要按 Enter 键。部分完成的 root 命令看起来如下： 
+grub> root (hd0, 
+现在，继续操作，再按一次 Tab 键。GRUB 将显示特定硬盘上所有分区的列表，以及它们的文件系统类型。在我的系统中，按 Tab 键时得到以下列表： 
+grub> root (hd0, (tab) 
+Possible partitions are: 
+Partition num: 0, Filesystem type is ext2fs, partition type 0x83 
+Partition num: 1, Filesystem type unknown, partition type 0x82 
+Partition num: 2, Filesystem type unknown, partition type 0x7 
+Partition num: 4, Filesystem type is reiserfs, partition type 0x83 
+Partition num: 5, Filesystem type is reiserfs, partition type 0x83 
+如您所见，GRUB 的交互式硬盘和分区名称实现功能非常有条理。这些，只需要好好理解 GRUB 新奇的硬盘和分区命名语法，然后就可以继续操作了。 
+装入内核 
+
+
+从软盘启动grub 
+　　制作启动盘后可以用软盘启动引导硬盘上的操作系统 插入制作好的启动软盘，进入 
+BIOS设定软盘启动。软盘启动成功后就会进入grub的命令行模式 
+grub> 
+　　要启动一个操作系统，首先指定引导哪个分区上的系统，例如要引导指第一个硬盘 
+上的第一个分区的操作系统，先键入 
+grub>root (hd0,0) 
+　　接着如果要启动的是Windows系统，键入 
+grub>chainloader (hd0,0)+1 
+　　注意(hd0,0)要随着硬盘和分区的不同而改变数字。 如果要引导Linux或其他系统， 
+应键入 
+grub>kernel （hd0,0）/boot/vmlinuz root=/dev/hda1 
+　　注意hda1参数也要随着硬盘和分区的不同而改变，如从第二个硬盘的第一个分区引 
+导则用hdb1。 
+　　最后敲入boot就可以启动系统了。 
+　　在任何时候不能确定命令或者命令的参数都可以按Tab获得相关的帮助。用上下键可 
+以获得命令的历史记录。 其实这些命令就是menu.lst的启动描述，您也可以根据那些描 
+述来自己键入启动命令，最后敲入boot就可以引导系统了。 
+
+
+grub>cat (hd0,6)/boot/grub/grub.conf (看参数) 
+
+
+一个非常基本的用于引导Red Hat Linux或Microsoft Windows 2000的GRUB菜单配置文件可能如下所示： 
+　　default=linux 
+　　timeout=10 
+　　color=green/black light-gray/blue 
+　　# section to load linux 
+　　title linux 
+　　root (hd0,1) 
+　　kernel /vmlinuz root=/dev/hda5 
+　　boot 
+　　# section to load Windows 2000 
+　　title windows 
+　　rootnoverify (hd0,0) 
+

@@ -1,0 +1,5 @@
+用光盘引导后用iso安装
+
+启动命令选择为 ”linux askmethod“
+
+Centos 5.7 实验成功

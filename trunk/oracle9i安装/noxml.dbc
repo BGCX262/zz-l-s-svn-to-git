@@ -1,0 +1,103 @@
+<?xml version = '1.0'?>
+<DatabaseTemplate name="noxml" description="" version="9.0.1">
+   <CommonAttributes>
+      <option name="Oracle Ultra Search" value="true"/>
+      <option name="Oracle Label Security" value="false"/>
+      <option name="Oracle JVM" value="true"/>
+      <option name="Oracle Spatial" value="true"/>
+      <option name="Oracle Intermedia" value="true"/>
+      <option name="Oracle XML DB" value="false"/>
+      <option name="Oracle Data Mining" value="true"/>
+      <option name="Oracle Text" value="true"/>
+      <option name="Example Schemas" value="true"/>
+      <option name="Oracle OLAP" value="true"/>
+   </CommonAttributes>
+   <Variables/>
+   <CustomScripts Execute="false"/>
+   <InitParamAttributes>
+      <InitParams>
+         <initParam name="pga_aggregate_target" value="33554432"/>
+         <initParam name="hash_join_enabled" value="TRUE"/>
+         <initParam name="instance_name" value="orcl"/>
+         <initParam name="fast_start_mttr_target" value="300"/>
+         <initParam name="sort_area_size" value="1048576"/>
+         <initParam name="db_cache_size" value="16" unit="MB"/>
+         <initParam name="processes" value="150"/>
+         <initParam name="aq_tm_processes" value="1"/>
+         <initParam name="star_transformation_enabled" value="TRUE"/>
+         <initParam name="control_files" value="(&quot;{ORACLE_BASE}/oradata/{DB_NAME}/control01.ctl&quot;, &quot;{ORACLE_BASE}/oradata/{DB_NAME}/control02.ctl&quot;, &quot;{ORACLE_BASE}/oradata/{DB_NAME}/control03.ctl&quot;)"/>
+         <initParam name="timed_statistics" value="TRUE"/>
+         <initParam name="compatible" value="9.2.0.0.0"/>
+         <initParam name="query_rewrite_enabled" value="TRUE"/>
+         <initParam name="hash_area_size" value="1048576"/>
+         <initParam name="shared_pool_size" value="83886080"/>
+         <initParam name="background_dump_dest" value="{ORACLE_BASE}/admin/{DB_NAME}/bdump"/>
+         <initParam name="job_queue_processes" value="10"/>
+         <initParam name="java_pool_size" value="83886080"/>
+         <initParam name="db_name" value="orcl"/>
+         <initParam name="large_pool_size" value="16777216"/>
+         <initParam name="user_dump_dest" value="{ORACLE_BASE}/admin/{DB_NAME}/udump"/>
+         <initParam name="dispatchers" value="(PROTOCOL=TCP) (SERVICE={SID}XDB)"/>
+         <initParam name="db_domain" value=""/>
+         <initParam name="undo_retention" value="10800"/>
+         <initParam name="open_cursors" value="300"/>
+         <initParam name="db_block_size" value="8192"/>
+         <initParam name="undo_tablespace" value="UNDOTBS1"/>
+         <initParam name="core_dump_dest" value="{ORACLE_BASE}/admin/{DB_NAME}/cdump"/>
+         <initParam name="remote_login_passwordfile" value="EXCLUSIVE"/>
+         <initParam name="undo_management" value="AUTO"/>
+         <initParam name="db_file_multiblock_read_count" value="32"/>
+      </InitParams>
+      <MiscParams>
+         <archiveLogMode>false</archiveLogMode>
+         <initParamFileName>{ORACLE_BASE}/admin/{DB_NAME}/pfile/init{SID}.ora</initParamFileName>
+      </MiscParams>
+      <SPfile useSPFile="true">{ORACLE_HOME}/dbs/spfile{SID}.ora</SPfile>
+   </InitParamAttributes>
+   <StorageAttributes>
+      <DataFiles>
+         <Location>{ORACLE_HOME}/assistants/dbca/templates/Data_Warehouse.dfj</Location>
+         <Name id="0" Tablespace="CWMLITE" Contents="PERMANENT" Size="20">{ORACLE_BASE}/oradata/{DB_NAME}/cwmlite01.dbf</Name>
+         <Name id="1" Tablespace="DRSYS" Contents="PERMANENT" Size="20">{ORACLE_BASE}/oradata/{DB_NAME}/drsys01.dbf</Name>
+         <Name id="2" Tablespace="EXAMPLE" Contents="PERMANENT" Size="148.75">{ORACLE_BASE}/oradata/{DB_NAME}/example01.dbf</Name>
+         <Name id="3" Tablespace="INDX" Contents="PERMANENT" Size="25">{ORACLE_BASE}/oradata/{DB_NAME}/indx01.dbf</Name>
+         <Name id="4" Tablespace="ODM" Contents="PERMANENT" Size="20">{ORACLE_BASE}/oradata/{DB_NAME}/odm01.dbf</Name>
+         <Name id="5" Tablespace="SYSTEM" Contents="PERMANENT" Size="370">{ORACLE_BASE}/oradata/{DB_NAME}/system01.dbf</Name>
+         <Name id="6" Tablespace="TOOLS" Contents="PERMANENT" Size="10">{ORACLE_BASE}/oradata/{DB_NAME}/tools01.dbf</Name>
+         <Name id="7" Tablespace="UNDOTBS1" Contents="UNDO" Size="200">{ORACLE_BASE}/oradata/{DB_NAME}/undotbs01.dbf</Name>
+         <Name id="8" Tablespace="USERS" Contents="PERMANENT" Size="25">{ORACLE_BASE}/oradata/{DB_NAME}/users01.dbf</Name>
+         <Name id="9" Tablespace="XDB" Contents="PERMANENT" Size="45">{ORACLE_BASE}/oradata/{DB_NAME}/xdb01.dbf</Name>
+      </DataFiles>
+      <TempFiles>
+         <Name id="10" Tablespace="TEMP" Contents="TEMPORARY" Size="40">{ORACLE_BASE}/oradata/{DB_NAME}/temp01.dbf</Name>
+      </TempFiles>
+      <ControlfileAttributes id="Controlfile">
+         <maxDatafiles>100</maxDatafiles>
+         <maxLogfiles>50</maxLogfiles>
+         <maxLogMembers>5</maxLogMembers>
+         <maxLogHistory>1</maxLogHistory>
+         <maxInstances>1</maxInstances>
+         <image name="control01.ctl" filepath="{ORACLE_BASE}/oradata/{DB_NAME}/"/>
+         <image name="control02.ctl" filepath="{ORACLE_BASE}/oradata/{DB_NAME}/"/>
+         <image name="control03.ctl" filepath="{ORACLE_BASE}/oradata/{DB_NAME}/"/>
+      </ControlfileAttributes>
+      <RedoLogGroupAttributes id="1">
+         <reuse>false</reuse>
+         <fileSize unit="KB">102400</fileSize>
+         <Thread>1</Thread>
+         <member ordinal="0" memberName="redo01.log" filepath="{ORACLE_BASE}/oradata/{DB_NAME}/"/>
+      </RedoLogGroupAttributes>
+      <RedoLogGroupAttributes id="2">
+         <reuse>false</reuse>
+         <fileSize unit="KB">102400</fileSize>
+         <Thread>1</Thread>
+         <member ordinal="0" memberName="redo02.log" filepath="{ORACLE_BASE}/oradata/{DB_NAME}/"/>
+      </RedoLogGroupAttributes>
+      <RedoLogGroupAttributes id="3">
+         <reuse>false</reuse>
+         <fileSize unit="KB">102400</fileSize>
+         <Thread>1</Thread>
+         <member ordinal="0" memberName="redo03.log" filepath="{ORACLE_BASE}/oradata/{DB_NAME}/"/>
+      </RedoLogGroupAttributes>
+   </StorageAttributes>
+</DatabaseTemplate>

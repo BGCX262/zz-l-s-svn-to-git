@@ -1,0 +1,206 @@
+◆20111102  安装要求：必须要先装好“开发库”
+
+◆: 检查缺包情况
+# rpm -q gcc glibc-headers glibc-kernheaders glibc-devel compat-libstdc++ cpp compat-gcc
+安装相应包
+拷贝包到/tmp
+cp compat-gcc-7.3-2.96.126.i386.rpm /tmp/
+cp compat-libgcc-296-2.96-138.i386.rpm /tmp/
+cp compat-libstdc++-296-2.96-138.i386.rpm /tmp/
+cp compat-libstdc++-33-3.2.3-61.i386.rpm /tmp/
+cp j2re-1_3_1_19-linux-i586.bin /tmp/  
+
+cp ship_9204_linux_disk1.cpio.gz /tmp/
+cp ship_9204_linux_disk2.cpio.gz /tmp/
+cp ship_9204_linux_disk3.cpio.gz /tmp/
+  
+◆: # ./orainsenv.sh
+vi  /home/oracle/.i18n
+LANG="en_US.english"
+
+◆: #vi /etc/sysctl.conf 
+  add following lines: 
+kernel.sem = 250 32000 100 128
+kernel.shmmax = 2147483648
+kernel.shmmni = 128
+kernel.shmall = 2097152
+kernel.msgmnb = 65536
+kernel.msgmni = 2878
+fs.file-max = 65536
+net.ipv4.ip_local_port_range = 1024 65000 
+
+# sysctl -p    #or restart
+
+◆: #vi /etc/security/limits.conf 
+    add following lines: 
+* - nproc 16384
+* - nofile 16384 
+
+◆: #vi Disk1/install/linux/oraparam.ini 
+ JRE_LOCATION variable and set path to our JRE installation from Step 2. 
+
+JRE_LOCATION=/opt/jre1.3.1_19
+
+
+◆: 转oracle登陆
+$ cd /home/oracle
+$ . .bash_profile 
+
+
+◆: ./runstaller  开始安装
+Initializing Java Virtual Machine from /tmp/OraInstall2006-10-25_01-43-30PM/jre/bin/java. Please wait... /tmp/OraInstall2006-10-25_01-43-30PM/jre/bin/i386/native_threads/java: error while loading shared libraries: libstdc++-libc6.1-1.so.2: cannot open shared object file: No such file or directory - after ./runInstaller execution. 
+Solution:
+su -
+# cd /usr/lib
+# ln -s libstdc++-3-libc6.2-2-2.10.0.so libstdc++-libc6.1-1.so.2
+
+◆: 出现提示框，要求运行orainstRoot.sh脚本
+su – root							
+#cd /opt/oracle/920
+#./orainstRoot.sh						
+
+◆: 中间部分略
+
+◆:
+ 
+◆: 出现Setup Privileges对话框时,切换到第二个终端窗口，输入
+#cd /opt/oracle/920
+#./root.sh
+提示输入：/opt/oracle/920/bin
+数次提示覆盖文件
+
+◆: 继续
+cd /opt/oracle/920
+rm JRE
+ln -s /opt/jre1.3.1_19 JRE
+su -
+# cd /opt/oracle/920/JRE/bin
+# ln -s java jre
+# cd i386/native_threads
+# ln -s java jre 
+
+◆:$vi $ORACLE_BASE/oui/oraparam.ini 
+ JRE_LOCATION to /opt/jre1.3.1_19 
+
+◆:回到Setup Privileges对话框，按OK继续；ConfigurationTools窗口，弹出Net8 Configuration Assistant:Welcome窗口
+configuration listener 和 net service name
+Agent Configuration 和 http server failed
+退出
+
+◆:◆:◆:缺补丁p2617419_210_GENERIC.zip
+p3238244_9204_LINUX.zip
+
+◆: dbca 启动建库
+Shared Pool Size(Byles)设置为32M >>失败  out of memary
+Shared Pool Size(Byles)设置为8M(默认)
+database charset "use Unicode(AL32UTF8)"
+National Character "UTF8"
+
+◆: vi /etc/oratab
+orcl:/opt/oracle/920:N    #改成Y
+
+◆: 创建数据库初始化文件：
+cp $ORACLE_BASE/admin/$ORACLE_SID/pfile/init$ORACLE_SID.ora.* $ORACLE_HOME/dbs/init$ORACLE_SID.ora
+如果没有init$ORACLE_SID.ora.*文件，或者出现“init文件无法找到”，则运行
+sql> create pfile from spfile
+
+◆: sql> create spfile from pfile;
+
+◆: 安装完成
+1. Switch back the GCC binaries 
+su -
+# cd /usr/bin
+# mv ./gcc ./gcc296
+# mv ./gcc3 ./gcc
+
+◆: 启动企业管理器 :
+$ oemapp console
+
+
+2. Change of JRE path in Oracle Universal Installer
+
+Edit the $ORACLE_BASE/oui/oraparam.ini file and modify the value of JRE_LOCATION to /opt/jre1.3.1_15 
+
+
+
+◆: c57-o9i.bash_profile清单
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+# User specific environment and startup programs
+
+PATH=$PATH:$HOME/bin
+
+ORACLE_BASE=/opt/oracle
+ORACLE_HOME=$ORACLE_BASE/920
+ORACLE_SID=orcl
+LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib
+ORACLE_OEM_JAVARUNTIME=/opt/jre1.3.1_19
+PATH=$PATH:$ORACLE_HOME/bin
+
+export ORACLE_BASE ORACLE_HOME ORACLE_SID LD_LIBRARY_PATH ORACLE_OEM_JAVARUNTIME PATH
+#export NLS_LANG="American_america.zhs16gbk"
+export NLS_LANG="American_america.utf8"
+export DISPLAY=:0
+#export LANG=en_US
+export LANG=en_US
+export GDM_LANG=en_US
+export LC=en_US
+unset USENAME
+
+◆: orainsenv.sh清单
+#!/bin/sh
+
+#安装libgcc
+cd /tmp
+rpm -ivh compat-gcc-7.3-2.96.126.i386.rpm 
+rpm -ivh compat-libgcc-296-2.96-138.i386.rpm
+rpm -ivh compat-libstdc++-296-2.96-138.i386.rpm
+rpm -ivh compat-libstdc++-33-3.2.3-61.i386.rpm
+
+cd /usr/lib
+ln -s libstdc++-3-libc6.2-2-2.10.0.so libstdc++-libc6.1-1.so.2   
+yum install libXp
+  
+#隐藏文件
+cd /usr/bin
+mv ./gcc ./gcc3
+mv ./gcc296 ./gcc
+
+#安装JDK
+cd /tmp
+chmod +x j2re-1_3_1_19-linux-i586.bin
+./j2re-1_3_1_19-linux-i586.bin
+mv jre1.3.1_19 /opt/ 
+
+#cd /tmp
+#rpm -Uvh --force --nodeps binutils-2.10.91.0.2-3.i386.rpm
+
+#创建oracle用户和组
+#groupadd oinstall
+groupadd dba
+useradd -g dba oracle
+#useradd oracle -g oinstall -G dba
+passwd oracle
+cd /opt
+mkdir oracle
+# chown oracle:dba oracle 
+chown -R oracle.dba /opt/oracle
+chmod 750 /opt/oracle
+
+cp /tmp/c57-o9i.bash_profile /home/oracle/.bash_profile
+cp /etc/sysconfig/i18n /home/oracle/.i18n
+
+cd /tmp
+gunzip ship_9204_linux_disk1.cpio.gz
+gunzip ship_9204_linux_disk2.cpio.gz
+gunzip ship_9204_linux_disk3.cpio.gz
+
+cpio -idmv < ship_9204_linux_disk1.cpio
+cpio -idmv < ship_9204_linux_disk2.cpio
+cpio -idmv < ship_9204_linux_disk3.cpio 
+

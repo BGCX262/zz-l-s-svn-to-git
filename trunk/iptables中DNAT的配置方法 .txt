@@ -1,0 +1,189 @@
+ iptables中DNAT的配置方法 2011-09-22 12:46:51标签：iptables DNAT配置 
+ 1.一对一流量完全DNAT
+
+首先说一下网络环境，普通主机一台做防火墙用，网卡两块
+
+eth0 192.168.0.1  内网
+
+eth1 202.202.202.1 外网
+
+内网中一台主机 192.168.0.101
+
+现在要把外网访问202.202.202.1的所有流量映射到192.168.0.101上
+
+命令如下：
+
+
+
+#将防火墙改为转发模式
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+iptables -F
+
+iptables -t nat -F
+
+iptables -t mangle -F
+
+iptables -X
+
+iptables -t nat -X
+
+iptables -t mangle -X
+
+
+
+
+iptables -A INPUT -i lo -j ACCEPT
+
+iptables -A OUTPUT -o lo -j ACCEPT
+
+
+
+
+iptables -P INPUT ACCEPT
+
+iptables -P OUTPUT ACCEPT
+
+iptables -P FORWARD ACCEPT
+
+
+
+
+iptables -t nat -A PREROUTING -d 202.202.202.1 -j DNAT --to-destination 192.168.0.101
+
+iptables -t nat -A POSTROUTING -d 192.168.0.101 -j SNAT --to 192.168.0.1
+
+
+2.多对多流量完全DNAT
+
+说是多对多，实际上这里的配置是指定了多个一对一
+
+环境：
+
+eth0 192.168.0.1  内网
+
+eth1 202.202.202.1 、202.202.202.2 外网
+
+内网中2台主机 192.168.0.101、192.168.0.102
+
+现在要把外网访问202.202.202.1的所有流量映射到192.168.0.101上，同时把把外网访问202.202.202.2的所有流量映射到192.168.0.102上
+
+这里顺便提一下如何为网卡配置多个IP
+
+ifconfig eth1:1 202.202.202.2 netmask 255.255.255.0 up
+
+
+#将防火墙改为转发模式
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+iptables -F
+
+iptables -t nat -F
+
+iptables -t mangle -F
+
+iptables -X
+
+iptables -t nat -X
+
+iptables -t mangle -X
+
+ 
+
+iptables -A INPUT -i lo -j ACCEPT
+
+iptables -A OUTPUT -o lo -j ACCEPT
+
+ 
+
+iptables -P INPUT ACCEPT
+
+iptables -P OUTPUT ACCEPT
+
+iptables -P FORWARD ACCEPT
+
+ 
+
+iptables -t nat -A PREROUTING -d 202.202.202.1 -j DNAT --to-destination 192.168.0.101
+
+iptables -t nat -A POSTROUTING -d 192.168.0.101 -j SNAT --to 192.168.0.1
+
+ 
+
+iptables -t nat -A PREROUTING -d 202.202.202.2 -j DNAT --to-destination 192.168.0.102
+
+iptables -t nat -A POSTROUTING -d 192.168.0.102 -j SNAT --to 192.168.0.1
+
+3.一对多根据协议DNAT
+
+ 这个最常用，一般是内网或DMZ区内有多个应用服务器，可以将不同的应用流量映射到不同的服务器上
+
+环境：
+
+eth0 192.168.0.1  内网
+
+eth1 202.202.202.1  外网
+
+内网中2台主机 192.168.0.101（Web服务器）、192.168.0.102（邮件服务器）
+
+现在要把外网访问202.202.202.1的Web流量映射到192.168.0.101上，同时把把外网访问202.202.202.1的邮件访问流量映射到192.168.0.102上
+
+命令如下：
+
+
+#将防火墙改为转发模式
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+iptables -F
+
+iptables -t nat -F
+
+iptables -t mangle -F
+
+iptables -X
+
+iptables -t nat -X
+
+iptables -t mangle -X
+
+
+
+
+iptables -A INPUT -i lo -j ACCEPT
+
+iptables -A OUTPUT -o lo -j ACCEPT
+
+
+
+
+iptables -P INPUT ACCEPT
+
+iptables -P OUTPUT ACCEPT
+
+iptables -P FORWARD ACCEPT
+
+
+
+
+iptables -t nat -A PREROUTING -d 202.202.202.1 -p tcp --dport 80 -j DNAT --to-destination 192.168.0.101:80
+
+iptables -t nat -A POSTROUTING -d 192.168.0.101 -p tcp --dport 80 -j SNAT --to 192.168.0.1
+
+
+
+
+iptables -t nat -A PREROUTING -d 202.202.202.1 -p tcp --dport 25 -j DNAT --to-destination 192.168.0.102:25
+
+iptables -t nat -A POSTROUTING -d 192.168.0.102 -p tcp --dport 25 -j SNAT --to 192.168.0.1
+
+
+
+
+iptables -t nat -A PREROUTING -d 202.202.202.1 -p tcp --dport 110 -j DNAT --to-destination 192.168.0.102:110
+
+iptables -t nat -A POSTROUTING -d 192.168.0.102 -p tcp --dport 110 -j SNAT --to 192.168.0.1
+
+ 

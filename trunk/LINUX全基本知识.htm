@@ -1,0 +1,447 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=gb2312">
+<meta name=Generator content="Microsoft Word 11 (filtered)">
+<title>LINUX系统管理 </title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:"Times New Roman";}
+ /* Page Definitions */
+ @page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	layout-grid:15.6pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=ZH-CN style='text-justify-trim:punctuation'>
+
+<div class=Section1 style='layout-grid:15.6pt'>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>LINUX</span><span
+style='font-size:9.0pt;font-family:宋体'>系统管理</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>1</span><span style='font-size:
+9.0pt;font-family:宋体'>：我的</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>linux</span><span style='font-size:9.0pt;font-family:宋体'>开机直接进入文本界面，怎样才能让它默认进入图形界面？</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>答：修改</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>/etc/inittab</span><span
+style='font-size:9.0pt;font-family:宋体'>文件，其中有一行</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>id:3:initdefault</span><span
+style='font-size:9.0pt;font-family:宋体'>，意思是说开机默认进入</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>运行级别</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>3</span><span
+style='font-size:9.0pt;font-family:宋体'>（多用户的文本界面），把它改成</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>id:5:initdefault</span><span
+style='font-size:9.0pt;font-family:宋体'>，既开机默认进入</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>运行级别</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>5</span><span
+style='font-size:9.0pt;font-family:宋体'>（多用户的图形界面）。这样就行了。</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>2</span><span style='font-size:
+9.0pt;font-family:宋体'>：</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>LINUX</span><span style='font-size:9.0pt;font-family:宋体'>中</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>VI</span><span
+style='font-size:9.0pt;font-family:宋体'>编辑器是如何使用？用到哪些命令？</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>　　　　基本上</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>vi</span><span
+style='font-size:9.0pt;font-family:宋体'>可以分为三种状态，分别是命令模式（</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>command&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>）、插入模式（</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Insert&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>）和底行模式（</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>last&nbsp;line&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>），各模式的功能区分如下：</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>&nbsp; <br>
+1) </span><span style='font-size:9.0pt;font-family:宋体'>命令行模式</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>command&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>）</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>&nbsp; <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>　　　　　　控制屏幕光标的移动，字符、字或行的删除，移动复制某区段及进入</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Insert&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>下，或者到</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>&nbsp;last&nbsp;line&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>。</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>&nbsp; <br>
+2)&nbsp;</span><span style='font-size:9.0pt;font-family:宋体'>插入模式（</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Insert&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>）　　</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>　　　　只有在</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Insert&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>下，才可以做文字输入，按「</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>ESC</span><span style='font-size:
+9.0pt;font-family:宋体'>」键可回到命令行模式。　　</span><span lang=EN-US style='font-size:
+9.0pt;font-family:Verdana'> <br>
+3)&nbsp;</span><span style='font-size:9.0pt;font-family:宋体'>底行模式（</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>last&nbsp;line&nbsp;mode</span><span
+style='font-size:9.0pt;font-family:宋体'>）</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>　　　　将文件保存或退出</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>vi</span><span
+style='font-size:9.0pt;font-family:宋体'>，也可以设置编辑环境，如寻找字符串、列出行号……等。</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>&nbsp; <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>3</span><span style='font-size:
+9.0pt;font-family:宋体'>：</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>&nbsp;</span><span style='font-size:9.0pt;font-family:
+宋体'>与网络设置有关的几个文件</span><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana'>? <br>
+/etc/hosts&nbsp;</span><span style='font-size:9.0pt;font-family:宋体'>包含一个</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>IP</span><span
+style='font-size:9.0pt;font-family:宋体'>地址和对应的节点名。</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+/etc/resolv.conf&nbsp;</span><span style='font-size:9.0pt;font-family:宋体'>设置名字服务器</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>,&nbsp;nameserver&nbsp;202.102.24.31</span><span
+style='font-size:9.0pt;font-family:宋体'>可以在</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>/etc/resolv.conf</span><span
+style='font-size:9.0pt;font-family:宋体'>中设置不止一个名字服务器</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>,</span><span style='font-size:
+9.0pt;font-family:宋体'>每个都必须一</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>nameserver</span><span style='font-size:9.0pt;font-family:
+宋体'>开头并独占一行</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>.
+<br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>4</span><span style='font-size:
+9.0pt;font-family:宋体'>：如何修改</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>linux</span><span style='font-size:9.0pt;font-family:宋体'>主机名</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>答：</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>vi&nbsp;&nbsp;&nbsp;&nbsp;/etc/sysconfig/network</span><span
+style='font-size:9.0pt;font-family:宋体'>，修改</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>HOSTNAME</span><span
+style='font-size:9.0pt;font-family:宋体'>一行为</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>HOSTNAME=</span><span
+style='font-size:9.0pt;font-family:宋体'>主机名，重启后也能生效</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>5</span><span style='font-size:
+9.0pt;font-family:宋体'>：</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>linux</span><span style='font-size:9.0pt;font-family:宋体'>中如何让用户的密码必须有一定的长度</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>,</span><span
+style='font-size:9.0pt;font-family:宋体'>并且符合复杂度</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>(eapass) <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>答：</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>vi&nbsp;/etc/login.defs</span><span
+style='font-size:9.0pt;font-family:宋体'>，改</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>PASS_MIN_LEN <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>6:&nbsp;TCP</span><span
+style='font-size:9.0pt;font-family:宋体'>和</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>UDP</span><span style='font-size:
+9.0pt;font-family:宋体'>的区别</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>? <br>
+1</span><span style='font-size:9.0pt;font-family:宋体'>、</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> &nbsp;&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>有连接和无连接</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>&nbsp;&nbsp;2</span><span
+style='font-size:9.0pt;font-family:宋体'>、可靠和不可靠</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+<br>
+<br>
+Linux</span><span style='font-size:9.0pt;font-family:宋体'>网络服务</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+<br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>1</span><span style='font-size:
+9.0pt;font-family:宋体'>：</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>&nbsp;linux&nbsp;</span><span style='font-size:9.0pt;
+font-family:宋体'>中</span><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana'>apache</span><span style='font-size:9.0pt;font-family:宋体'>的配置文件是什么？</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+&nbsp;&nbsp;Httpd.conf <br>
+<br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>2</span><span style='font-size:
+9.0pt;font-family:宋体'>：</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>Windows</span><span style='font-size:9.0pt;font-family:
+宋体'>和</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Linux</span><span
+style='font-size:9.0pt;font-family:宋体'>间有很多文件共享的方式</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>.(</span><span style='font-size:
+9.0pt;font-family:宋体'>要掌握其中</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>4</span><span style='font-size:9.0pt;font-family:宋体'>个</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>)&nbsp; <br>
+1.&nbsp;</span><span style='font-size:9.0pt;font-family:宋体'>利用</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Samba <br>
+2.&nbsp;</span><span style='font-size:9.0pt;font-family:宋体'>在</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Linux</span><span
+style='font-size:9.0pt;font-family:宋体'>下配置</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Apahce <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>在</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Linux</span><span style='font-size:
+9.0pt;font-family:宋体'>下配置</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>Apahce</span><span style='font-size:9.0pt;font-family:
+宋体'>，然后在</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Windows</span><span
+style='font-size:9.0pt;font-family:宋体'>下通过</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>www</span><span style='font-size:
+9.0pt;font-family:宋体'>方式把</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>Linux</span><span style='font-size:9.0pt;font-family:宋体'>下的文件下载下来。这种方式只能把</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Linux</span><span
+style='font-size:9.0pt;font-family:宋体'>的文件传到</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Windows</span><span
+style='font-size:9.0pt;font-family:宋体'>，不能把</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Windows</span><span
+style='font-size:9.0pt;font-family:宋体'>的文件传到</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Linux. <br>
+3.</span><span style='font-size:9.0pt;font-family:宋体'>在</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Linux</span><span style='font-size:
+9.0pt;font-family:宋体'>下配置</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>Ftp <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>用</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>vsftp</span><span style='font-size:
+9.0pt;font-family:宋体'>或者</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>wu-ftp</span><span style='font-size:9.0pt;font-family:
+宋体'>都可以，配置成上传权限的，然后</span><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana'>Windows</span><span style='font-size:9.0pt;font-family:宋体'>和</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Linux</span><span
+style='font-size:9.0pt;font-family:宋体'>就可以相互共享文件了。</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+4.Windows</span><span style='font-size:9.0pt;font-family:宋体'>下配置</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>WWW</span><span
+style='font-size:9.0pt;font-family:宋体'>服务</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>用</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>IIS</span><span style='font-size:
+9.0pt;font-family:宋体'>，</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>Apache</span><span style='font-size:9.0pt;font-family:
+宋体'>或者其它的都可以。如果你的</span><span lang=EN-US style='font-size:9.0pt;font-family:
+Verdana'>Linux</span><span style='font-size:9.0pt;font-family:宋体'>只有命令行的话，就用</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>wget</span><span
+style='font-size:9.0pt;font-family:宋体'>命令吧，可以很方便地下载文件。</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+5.Windows</span><span style='font-size:9.0pt;font-family:宋体'>下配置</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Ftp <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>用</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>serv-u</span><span
+style='font-size:9.0pt;font-family:宋体'>比较简单</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+6.</span><span style='font-size:9.0pt;font-family:宋体'>利用</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Windows</span><span
+style='font-size:9.0pt;font-family:宋体'>的文件共享功能</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>比如说你的</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Windows</span><span
+style='font-size:9.0pt;font-family:宋体'>的</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>IP</span><span style='font-size:
+9.0pt;font-family:宋体'>为</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>192.168.0.1</span><span style='font-size:9.0pt;font-family:
+宋体'>，共享了一个叫</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>share</span><span
+style='font-size:9.0pt;font-family:宋体'>的目录，那么就可以用下列命令</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+smbmount&nbsp;//192.168.0.1/share&nbsp;/mnt&nbsp;-o&nbsp;username=user%passwd <br>
+7.</span><span style='font-size:9.0pt;font-family:宋体'>直接挂接物理硬盘或者硬盘分区</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>不过</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>vmware</span><span
+style='font-size:9.0pt;font-family:宋体'>也是支持直接</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>mount&nbsp;Host</span><span
+style='font-size:9.0pt;font-family:宋体'>机器的磁盘，方法是在虚机设置里新建磁盘，类型选“</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Usephysicaldisk(foradvanced&nbsp;users)</span><span
+style='font-size:9.0pt;font-family:宋体'>”</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>,</span><span style='font-size:
+9.0pt;font-family:宋体'>再选定磁盘和分区就可以。但是这样的操作可能会引会文件系统的不一致，导致错误，不推荐使用。</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+8.</span><span style='font-size:9.0pt;font-family:宋体'>用</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>ISO</span><span style='font-size:
+9.0pt;font-family:宋体'>文件</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>虚拟机里面的光驱可以有物理光驱和</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>ISO</span><span
+style='font-size:9.0pt;font-family:宋体'>文件两种，我们可以把我们的文件重点制件成</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>ISO</span><span
+style='font-size:9.0pt;font-family:宋体'>文件</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>(</span><span style='font-size:
+9.0pt;font-family:宋体'>用</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>WinIso),</span><span style='font-size:9.0pt;font-family:
+宋体'>然后在</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>Linux</span><span
+style='font-size:9.0pt;font-family:宋体'>中作为</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>CDROM</span><span style='font-size:
+9.0pt;font-family:宋体'>挂接。</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'> <br>
+<br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>3:&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>如果要知道去</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>abc.com</span><span
+style='font-size:9.0pt;font-family:宋体'>的线路是否能连通，该使用什么命令？，如果要判断去</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>abc.com</span><span
+style='font-size:9.0pt;font-family:宋体'>的路上堵塞位置，则使用什么命令？</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>答：</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>1</span><span style='font-size:
+9.0pt;font-family:宋体'>、</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>ping&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2</span><span
+style='font-size:9.0pt;font-family:宋体'>、</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>traceroute <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>4:&nbsp;Linux</span><span
+style='font-size:9.0pt;font-family:宋体'>下如何限制</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Root</span><span style='font-size:
+9.0pt;font-family:宋体'>用户进行远程登陆？</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'> <br>
+1</span><span style='font-size:9.0pt;font-family:宋体'>、在</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>/etc/default/login&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>文件，增加一行设置命令：</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>　　</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>CONSOLE&nbsp;=&nbsp;/dev/tty01 <br>
+2</span><span style='font-size:9.0pt;font-family:宋体'>、将</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>su</span><span style='font-size:
+9.0pt;font-family:宋体'>命令属主改为</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>&nbsp;root</span><span style='font-size:9.0pt;font-family:
+宋体'>；</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>　　</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>2.</span><span style='font-size:
+9.0pt;font-family:宋体'>将</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>su</span><span style='font-size:9.0pt;font-family:宋体'>命令的权限改为</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>&nbsp;700 <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>5</span><span style='font-size:
+9.0pt;font-family:宋体'>：关闭用户的</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>POP3</span><span style='font-size:9.0pt;font-family:宋体'>权限</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>? <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>把</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>POP3</span><span style='font-size:
+9.0pt;font-family:宋体'>的端口关了就可以了。在文件</span><span lang=EN-US style='font-size:
+9.0pt;font-family:Verdana'>/etc/services</span><span style='font-size:9.0pt;
+font-family:宋体'>中找到这一行</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>&nbsp;pop-3&nbsp;110/tcp&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>把这一行前加个</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>#,</span><span style='font-size:
+9.0pt;font-family:宋体'>把它注释掉就可以了</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>. <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>6:&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>如何不让普通用户自己改密码</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>? <br>
+[root@chenglin&nbsp;etc]#&nbsp;chmod&nbsp;511&nbsp;/usr/bin/passwd&nbsp; <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>又想让普通用户自己改密码</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>&nbsp; <br>
+[root@chenglin&nbsp;etc]#&nbsp;chmod&nbsp;4511&nbsp;/usr/bin/passwd <br>
+<br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>7:&nbsp;</span><span
+style='font-size:9.0pt;font-family:宋体'>临时修改网卡</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>MAC</span><span style='font-size:
+9.0pt;font-family:宋体'>地址的方法</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>关闭网卡：</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>/sbin/ifconfig&nbsp;eth0&nbsp;down&nbsp;
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>然后改地址：</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>/sbin/ifconfig&nbsp;eth0&nbsp;hw&nbsp;ether&nbsp;00:AA:BB:CC:DD:EE
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>然后启动网卡</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>:/sbin/ifconfig&nbsp;eth0&nbsp;up
+<br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>8:/etc/fstab</span><span
+style='font-size:9.0pt;font-family:宋体'>配置项里最后两个数字是什么意思</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>? <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>第一个叫</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>fs_freq</span><span
+style='font-size:9.0pt;font-family:宋体'>，用来决定哪一个文件系统需要执行</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>dump</span><span style='font-size:
+9.0pt;font-family:宋体'>操作</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>(dump</span><span style='font-size:9.0pt;font-family:宋体'>执行</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>ext2</span><span
+style='font-size:9.0pt;font-family:宋体'>的文件系统的备份操作</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>)</span><span style='font-size:
+9.0pt;font-family:宋体'>，</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>0</span><span style='font-size:9.0pt;font-family:宋体'>就是不需要；</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+</span><span style='font-size:9.0pt;font-family:宋体'>第二个叫</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>fs_passno</span><span
+style='font-size:9.0pt;font-family:宋体'>，是系统重启时</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>fsck</span><span style='font-size:
+9.0pt;font-family:宋体'>程序检测磁盘</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>(fsck</span><span style='font-size:9.0pt;font-family:宋体'>检测和修复文件系统</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>)</span><span
+style='font-size:9.0pt;font-family:宋体'>的顺序号，</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>0</span><span style='font-size:
+9.0pt;font-family:宋体'>表示该文件系统不被检测，</span><span lang=EN-US style='font-size:
+9.0pt;font-family:Verdana'>1</span><span style='font-size:9.0pt;font-family:
+宋体'>是</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>root</span><span
+style='font-size:9.0pt;font-family:宋体'>文件系统，</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>2</span><span style='font-size:
+9.0pt;font-family:宋体'>是别的文件系统。</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>fsck</span><span style='font-size:9.0pt;font-family:宋体'>按序号检测磁盘</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'> <br>
+<br>
+</span><span style='font-size:9.0pt;font-family:宋体'>问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>9:&nbsp;Samba</span><span
+style='font-size:9.0pt;font-family:宋体'>的主要功能</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>: <br>
+1.</span><span style='font-size:9.0pt;font-family:宋体'>提供</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>windows</span><span
+style='font-size:9.0pt;font-family:宋体'>风格的文件和打印机共享。</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+2.</span><span style='font-size:9.0pt;font-family:宋体'>在</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>Windows</span><span
+style='font-size:9.0pt;font-family:宋体'>网络中解析</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>NetBios</span><span
+style='font-size:9.0pt;font-family:宋体'>的名字</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'> <br>
+3.</span><span style='font-size:9.0pt;font-family:宋体'>提供</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>SMB</span><span
+style='font-size:9.0pt;font-family:宋体'>客户端，</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>linux</span><span style='font-size:
+9.0pt;font-family:宋体'>用户可以利用</span><span lang=EN-US style='font-size:9.0pt;
+font-family:Verdana'>smbclient</span><span style='font-size:9.0pt;font-family:
+宋体'>利用类似于</span><span lang=EN-US style='font-size:9.0pt;font-family:Verdana'>ftp</span><span
+style='font-size:9.0pt;font-family:宋体'>的形式访问</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>windows</span><span
+style='font-size:9.0pt;font-family:宋体'>资源</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>. <br>
+4.</span><span style='font-size:9.0pt;font-family:宋体'>提供命令行工具，利用该工具可以有限制地支持</span><span
+lang=EN-US style='font-size:9.0pt;font-family:Verdana'>windows</span><span
+style='font-size:9.0pt;font-family:宋体'>的某些管理功能</span><span lang=EN-US
+style='font-size:9.0pt;font-family:Verdana'>.</span></p>
+
+</div>
+
+</body>
+
+</html>

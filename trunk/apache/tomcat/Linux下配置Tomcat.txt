@@ -1,0 +1,452 @@
+Linux下配置Tomcat
+
+Linux下配置Tomcat
+
+***安装***
+  安装JDK
+chmod a+x jdk-1_5_0_06-linux-i586-rpm.bin
+./jdk-1_5_0_06-linux-i586-rpm.bin
+敲几次空格就OK了。还有一个是否接受协议，输入YES就可以了。
+得到jdk-1_5_0_06-linux-i586-rpm包
+rpm -ivh jdk-1_5_0_06-linux-i586-rpm
+ln -s /usr/java/jdk1.5.0_08 /opt/jdk
+  安装TOMCAT
+下载jakarta-tomcat-5.0.28.tar.gz到/opt
+tar -zxvf jakarta-tomcat-5.0.28.tar.gz
+在Linux下配置Tomcat最主要的问题就是配置环境变量。系统环境变量的配置在\etc\profile这个文件中。 
+export JAVA_HOME=/usr/java/jdk
+export CLASSPATH=$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:.
+export CATALINA_HOME=/opt/tomcat
+export PATH=$JAVA_HOME/bin:$PATH 
+这两个变量设置后，source /etc/profile 
+Tomcat就可以正常启动了。
+vi /etc/rc.local
+/opt/jakarta-tomcat-5.0.28/bin/startup.sh
+stop tomcat
+/opt/jakarta-tomcat-5.0.28/bin/shutdown.sh
+使用浏览器访问 
+[url=http://::，确认一下是否已经启动 Tomcat。
+*****Tomcat一些基本配置****
+　　
+　　一、先从网上下载tomcat
+　　目前最新版本是5.57，下载地址是：
+http://apache.freelamp.com/jakarta/tomcat-5/v5.5.7/bin/jakarta-tomcat-5.5.7.zip
+，
+下载安装完后，在安装目录下有以下目录，主要介绍一下conf、common、webapps：
+　　
+　　如果你现在等不急了，就想体验一下tomcat的魅力的话，把你的网页拷到webapps/ROOT目录下，然后再通过浏览器访问即可，
+默认如下格式：
+http://localhost:8080/
+　　
+　　1)webapps文件夹主要用于web应用程序部署，比如你可以把你的应用程序包，如war文件拷到该目录下，容器会自动部署。
+　　2)conf文件夹下主要是放置tomcat的服务器的相关配置文件
+　　3)common文件夹主要是对容器全局变量的文件放置地方，如common/lib下就是放置一些需要全文配置的文件包。
+　　
+　　二、j2ee的相关部署规范：
+　　一般来说作为一个符合规范的web程序，会包括以下文件夹和文件：/WEB-INF/（主要是放置一些配置文件与不希望外部程序访问的
+           隐私文件），在网络上是不允许访问该文件夹的，如当你输入以下
+http://localhost:8080/WEB-INF/
+的话就会出现错误。
+　　
+　　在WEB-INF文件夹下有一个web.xml文件，这是对当前应用程序的相关设置，资源寻找等，/WEN-INF/文件夹下有个classes子文件夹，
+    该文件夹是应用程序的根路径（等于是classpath的路径），/WEN-INF下还要有个lib文件夹，主要是放置需要引入的包，
+   应用程序导入的包先从这里开始寻找，其次到容器的全局路径下$TOMCAT_HOME/common/lib下寻找。
+　　
+　　以下是基本文件夹:
+　　/tomcat
+　　/common
+　　/lib
+　　/classes
+　　/conf
+　　/webapps
+　　/ROOT
+　　web.xml
+　　/WEB-INF
+　　/lib
+　　/classes
+　　/你部署的程序包
+　　web.xml
+　　/WEB-INF
+　　/lib
+　　/classes
+　　
+　　三、容器的配置（server.xml)
+　　到主目录/conf文件夹下server.xml文件是对web服务器的配置：
+　　以下是一些常见的设置，http端口设置，找到以下：
+　　
+　　把8080端口改为你喜欢使用的端口，如常见的80，以后你就可以利用该端口进行访问你的网站了：
+http://localhost:80
+期中80是默认的，可以不写，其他的一下配置，可以参观相关的内容，入门就是这么简单。
+　　web.xml为servlet的一些相关配置，可以参照一下规范。可以看我写的其他文章。
+　　继续说一下server.xml文件的设置，
+　　找到以下：
+　　
+　　....
+　　
+　　在他们之间可以添加一个元素，如：，其中属性path代表是网络访问的上下文路径，reloadable表示可以在运行时在classes与lib文件夹下自动加载类包，docBase属性表示你的应用程序的路径，在windows在如：docBase="E:\Sun\axis"，workDir表示是缓存文件的放置地点，可以方便跨平台移植时不用重编译。这样，你的应用程序就可以放到硬盘上的任意地方了。还有一个方法可以做到这点（推荐）：编写一个xml文件，然后放到tomcat目录/conf/Catalina//目录下，如：现在我有个应用程序ACMEWeb，我编了一个文件ACMEWeb.xml内容如下：
+　　
+　　我把它放到了tomcat目录/conf/Cataline/localhost下，在浏览器打开
+http://localhost/ACMEWeb
+就会转向我放在E:\eclipseproject\ACMEWeb下的程序了。
+1、配置系统管理（Admin Web Application）
+　　
+　　大多数商业化的J2EE服务器都提供一个功能强大的管理界面，且大都采用易于理解的Web应用界面。Tomcat按照自己的方式，
+同样提供一个成熟的管理工具，并且丝毫不逊于那些商业化的竞争对手。Tomcat的Admin Web Application最初在4.1版本时出现，
+当时的功能包括管理context、data source、user和group等。当然也可以管理像初始化参数，user、group、role的多种数据库管理等。
+在后续的版本中，这些功能将得到很大的扩展，但现有的功能已经非常实用了。
+Admin Web Application被定义在自动部署文件：CATALINA_BASE/webapps/admin.xml 。
+（译者注：CATALINA_BASE即tomcat安装目录下的server目录）
+　　
+　你必须编辑这个文件，以确定Context中的docBase参数是绝对路径。也就是说，CATALINA_BASE/webapps/admin.xml的路径是绝对路径。
+   作为另外一种选择，你也可以删除这个自动部署文件，而在server.xml文件中建立一个Admin Web Application的context，效果是一样的。
+   你不能管理Admin Web Application这个应用，换而言之，除了删除CATALINA_BASE/webapps/admin.xml ，你可能什么都做不了。
+　　
+　　如果你使用UserDatabaseRealm（默认），你将需要添加一个user以及一个role到CATALINA_BASE/conf/tomcat-users.xml文件中。
+   你编辑这个文件，添加一个名叫“admin”的role 到该文件中，如下：
+　　<role name="admin"/>
+　　的用户那样，添加一个用户（改变密码使其更加安全）：
+　　
+　　<user name="admin"
+　　password="deep_dark_secret"
+　　roles="admin"/>
+　　
+　　当你完成这些步骤后，请重新启动Tomcat，访问
+http://localhost:8080/admin
+，你将看到一个登录界面。
+    Admin Web Application采用基于容器管理的安全机制，并采用了Jakarta Struts框架。一旦你作为“admin”角色的用户登录管理界面，
+    你将能够使用这个管理界面配置Tomcat。
+　　
+　　2、配置应用管理（Manager Web Application）
+　　
+　　Manager Web Application让你通过一个比Admin Web Application更为简单的用户界面，执行一些简单的Web应用任务。
+   Manager Web Application被被定义在一个自动部署文件中：
+　　CATALINA_BASE/webapps/manager.xml
+　　你必须编辑这个文件，以确保context的docBase参数是绝对路径，也就是说CATALINA_HOME/server/webapps/manager的绝对路径。
+   （译者注：CATALINA_HOME即tomcat安装目录）
+　　
+　　如果你使用的是UserDatabaseRealm，那么你需要添加一个角色和一个用户到CATALINA_BASE/conf/tomcat-users.xml文件中。
+    接下来，编辑这个文件，添加一个名为“manager”的角色到该文件中：
+　　<role name=”manager”>
+　　你同样需要有一个角色为“manager”的用户。像已经存在的用户那样，添加一个新用户（改变密码使其更加安全）：
+　　
+　　<user name="manager"
+　　password="deep_dark_secret"
+　　roles="manager"/>
+　　
+　　然后重新启动Tomcat，访问
+http://localhost/manager/list
+，将看到一个很朴素的文本型管理界面，
+   或者访问
+http://localhost/manager/html/list
+，将看到一个HMTL的管理界面。
+   不管是哪种方式都说明你的Manager Web Application现在已经启动了。
+　　
+　　Manager application让你可以在没有系统管理特权的基础上，安装新的Web应用，以用于测试。
+    如果我们有一个新的web应用位于/home/user/hello下在，并且想把它安装到/hello下，为了测试这个应用，我们可以这么做，
+    在第一个文件框中输入“/hello”（作为访问时的path），在第二个文本框中输入“file:/home/user/hello”（作为Config URL）。
+　　
+　　Manager application还允许你停止、重新启动、移除以及重新部署一个web应用。停止一个应用使其无法被访问，
+    当有用户尝试访问这个被停止的应用时，将看到一个503的错误??“503 - This application is not currently available”。
+　　
+　　移除一个web应用，只是指从Tomcat的运行拷贝中删除了该应用，如果你重新启动Tomcat，被删除的应用将再次出现
+   （也就是说，移除并不是指从硬盘上删除）。
+　　
+　　3、部署一个web应用
+　　有两个办法可以在系统中部署web服务。
+　　1. 拷贝你的WAR文件或者你的web应用文件夹（包括该web的所有内容）到$CATALINA_BASE/webapps目录下。
+　　 
+　　如果你有一个WAR文件，你若想部署它，则只需要把该文件简单的拷贝到CATALINA_BASE/webapps目录下即可，
+    文件必须以“.war”作为扩展名。一旦Tomcat监听到这个文件，它将（缺省的）解开该文件包作为一个子目录，
+    并以WAR文件的文件名作为子目录的名字。
+　　接下来，Tomcat将在内存中建立一个context，就好象你在server.xml文件里建立一样。当然，其他必需的内容，
+    将从server.xml中的DefaultContext获得。
+　　2.移植时不用重编译。这样，你的应用程序就可以放到硬盘上的任意地方了。还有一个方法可以做到这点（推荐）：
+    编写一个xml文件，然后放到tomcat目录/conf/Catalina//目录下，如：现在有个应用程序ACMEWeb，
+    编了一个文件test.xml内容如下：
+　　
+　　把它放到了tomcat目录/conf/Cataline/localhost下，在浏览器打开
+http://localhost/test
+    就会转向我在/opt/geweb/test/下的程序了。 。
+　　这种context片断提供了一种便利的方法来部署web应用，你不需要编辑server.xml，除非你想改变缺省的部署特性，
+    安装一个新的web应用时不需要重启动Tomcat。
+　　
+　　4、配置虚拟主机（Virtual Hosts）
+　　
+　　关于server.xml中“Host”这个元素，只有在你设置虚拟主机的才需要修改。虚拟主机是一种在一个web服务器上服务多个域名的机制，
+    对每个域名而言，都好象独享了整个主机。实际上，大多数的小型商务网站都是采用虚拟主机实现的，
+    这主要是因为虚拟主机能直接连接到Internet并提供相应的带宽，以保障合理的访问响应速度，
+    另外虚拟主机还能提供一个稳定的固定IP。
+　　基于名字的虚拟主机可以被建立在任何web服务器上，建立的方法就是通过在域名服务器（DNS）上建立IP地址的别名，
+    并且告诉web服务器把去往不同域名的请求分发到相应的网页目录。因为这篇文章主要是讲Tomcat，
+    我们不准备介绍在各种操作系统上设置DNS的方法，如果你在这方面需要帮助，
+    请参考《DNS and Bind》一书，作者是Paul Albitz and Cricket Liu (O'Reilly)。为了示范方便，
+    我将使用一个静态的主机文件，因为这是测试别名最简单的方法。
+　　
+　　在Tomcat中使用虚拟主机，你需要设置DNS或主机数据。为了测试，为本地IP设置一个IP别名就足够了，接下来，
+    你需要在server.xml中添加几行内容，如下：
+　　
+　　<Server port="8005"
+　　shutdown="SHUTDOWN" debug="0">
+　　<Service name="Tomcat-Standalone">
+　　<Connector className=
+　　"org.apache.coyote.tomcat4.CoyoteConnector"
+　　port="8080"
+　　minProcessors="5" maxProcessors="75"
+　　enableLookups="true"
+　　redirectPort="8443"/>
+　　<Connector className=
+　　"org.apache.coyote.tomcat4.CoyoteConnector"
+　　port="8443" minProcessors="5"
+　　maxProcessors="75"
+　　acceptCount="10" debug="0"
+　　scheme="https" secure="true"/>
+　　<Factory className="org.apache.coyote.
+　　tomcat4.CoyoteServerSocketFactory"
+　　clientAuth="false" protocol="TLS" />
+　　</Connector>
+　　<Engine name="Standalone"
+　　defaultHost="localhost" debug="0">
+　　<!-- This Host is the default Host -->
+　　<Host name="localhost"
+　　debug="0" appBase="webapps"
+　　unpackWARs="true" autoDeploy="true">
+　　<Context path="" docBase="ROOT" debug="0"/>
+　　<Context path="/orders"
+　　docBase="/home/ian/orders" debug="0"
+　　reloadable="true" crossContext="true">
+　　</Context>
+　　</Host>
+　　
+　　<!-- This Host is the first
+　　"Virtual Host": 
+http://www.example.com/
+-->
+　　<Host name="
+www.example.com
+"
+　　appBase="/home/example/webapp">
+　　<Context path="" docBase="."/>
+　　</Host>
+　　
+　　</Engine>
+　　</Service>
+　　</Server>
+　　
+　　Tomcat的server.xml文件，在初始状态下，只包括一个虚拟主机，但是它容易被扩充到支持多个虚拟主机。
+    在前面的例子中展示的是一个简单的server.xml版本，其中粗体部分就是用于添加一个虚拟主机。
+    每一个Host元素必须包括一个或多个context元素，所包含的context元素中必须有一个是默认的context，
+    这个默认的context的显示路径应该为空（例如，path=””）。
+　　
+　　5、配置基础验证（Basic Authentication）
+　　
+　　容器管理验证方法控制着当用户访问受保护的web应用资源时，如何进行用户的身份鉴别。
+    当一个web应用使用了Basic Authentication（BASIC参数在web.xml文件中auto-method元素中设置），
+    而有用户访问受保护的web应用时，Tomcat将通过HTTP Basic Authentication方式，弹出一个对话框，
+    要求用户输入用户名和密码。在这种验证方法中，所有密码将被以64位的编码方式在网络上传输。
+　　
+　　注意：使用Basic Authentication通过被认为是不安全的，因为它没有强健的加密方法，
+    除非在客户端和服务器端都使用HTTPS或者其他密码加密码方式（比如，在一个虚拟私人网络中）。
+    若没有额外的加密方法，网络管理员将能够截获（或滥用）用户的密码。
+　　
+　　但是，如果你是刚开始使用Tomcat，或者你想在你的web应用中测试一下基于容器的安全管理，
+    Basic Authentication还是非常易于设置和使用的。
+    只需要添加<security-constraint>和<login-config>两个元素到你的web应用的web.xml文件中，
+    并且在CATALINA_BASE/conf/tomcat-users.xml文件中添加适当的<role>和<user>即可，然后重新启动Tomcat。
+　　
+　　下面例子中的web.xml摘自一个俱乐部会员网站系统，该系统中只有member目录被保护起来，
+     并使用Basic Authentication进行身份验证。请注意，这种方式将有效的代替Apache web服务器中的.htaccess文件。
+　　
+　　<!--
+　　Define the
+　　Members-only area,
+　　by defining
+　　a "Security Constraint"
+　　on this Application, and
+　　mapping it to the
+　　subdirectory (URL) that we want
+　　to restrict.
+　　-->
+　　<security-constraint>
+　　<web-resource-collection>
+　　<web-resource-name>
+　　Entire Application
+　　</web-resource-name>
+　　<url-pattern>/members/*</url-pattern>
+　　</web-resource-collection>
+　　<auth-constraint>
+　　<role-name>member</role-name>
+　　</auth-constraint>
+　　</security-constraint>
+　　<!-- Define the Login
+　　Configuration for
+　　this Application -->
+　　<login-config>
+　　<auth-method>BASIC</auth-method>
+　　<realm-name>My Club
+　　Members-only Area</realm-name>
+　　</login-config>
+　　
+　　6、配置单点登录（Single Sign-On）
+　　
+　　一旦你设置了realm和验证的方法，你就需要进行实际的用户登录处理。一般说来，对用户而言登录系统是一件很麻烦的事情，
+你必须尽量减少用户登录验证的次数。作为缺省的情况，当用户第一次请求受保护的资源时，每一个web应用都会要求用户登录。
+　　
+　　如果你运行了多个web应用，并且每个应用都需要进行单独的用户验证，那这看起来就有点像你在与你的用户搏斗。
+用户们不知道怎样才能把多个分离的应用整合成一个单独的系统，所有他们也就不知道他们需要访问多少个不同的应用，
+只是很迷惑，为什么总要不停的登录。
+　　
+　　Tomcat 4的“single sign-on”特性允许用户在访问同一虚拟主机下所有web应用时，只需登录一次。为了使用这个功能，
+你只需要在Host上添加一个SingleSignOn Valve元素即可，如下所示：
+　　
+　　<Valve className=
+　　"org.apache.catalina.
+　　authenticator.SingleSignOn"
+　　debug="0"/>
+　　
+　　在Tomcat初始安装后，server.xml的注释里面包括SingleSignOn Valve配置的例子，你只需要去掉注释，即可使用。
+那么，任何用户只要登录过一个应用，则对于同一虚拟主机下的所有应用同样有效。使用single sign-on valve有一些重要的限制：
+　　
+　　1> value必须被配置和嵌套在相同的Host元素里，并且所有需要进行单点验证的web应用（必须通过context元素定义）都位于该Host下。
+　　
+　　2> 包括共享用户信息的realm必须被设置在同一级Host中或者嵌套之外。
+　　
+　　3> 不能被context中的realm覆盖。
+　　
+　　4> 使用单点登录的web应用最好使用一个Tomcat的内置的验证方式（被定义在web.xml中的<auth-method>中），
+这比自定义的验证方式强，Tomcat内置的的验证方式包括basic、digest、form和client-cert。
+　　
+　　5> 如果你使用单点登录，还希望集成一个第三方的web应用到你的网站中来，并且这个新的web应用使用它自己的验证方式，
+而不使用容器管理安全，那你基本上就没招了。你的用户每次登录原来所有应用时需要登录一次，
+并且在请求新的第三方应用时还得再登录一次。
+　　
+　　当然，如果你拥有这个第三方web应用的源码，而你又是一个程序员，你可以修改它，但那恐怕也不容易做。
+　　
+　　6> 单点登录需要使用cookies。
+　　
+　　7、配置用户定制目录（Customized User Directores）
+　　
+　　一些站点允许个别用户在服务器上发布网页。例如，一所大学的学院可能想给每一位学生一个公共区域，
+或者是一个ISP希望给一些web空间给他的客户，但这又不是虚拟主机。在这种情况下，
+一个典型的方法就是在用户名前面加一个特殊字符（~），作为每位用户的网站，比如：
+　　
+　　
+http://www.cs.myuniversity.edu/~username
+　　
+http://members.mybigisp.com/~username
+　　
+　　Tomcat提供两种方法在主机上映射这些个人网站，主要使用一对特殊的Listener元素。
+Listener的className属性应该是org.apache.catalina.startup.UserConfig，userClass属性应该是几个映射类之一。
+　　
+　　如果你的系统是Unix，它将有一个标准的/etc/passwd文件，该文件中的帐号能够被运行中的Tomcat很容易的读取，
+该文件指定了用户的主目录，使用PasswdUserDatabase 映射类。
+　　
+　　<Listener className=
+　　"org.apache.catalina.startup.UserConfig"
+　　directoryName="public_html"
+　　userClass="org.apache.catalina.
+　　startup.PasswdUserDatabase"/>
+　　
+　　web文件需要放置在像/home/users/ian/public_html或者/users/jbrittain/public_html一样的目录下面。
+当然你也可以改变public_html 到其他任何子目录下。
+　　
+　　实际上，这个用户目录根本不一定需要位于用户主目录下里面。如果你没有一个密码文件，
+但你又想把一个用户名映射到公共的像/home一样目录的子目录里面，则可以使用HomesUserDatabase类。
+　　
+　　<Listener className=
+　　"org.apache.catalina.startup.UserConfig"
+　　directoryName="public_html"
+　　homeBase="/home"
+　　userClass="org.apache.catalina.
+　　startup.HomesUserDatabase"/>
+　　
+　　这样一来，web文件就可以位于像/home/ian/public_html或者/home/jasonb/public_html一样的目录下。
+这种形式对Windows而言更加有利，你可以使用一个像c:\home这样的目录。
+　　
+　　这些Listener元素，如果出现，则必须在Host元素里面，而不能在context元素里面，因为它们都用应用于Host本身。
+　　
+　　8、在Tomcat中使用CGI脚本
+　　
+　　Tomcat主要是作为Servlet/JSP容器，但它也有许多传统web服务器的性能。支持通用网关接口（Common Gateway Interface，即CGI）
+就是其中之一，CGI提供一组方法在响应浏览器请求时运行一些扩展程序。
+　　
+　　CGI之所以被称为通用，是因为它能在大多数程序或脚本中被调用，包括：Perl，Python，awk，Unix shell scripting等，
+甚至包括Java。
+　　
+　　当然，你大概不会把一个Java应用程序当作CGI来运行，毕竟这样太过原始。一般而言，开发Servlet总要比CGI具有更好的效率，
+因为当用户点击一个链接或一个按钮时，你不需要从操作系统层开始进行处理。
+　　
+　　Tomcat包括一个可选的CGI Servlet，允许你运行遗留下来的CGI脚本。
+　　
+　　为了使Tomcat能够运行CGI，你必须做如下几件事：
+　　
+　　1. 把servlets-cgi.renametojar （在CATALINA_HOME/server/lib/目录下）改名为servlets-cgi.jar。
+处理CGI的servlet应该位于Tomcat的CLASSPATH下。
+　　
+　　2. 在Tomcat的CATALINA_BASE/conf/web.xml 文件中，把关于<servlet-name> CGI的那段的注释去掉
+（默认情况下，该段位于第241行）。
+　　
+　　3. 同样，在Tomcat的CATALINA_BASE/conf/web.xml文件中，把关于对CGI进行映射的那段的注释去掉
+（默认情况下，该段位于第299行）。注意，这段内容指定了HTML链接到CGI脚本的访问方式。
+　　
+　　4. 你可以把CGI脚本放置在WEB-INF/cgi 目录下（注意，WEB-INF是一个安全的地方，
+你可以把一些不想被用户看见或基于安全考虑不想暴露的文件放在此处），或者你也可以把CGI脚本放置在context下的其他目录下，
+并为CGI Servlet调整cgiPathPrefix初始化参数。这就指定的CGI Servlet的实际位置，且不能与上一步指定的URL重名。
+　　
+　　5. 重新启动Tomcat，你的CGI就可以运行了。
+　　
+　　在Tomcat中，CGI程序缺省放置在WEB-INF/cgi目录下，正如前面所提示的那样，WEB-INF目录受保护的，
+通过客户端的浏览器无法窥探到其中内容，所以对于放置含有密码或其他敏感信息的CGI脚本而言，这是一个非常好的地方。
+　　
+　　为了兼容其他服务器，尽管你也可以把CGI脚本保存在传统的/cgi-bin目录，但要知道，
+在这些目录中的文件有可能被网上好奇的冲浪者看到。另外，在Unix中，请确定运行Tomcat的用户有执行CGI脚本的权限。
+　　
+　　9、改变Tomcat中的JSP编译器（JSP Compiler）
+　　
+　　在Tomcat 4.1（或更高版本，大概），JSP的编译由包含在Tomcat里面的Ant程序控制器直接执行。这听起来有一点点奇怪，
+但这正是Ant有意为之的一部分，有一个API文档指导开发者在没有启动一个新的JVM的情况下，使用Ant。
+　　
+　　这是使用Ant进行Java开发的一大优势。另外，这也意味着你现在能够在Ant中使用任何javac支持的编译方式，
+这里有一个关于Apache Ant使用手册的javac page列表。
+　　
+　　使用起来是容易的，因为你只需要在<init-param> 元素中定义一个名字叫“compiler”，
+并且在value中有一个支持编译的编译器名字，示例如下：
+　　
+　　<servlet>
+　　<servlet-name>jsp</servlet-name>
+　　<servlet-class>
+　　org.apache.jasper.servlet.JspServlet
+　　</servlet-class>
+　　<init-param>
+　　<param-name>logVerbosityLevel
+　　</param-name>
+　　<param-value>WARNING</param-value>
+　　</init-param>
+　　<init-param>
+　　<param-name>compiler</param-name>
+　　<param-value>jikes</param-value>
+　　</init-param>
+　　<load-on-startup>3</load-on-startup>
+　　</servlet>
+　　
+　　当然，给出的编译器必须已经安装在你的系统中，并且CLASSPATH可能需要设置，那处决于你选择的是何种编译器。
+　　
+10、限制特定主机访问（Restricting Access to Specific Hosts）
+　　
+　　有时，你可能想限制对Tomcat web应用的访问，比如，你希望只有你指定的主机或IP地址可以访问你的应用。
+这样一来，就只有那些指定的的客户端可以访问服务的内容了。为了实现这种效果，
+Tomcat提供了两个参数供你配置：RemoteHostValve 和RemoteAddrValve。
+　　
+　　通过配置这两个参数，可以让你过滤来自请求的主机或IP地址，并允许或拒绝哪些主机/IP。
+与之类似的，在Apache的httpd文件里有对每个目录的允许/拒绝指定。例如你可以把Admin Web application设置成只允许本地访问，
+设置如下：
+　　
+　　<Context path=
+　　"/path/to/secret_files" ...>
+　　<Valve className="org.apache.
+　　catalina.valves.RemoteAddrValve"
+　　allow="127.0.0.1" deny=""/>
+　　</Context>
+　　
+　　如果没有给出允许主机的指定，那么与拒绝主机匹配的主机就会被拒绝，除此之外的都是允许的。
+与之类似，如果没有给出拒绝主机的指定，那么与允许主机匹配的主机就会被允许，除此之外的都是拒绝的。 
+

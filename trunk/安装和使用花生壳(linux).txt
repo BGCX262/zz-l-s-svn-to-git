@@ -1,0 +1,98 @@
+安装和使用花生壳(linux)
+2007-08-02 10:17
+
+
+
+一、花生壳For Linux安装步骤 
+
+下载适合您的unix/linux版本的安装包文件，使用root身份解压缩安装包
+
+# tar -zxvf phlinux-1.0-install.redhat.9.0.tar.gz
+
+
+安装包文件将解压缩至phlinux_install目录中
+
+# cd phlinux_install
+
+
+执行安装脚本 
+
+# ./install.sh
+
+
+执行安装脚本后,将自动以互动配置模式的phlinux程序
+
+输入web服务的地址,直接回车 
+
+Runing phlinux for first configuration...
+Peanuthull Linux-core 1.0 by oray.net, copyright 2005
+No user configuration found, entering interactive mode automatically!
+
+Peanuthull Linux-core Interactive startup.
+Please input service address(press ENTER use phservice.oray.net):
+
+输入花生壳服务器地址phlinux3.oray.net ,直接回车
+
+Please input server address(press ENTER use PH031.Oray.Net):
+
+此处提示输入您的花生护照登陆名 
+
+Please input username(press ENTER use ):
+
+此处提供输入花生护照登陆密码 
+
+Please input password:
+
+系统提示是否保存配置文件,在这里输入yes回车. 
+
+Save to configuration file (/etc/phlinux.conf)?(yes/no):
+
+
+以上操作完成,系统将自动登录花生壳服务器,用户可以通过web方式查看当前花生壳客户端的运行状态.
+花生壳客户端使用 6160端口提供web检测服务,例如 http://192.168.0.1:6160/
+此监测页面将完全的反应当前花生壳的运行状态.
+
+
+
+
+注：以互动配置模式运行phlinux程序并配置完成后,如监视web页面显示花生壳的在线状态为 "离线 / 认证失败",可能是由于您输入的用户名或密码错误,请重新以互动设置模式运行程序配置 
+# /usr/local/phlinux/phlinux -i
+
+
+二、花生壳For Linux程序参数说明
+
+
+phlinux [参数]
+
+参数列表
+--interact
+-i, 互动配置模式运行
+程序以互动模式提示用户输入必要的参数
+
+--daemon
+-d, 后台进程模式运行
+程序在后台进程中运行,可以使用 kill -9 <PID> 关闭
+
+--help
+-h, 显示帮助.
+
+
+
+三、常见问题
+
+如何以每次开机时自动运行花生壳客户端?
+使用RedHat Linux,在/etc/rc.d/rc.local 文件中加入一行内容 /usr/local/phlinux/phlinux -d
+使用Freebsd,创建一个文件/etc/rc.local并加执行权限，在此文件中加入一行内容 /usr/local/phlinux/phlinux -d
+
+以后台进程模式运行花生壳客户端程序，如何退出？ 
+首先用ps -A查看所有进程列表，记住phlinux的pid
+再使用kill -9 <PID> 杀掉此进程
+
+如何手动修改登陆的用户名及密码
+您可以直接编辑/etc/phlinux.conf文件，对登陆用户名及密码进行修改。 
+
+花生壳日志保存路径
+/var/log/phlinux.log 
+
+为什么花生壳无法登陆？
+花生壳使用的通信端口是TCP:80,6060和UDP:6060（方向：OUT），请确认防火墙没有把这几个通信端口封掉。

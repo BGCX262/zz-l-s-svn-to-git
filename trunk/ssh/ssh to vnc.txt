@@ -1,0 +1,34 @@
+远程桌面设置:利用putty进行vnc + ssh tunneling
+http://os.51cto.com  2005-12-09 19:02  yunqing  chinaunix.net  我要评论(0)
+摘要：远程桌面设置:利用putty进行vnc + ssh tunneling
+标签：进  C  SSH  I  s  桌面
+
+如果直接使用vncviewer来进行访问,有两点不利因素: 
+1. 口令传输是明文,很容易被侦听到. 
+2. 防火墙需要打开59xx端口,这在通常的单位里是不可能的. 
+幸运的是,我们有ssh这个强大的工具,象X11 Forwarding(另文论述),我们可以使用ssh隧道来保护通讯过程,下面就进行简单介绍. 
+假设vncserver运行在服务器 myserver (ip地址为:192.168.x.x)的屏幕1,也就是侦听 192.168.x.x:5901, 用户名为foo 
+情形一: vnc客户端为linux
+这种情形很简单,一般的linux发行版本里面都默认安装了ssh套件. 
+
+1. 用ssh登录到服务器 
+ssh -L 5901:localhost:5901 -l foo myserver
+或者直接用ip地址 
+ssh -L 5901:localhost:5901 -l foo 192.168.x.x
+
+2. 在本机的另外开的终端上,运行vncviewer (或其它的类似工具) 
+vncviewer localhost:1 
+情形二: vnc客户端为windows
+
+1. 下载一个ssh客户端,个人推荐putty,只有一个程序,不需要安装,简单而功能齐全. 到这里下载http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
+下载putty.exe到桌面上直接运行即可。 
+
+2. 运行putty,输入服务器的ip地址,输入一个名字,这里myserver作为session的名字，按save保存(见图一)。 
+3. 单击对话框左边的tunnels来选择相关设置，在source port里输入5901，在Destination里输入localhost：5901，按Add添加(见图二)。 
+4. 单击左边session，回到session设置，按save重新保存。按open即可登录到服务器。 
+5. 运行vnc-viewer （如果没有，到这里下载[url]http://www.realvnc.com/download.html[/url]，只要一个exe的文件就行），在Server里输入localhost:1, 输入口令后一个linux的桌面就会出现在windows里，并且是非常安全的.
+
+
+
+图1
+

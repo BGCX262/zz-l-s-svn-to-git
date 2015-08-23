@@ -1,0 +1,113 @@
+LINUX安装ORACLE 9204　报错解决！！
+[oracle@localhost ~]$ uname -a
+Linux localhost.localdomain 2.6.9-55.ELsmp #1 SMP Fri Apr 20 17:03:35 EDT 2007 i686 i686 i386 GNU/Linux
+
+1、问题一
+[oracle@dbServer Disk1]$ ./runInstaller
+[oracle@dbServer Disk1]$ Initializing Java Virtual Machine from /tmp/OraInstall2
+008-10-09_12-56-11PM/jre/bin/java. Please wait...
+Error occurred during initialization of VM
+Unable to load native library: /tmp/OraInstall2008-10-09_12-56-11PM/jre/lib/i386
+/libjava.so: symbol __libc_wait, versionGLIBC_2.0 not defined in file libc.so.6
+ with link time reference
+
+解决方法：
+When you execute runInstaller from the Oracle 9iR2 (9.2.0) CD, you will get the following
+
+error message:
+
+Error occurred during initialization of VM
+Unable to load native library: /tmp/OraInstall2003-10-25_03-14-
+
+57PM/jre/lib/i386/libjava.so:
+    symbol __libc_wait, version GLIBC_2.0 not defined in file libc.so.6 with link time
+
+reference
+
+
+To resolve the __libc_wait symbol issue, download the p3006854_9204 patch
+
+p3006854_9204_LINUX.zip fromhttp://metalink.oracle.com/. See bug 3006854 for more
+
+information.
+
+su - root
+# unzip p3006854_9204_LINUX.zip
+Archive:  p3006854_9204_LINUX.zip
+   creating: 3006854/
+  inflating: 3006854/rhel3_pre_install.sh
+  inflating: 3006854/README.txt
+
+# cd 3006854
+# sh rhel3_pre_install.sh
+Applying patch...
+Patch successfully applied
+#
+２、问题二
+
+linux安装Oracle安装界面乱码解决方法！
+
+ 
+
+export NLS_LANG=AMERICAN_AMERICA.UTF8
+export LC_ALL=C
+
+ 
+
+3、问题三
+在linuxrh4 安装oracle9.2.0.4 过程中运行到63%时
+
+Exception String: Error in invoking target install of makefile
+
+/orasys/oracle/product/9.2.0/plsql/lib/ins_plsql.mk
+
+该打的补丁包 也已经打了
+
+检查安装日志
+
+Exception thrown from action: make
+Exception Name: MakefileException
+Exception String: Error in invoking target install of makefile
+
+/u01/app/oracle/plsql/lib/ins_plsql.mk
+
+在linux下执行以下操作
+
+mv /usr/bin/gcc /usr/bin/gccold
+mv /usr/bin/gcc32 /usr/bin/gcc
+
+然后安装正常 成功后记的改回去
+mv /usr/bin/gcc  /usr/bin/gcc32
+mv /usr/bin/gccold /usr/bin/gcc
+
+ 
+
+ 
+
+ 
+
+4、问题四
+/home/oracle/jre/1.1.8/bin/../lib/i686/native_threads/libzip.so: symbol errno, version
+
+GLIBC_2.0 not defined in file libc.so.6 with
+link time reference (libzip.so)
+Unable to initialize threads: cannot find class java/lang/Thread
+Could not create Java VM
+
+ 
+
+export PATH LD_ASSUME_KERNEL=2.4.1　　　
+          ##(1)这一步很重要，只要2.6.0以下的内核都可以用这个版本，不要写成自已的内核版本
+
+。会出现内jvm错误
+          　　　/opt/oracle/jre/1.1.8/bin/../lib/i686/green_threads/libzip.so: symbol
+
+errno, version GLIBC_2.0 not defined　in file libc.so.6 with link time reference
+
+(libzip.so)
+　　　　　　　　Unable to initialize threads: cannot find class java/lang/Thread
+　　　　　　　　Could not create Java VM
+          （事实上在2.4.20下安装成功之后重编译内核版本2.6.0照样可以正常运行。）
+
+作者：fengyifei11228 发表于2010-12-10 13:12:00 原文链接 
+阅读：25 评论：0 查看评论 

@@ -1,0 +1,392 @@
+
+GRUB 大全 
+.
+
+
+
+一. GRUB的技术特点：
+　　1. 支持多可执行文件格式
+　　　GRUB支持各种a.out格式和ELF格式。
+　　2. 支持不符合Multiboot标准的内核
+　　　GRUB能够直接支持多种并不符合Multiboot标准的自由操作系统内核（主要是FreeBSD,NetBSD,OpenBSD和　linux）。也能通过chainload间接引导非开放的其他操作系统。
+　　3. 支持操作系统模块装载。
+　　4. 提供文本格式可手工修改的配置文件。
+　　5. 菜单界面
+　　6. 灵活的命令行界面
+　　7. 多文件系统识别
+　　能够透明地识别多种文件系统，现在能够识别的文件系统有BSD FFS,DOS FAT16,FAT32和Linux ext2fs.这个范围仍然在扩展。
+　　8. 支持压缩文件的解压缩。
+　　　能够解压缩被gzip压缩的文件，并且这个识别和解压过程是自动的和对用户透明的，这个功能大大地减少了文件的大小，减少了load的时间，这个功能对于软盘上的系统尤其有用。
+　　可能有些内核模块在装载时要求是压缩状态，这时解压此模块可能会画蛇添足，所以GRUB提供了另一不进行解压缩的模块装载命令。
+　　9. 可以读取任何已安装的设备上的数据
+　　　支持读取软盘，硬盘上的数据，不依赖于根设备上任何的设置。
+　　10. 和磁盘定位的表示方法无关。
+　　11. 能够使用BIOS所检测到的所有RAM.
+　　　GRUB通常能够找到PC兼容机上的全部RAM，它采用一种先进的BIOS查询技术来找到所有的内存空间。
+　　12. 支持硬盘的LBA模式
+　　　GRUB通过支持LBA模式，突破1024柱面的限制，能够访问8GB以外的全部硬盘空间。
+　　13. 支持网络
+　　　虽然GRUB是一个基于磁盘的引导程序，但是它也支持网络功能，你可以通过TFTP协议从网络上得到操作系统映象文件并引导。
+
+　　GRUB的后继版本可能会包括一个内置的可编程语言来支持各种内核的引导参数，这还只是一个操作系统引导器吗？；），并且计划加入对非PC体系结构的支持。
+
+下载并安装GRUB
+你可以到<ftp://alpha.gnu.org/gnu/grub/grub-0.5.94.tar.gz>得到GRUB，然后：
+　zcat grub-0.5.94.tar.gz | tar xvf -
+　　会生成一个目录grub-0.5.94，再：
+　cd grub-0.5.94
+　./configure
+　make install
+
+debian下安装grub
+apt-get install grub
+
+　　这样GRUB就安装好了，下面你需要在你的硬盘或者软盘引导区上安装GRUB引导代码。
+　 制作GRUB引导软盘：
+
+cd /boot/grub
+　dd if=stage1 of=/dev/fd0 bs=512 count=1
+　dd if=stage2 of=/dev/fd0 bs=512 seek=1
+
+制作GRUB硬盘引导：
+
+　　重启动用GRUB引导软盘引导，或者你不想重启动也可以执行/usr/sbin/grub。两种情况都会进入命令行界面。 然后，我们首先要设置GRUB的“根设备”，也就是告诉GRUB安装所在的分区：
+　　grub> root (hd0,0)
+　　这里牵涉到GRUB的设备命名规则，将在下面介绍，此处（hd0,0）是指第一块硬盘的第一个分区。
+　　如果你不能够确定安装GRUB所在的分区号的话，可以通过find指令查找：
+　　grub> find /boot/grub/stage1
+　　GRUB将会查找文件/boot/grub/stage1并显示包含这个文件的设备名，当然就是我们安装GRUB所在的分区。下面就可以写引导记录了：
+　　grub> setup (hd0)
+　　这条命令将会在第一块硬盘的MBR安装GRUB引导，如果你不想在MBR安装GRUB，而是希望将GRUB安装在分区的引导扇区的话，你可以用下面指令指定安装设备：
+　　grub> setup (hd0,0)
+　　这将会在第一块硬盘的第一个分区的引导扇区安装GRUB。
+　　OK，现在你就可以重新启动由GRUB引导你的系统。
+
+设备命名规则
+
+　　首先GRUB对设备的命名必须包含在小括号内，GRUB不区分IDE硬盘和SCSI硬盘，统一使用hdx,其中x指定BIOS中硬盘的编号，从零开始计数，而且通常计算机内的IDE硬盘编号在SCSI硬盘前。GRUB用fdx指定软盘设备，x是软盘驱动器号。具体命名规则如下：
+　　(fd0):第一软驱,GRUB还可以引导软盘上的操作系统
+　　(hd0,1): 第一块硬盘的第二个分区。
+　　(hd1,4): 第二块硬盘的第一个扩展分区，扩展的分区是从4开始编号的。
+　　(hd0,2,a): 专用于FreeBSD,FreeBSD有一个slice概念，把一个分区进一步分为几个slice,此处指明是第一块硬盘的第三个分区中的slice a。你也可以用(hd0,a)，这样GRUB就会在第一块硬盘上找到第一个FreeBSD分区的slice a。
+　　让我们再来看看GRUB对于磁盘文件的命名方法：
+　　(hd0,1)/vmlinuz，很简单只要指定分区号和文件的绝对路径名就可以了。
+
+引导多系统
+现在来看看如何用GRUB引导我们的多操作系统,用GRUB引导后可以进入命令行模式或者菜单模式，你可以通过灵活的命令行模式选择引导各个分区的操作系统，指定引导参数。
+　　GRUB支持三种引导方法，第一种是直接引导操作系统内核，第二种是通过chainload进行间接引导。
+　　对于GRUB能够支持的LINUX,FreeBSD,OpenBSD,NetBSD,GUN Mach可以通过直接引导完成，不需要其他的引导扇区了，但是对于GRUB不直接支持的操作系统，需要用第二种方法chainload来完成。另外GRUB还支持网络引导，我们分别来看看这几种引导方法：
+　　（a） 直接引导：
+　　通常步骤如下：
+　　1.用root命令设置包含操作系统内核的根设备
+　　2.用kernel命令装载内核映象文件，如果这个内核引导的时候有参数的话，可以直接将参数加在内核文件名的后面。
+　　3.用module或modulenounzip装载内核模块。
+　　4.boot开始引导。
+　　（b） chainload引导：
+　　1.首先设置GRUB的根设备，用:
+　　　grub> rootnoverify (hdx,y)
+　　2.开始引导
+　　　grub> chainloader +1
+　　　此处'+1'是指示GRUB读入分区的第一个扇区的引导记录。
+　　3.执行boot开始引导
+　　以上是一般的chainloader方式，对于DOS和WINDOWS，可以简单地用两条指令进行引导：
+　　chainloader (hdx,y)+1,然后boot，其中x,y用来指明所在分区号。
+　　（c） 从网络引导：
+　　为了使GRUB能够支持从网络引导，你需要在编译时打开网络支持选项，关于这个你可以参考源文件目录里的`netboot/README.netboot为了从网络引导，你首先要在网络设置两个服务，首先是动态IP配置服务，可以是BOOTP，DHCP或RARP服务器，另一个是TFTP服务。
+　　然后分别针对不同的服务器BOOTP，DHCP或RARP（三个选一个）运行bootp，dhcp,rarp。如果一切设置无误的话GRUB就会给出IP，IP netmask和TFTP服务器的IP和网关的IP地址。最后，从网上得到操作系统的映象文件，网络的设备名称是(nd).如下例：
+　　grub> bootp
+　　Probing... [NE*000]
+　　NE2000 base ...
+　　Address: 192.168.110.23 Netmask: 255.255.255.0
+　　Server: 192.168.110.14 Gateway: 192.168.110.1
+　　grub> root (nd)
+　　grub> kernel /tftproot/gnumach.gz root=sd0s1
+　　grub> module /tftproot/serverboot.gz
+　　grub> boot
+
+实例
+
+GNU/Hurd
+--------
+因为GNU/Hurd是符合Multiboot规范的操作系统，所以非常容易引导:
+grub> root (hd0,2)
+如果你不记得Hurd所在的分区号的话，可以用find /boot/gnumach查找。
+grub> kernel /boot/gnumach root=hd0s1
+grub> module /boot/serverboot
+grub> boot
+GNU/Linux
+---------
+grub> root (hd1,3)
+grub> kernel /vmlinuz root=/dev/hda1
+如果你需要指定内核启动参数的话，可以直接加到命令的最后面如：
+grub> kernel /vmlinuz root=/dev/hda1 vga=ext
+如果你使用initrd的话，在kernel命令之后执行：
+grub> initrd /initrd
+grub> boot
+
+FreeBSD
+-------
+GRUB能够直接装载.ELF和a.out两种格式的内核，但是由于FreeBSD的内核引导接口有时有较大的变动，所以，对FreeBSD最安全的引导方法是引导/boot/loader
+grub> root (hd0,a)
+grub> kernel /boot/loader
+grub> boot
+NetBSD,OpenBSD,NetBSD
+-------------------------------------
+
+这三种系统的引导指令序列一样，如下：
+　　1. 'root'设置根设备.
+　　2. `kernel'装载内核.
+　　3. `boot'引导.
+DOS/Windows
+-----------
+grub> rootnoverify (hd0,0)
+grub> chainloader +1
+grub> boot
+SCO UnixWare
+------------
+grub> rootnoverify (hd1,0)
+grub> chainloader --force +1
+grub> makeactive //注意这条指令将设置UnixWare分区为活动分区，这样要求你的GRUB安装在MBR,否则下次启动时将直接进入UnixWare而不会进入GRUB grub> boot
+
+　　当然，如果每次引导都需要敲入命令的话实在是太麻烦了，因此，类似于LILO，GRUB提供了一个菜单方式，你需要一个配置文件将这些命令放入配置文件中就可以实现菜单方式的多引导，当然在菜单方式下你可以切换到命令模式下。GRUB引导时查找/boot/grub/menu.lst，如果存在这个文件的话，就根据这个文件生成一个引导菜单，menu.lst文件格式很简单。
+
+菜单设置
+# 等待用户选择菜单项的时间（以秒计），超时则引导默认的选项
+timeout 30
+# 默认选项，第一项
+default 0
+# 如果第一项出错，则启动下面的后备选项
+fallback 1
+# 引导 GNU Hurd，其中title就是菜单中显示的提示字符串
+title GNU/Hurd
+root (hd0,0)
+kernel /boot/gnumach.gz root=hd0s1
+module /boot/serverboot.gz
+# 引导 Linux
+title GNU/Linux
+root (hd1,0)
+kernel /vmlinuz root=/dev/hdb1
+# 引导Mach (kernel映象文件放在软盘)
+title Utah Mach4 multiboot
+root (hd0,2)
+pause Insert the diskette now!!
+kernel (fd0)/boot/kernel root=hd0s3
+module (fd0)/boot/bootstrap
+# 引导 FreeBSD
+title FreeBSD 3.4
+root (hd0,2,a)
+kernel /boot/loader
+# 引导 OS/2
+title OS/2
+root (hd0,1)
+makeactive
+chainloader +1
+# 引导 Windows NT 或者 Windows95，98
+title Windows NT / Windows 95，98 boot menu
+rootnoverify (hd0,0)
+chainloader +1
+# 安装 GRUB 到硬盘MBR
+title Install GRUB into the hard disk
+root (hd0,0)
+setup (hd0)
+# 改变显示菜单的颜色
+title Change the colors
+color light-green/brown blink-red/blue
+
+用户界面
+　　GRUB的用户界面有三种：命令行模式，菜单模式和菜单编辑模式
+　　（a） 命令行模式：
+　　进入命令行模式后GRUB会给出一个命令提示符`grub>`，此时就可以键入命令，按回车执行。此模式下可执行的命令是在menu.lst中可执行的命令的一个子集。此模式下允许类似于Bash shell的命令行编辑功能：
+<C-f>或<右箭头键> 光标右移一个字符
+<C-b> 或 <左箭头键> 光标左移一个字符
+<C-a> <HOME> 到这一行的开头
+<C-e> 或 <END> 到行尾
+<C-d> 或 del 删除光标处的字符
+<C-h> 或 <BackSpace> 删除光标左边的字符
+<C-k> 删除光标右边的所有字符（包括光标处的字符）
+<C-u> 删除光标左边的所有字符（包括光标处的字符）
+<C-y> 恢复上次删除的字符串到光标位置
+<C-p>或<向上键> 历史记录中的上一条命令
+<C-n>或<向下键> 历史记录中的下一条命令
+　　在命令行模式下<tab>键有补全命令的功能，如果你敲入了命令的前一部分，键入<tab>系统将列出所有可能以你给出的字符串开头的命令。如果你给出了命令，在命令参数的位置按下<tab>键，系统将给出这条命令的可能的参数列表，具体的可用命令集将在后面给出。
+　　（b） 菜单模式
+　　当存在文件/boot/grub/menu.lst文件时系统启动自动进入此模式。菜单模式下用户只需要用上下箭头来选择他所想启动的系统或者执行某个命令块，菜单的定义在menu.lst文件中，你也可以从菜单模式按<c>键进入命令行模式，并且可以按<ESC>键从命令行模式返回菜单模式。菜单模式下按<e>键将进入菜单编辑模式。
+　　（c） 菜单编辑模式
+　　菜单编辑模式用来对菜单项进行编辑改变，其界面和菜单模式的界面十分类似，不同的是菜单中显示的是对应某个菜单项的命令列表。如果在编辑模式下按下<ESC>,则取消所有当前对菜单的编辑并回到菜单模式下。在编辑模式下选中一个命令行，就可以对这条指令进行修改，修改完毕后按下<RET>，GRUB将提示你确认并完成修改。如果你想在当前命令列表中增加一条命令，按<o>在当前命令的下面增加一条指令，按<O>在当前命令前处增加一条指令。按<d>删除一条指令。
+
+命令列表
+
+　　下面是GRUB的可用命令列表:
+　　仅用于菜单的命令（不包括菜单项内部的启动命令）
+==========================================
+default num
+设置菜单中的默认选项为num（默认为0,即第一个选项），超时将启动这个选项
+fallback num
+如果默认菜单项启动失败，将启动这个num后援选项。
+password passwd new-config-file
+关闭命令行模式和菜单编辑模式，要求输入口令，如果口令输入正确，将使用new-conf
+ig－file
+作为新的配置文件代替menu.lst，并继续引导。
+timeout sec
+设置超时，将在sec秒后自动启动默认选项。
+title name ...
+开始一个新的菜单项，并以title后的字串作为显示的菜单名。
+在菜单（不包括菜单项内部的命令）和命令行方式下都可用的命令
+======================================================
+bootp
+以BOOTP协议初始化网络设备
+color normal [highlight]
+　　改变菜单的颜色，normal是用于指定菜单中非当前选项的行的颜色，highlight是用于指定当前菜单选项的颜色。如果不指定highlight，GRUB将使用normal的反色来作为highlight颜色。指定颜色的格式是“前景色/背景色”，前景色和背景色的可选列表如下：
+* black
+* blue
+* green
+* cyan
+* red
+* magenta
+* brown
+* light-gray
+下面的颜色只能用于背景色
+* dark-gray
+* light-blue
+* light-green
+* light-cyan
+* light-red
+* light-magenta
+* yellow
+* white
+你可以在前景色前加上前缀"blink-",产生闪烁效果，你可以在menu.lst中加上下面这个选项来改变颜色效果：
+title OS-BS like
+color magenta/blue black/magenta
+device drive file
+在GRUB命令行中，把BIOS中的一个驱动器drive映射到一个文件file。你可以用这条命令创建一个磁盘映象或者当GRUB不能真确地判断驱动器时进行纠正。如下
+grub> device (fd0) /floppy-image
+grub> device (hd0) /dev/sd0
+这条命令只能在命令行方式下使用， 是个例外。
+dhcp
+用DHCP协议初始化网络设备。目前而言，这条指令其实就是bootp的别名，效果和bootp一样。
+hide partition
+这条指令仅仅对DOS和WINDOWS有用，当在一个硬盘上存在多个DOS/WIN的主分区时，有时需要这条指令隐藏其中的一个或几个分区，即在分区表中设置“隐藏”位。
+rarp
+用RARP协议初始化网络设备。
+setkey to_key from_key
+改变键盘的映射表，将from_key映射到to_key,注意这条指令并不是交换键映射，如果你要交换两个键的映射，需要用两次setkey指令,如下：
+grub> setkey capslock control
+grub> setkey control capslock
+其中的键必须是字母，数字或者下面的一些代表某一键的字符串：
+`escape', `exclam', `at', `numbersign', `dollar', `percent',
+`caret', `ampersand', `asterisk', `parenleft', `parenright',
+`minus', `underscore', `equal', `plus', `backspace', `tab',
+`bracketleft', `braceleft', `bracketright', `braceright', `enter',
+`control', `semicolon', `colon', `quote', `doublequote',
+`backquote', `tilde', `shift', `backslash', `bar', `comma',
+`less', `period', `greater', `slash', `question', `alt', `space',
+`capslock', `FX' (`X' is a digit), and `delete'.
+下面给出了它们和键盘上的键的对应关系：
+`exclam'＝`!'
+`at'＝`@'
+`numbersign'＝`#'
+`dollar'＝`$'
+`percent'＝`%'
+`caret'＝`^'
+`ampersand'＝`&'
+`asterisk'＝`*'
+`parenleft'＝`('
+`parenright'＝`)'
+`minus'＝`-'
+`underscore'＝`_'
+`equal'＝`='
+`plus'＝`+'
+`bracketleft'＝`['
+`braceleft'＝`{'
+`bracketright'＝`]'
+`braceright'＝`}'
+`semicolon'＝`;'
+`colon'＝`:'
+`quote'＝`''
+`doublequote'＝`"'
+`backquote'＝``'
+`tilde'＝`~'
+`backslash'＝`'
+`bar'＝`|'
+`comma'＝`,'
+`less'＝`<'
+`period'＝`.'
+`greater'＝`>'
+`slash'＝`/'
+`question'＝`?'
+`space'＝` '
+unhide partition
+仅仅对DOS/WIN分区有效，清除分区表中的“隐藏”位。
+仅用于命令行方式或者菜单项内部的命令
+=======================================
+blocklist file
+显示文件file在所占磁盘块的列表。
+boot
+仅在命令行模式下需要，当参数都设定完成后，用这条指令启动操作系统
+cat file
+显示文件file的内容，可以用来得到某个操作系统的根文件系统所在的分区，如下：
+grub> cat /etc/fstab
+chainloader [`--force'] file
+把file装入内存进行chainload,除了能够通过文件系统得到文件外，这条指令也可以用磁盘块列表的方式读入磁盘中的数据块，如'+1`指定从当前分区读出第一个扇区进行引导。如果指定了`--force`参数，则无论文件是否有合法的签名都强迫读入，当你在引导SCO UnixWare时需要用这个参数。
+cmp file1 file2
+比较文件的内容，如果文件大小不一致，则输出两个文件的大小，如下：
+Differ in size: 0x1234 [foo], 0x4321 [bar]
+如果两个文件的大小一致但是在某个位置上的字节不同，则打印出不同的字节和他们的
+位移：
+Differ at the offset 777: 0xbe [foo], 0xef [bar]
+如果两个文件完全一致，则什么都不输出。
+configfile FILE
+将FILE作为配置文件替代menu.lst。
+embed stage1_5 device
+如果device是一个磁盘设备的话，将Stage1_5装入紧靠MBR的扇区内。如果device是一个FFS文件系统分区的话，则将Stage1_5装入此分区的第一扇区。如果装入成功的话，输出写入的扇区数。
+displaymem
+显示出系统所有内存的地址空间分布图。
+find filename
+在所有的分区中寻找指定的文件filename，输出所有包含这个文件的分区名。参数filename应该给出绝对路径。
+fstest
+启动文件系统测试模式。打开这个模式后，每当有读设备请求时，输出向底层例程读请求的参数和所有读出的数据。输出格式如下：
+先是由高层程序发出的分区内的读请求，输出：<分区内的扇区偏移，偏移(字节数)，长度(字节数)>之后由底层程序发出的扇区读请求，输出：[磁盘绝对扇区偏移] 可以用install或者testload命令关闭文件系统测试模式。
+geometry drive [cylinder head sector [total_sector]]
+输出驱动器drive的信息。
+help [pattern ...]
+在线命令帮助，列出符合pattern的命令列表，如果不给出参数，则将显示所有的命令列表。
+impsprobe检测Intel多处理器，启动并配置找到的所有CPU。
+initrd file ...
+为Linux格式的启动映象装载初始化的ramdisk，并且在内存中的Linux setup area中设置适当的参数。
+install stage1_file [`d'] dest_dev stage2_file [addr] [`p'] [config_file] [r
+eal_config_file]
+这是用来完全安装GRUB启动块的命令，一般很少用到。
+ioprobe drive
+探测驱动器drive所使用的I/O口，这条命令将会列出所有dirve使用的I/O口。
+kernel file ...
+装载内核映象文件(如符合Multiboot的a.out,ELF,Linux zImage或bzImage,FreeBSD a.out，NetBSD
+a.out等等）。文件名file后可跟内核启动时所需要的参数。如果使用了这条指令所有以前装载的模块都要重新装载。
+makeactive
+使当前的分区成为活跃分区，这条指令的对象只能是PC上的主分区，不能是扩展分区。
+map to_drive from_drive
+映射驱动器from_drive到to_drive。这条指令当你在chainload一些操作系统的时候可能是必须的，这些操作系统如果不是在第一个硬盘上可能不能正常启动，所以需要进行映射。如下：
+grub> map (hd0) (hd1)
+grub> map (hd1) (hd0)
+module file ...
+对于符合Multiboot规范的操作系统可以用这条指令来装载模块文件file，file后可以跟这个module所需要的参数。注意，必须先装载内核，再装载模块，否则装载的模块无效。
+modulenounzip file ...
+同module命令几乎一样，唯一的区别是不对module文件进行自动解压。
+pause message ...
+输出字符串message，等待用户按任意键继续。你可以用<^G>(ASCII码007)使PC喇叭发声提醒用户注意。
+quit
+退出GRUB shell，GRUB shell类似于启动时的命令行模式，只是它是在用户启动系统后执行/sbin/grub才
+进入，两者差别不大。
+read addr
+从内存的地址addr处读出32位的值并以十六进制显示出来。
+root device [hdbias]
+将当前根设备设为device，并且试图mount这个根设备得到分区大小。hdbias参数是用来告诉BSD内核在当前分区所在磁盘的前面还有多少个BIOS磁盘编号。例如，系统有一个IDE硬盘和一个SCSI硬盘，而你的BSD安装在IDE硬盘上，此时，你就需要指定hdbias参数为1。
+rootnoverify device [hdbias]
+和root类似，但是不mount该设备。这个命令用在当GRUB不能识别某个硬盘文件系统，但是仍然必须指定根设备。
+setup install_device [image_device]
+安装GRUB引导在install_device上。这条指令实际上调用的是更加灵活但是复杂的install指令。如果
+image_device也指定了的话，则将在image_device中寻找GRUB的文件映象，否则在当前根设备中查找。
+testload file
+这条指令是用来测试文件系统代码的，它以不同的方式读取文件file的内容，并将得到的结果进行比较，如果正确的话，输出的`i=X,filepos=Y`中的X,Y的值应该相等，否则就说明有错误。通常这条指令正确执行的话，之后我们就可以正确无误地装载内核。
+uppermem kbytes
+强迫GRBU认为高端内存只有kbytes千字节的内存，GRUB自动探测到的结果将变得无效。这条指令很少使用，可能只在一些古老的机器上才有必要。通常GRUB都能够正确地得到系统的内存数量。
+   

@@ -1,0 +1,34 @@
+在xwindows中切换KDE和GNOME
+
+方法1：在xwindows界面下通过菜单来切换，找到所需的菜单后执行，选择所需的桌面，重新启动xwindows即可。 （注：这个菜单未找到，但可以在登录是选择会话类型）
+
+方法2：在命令提示符下 
+　　1.切换成为KDE 如果现然是GNOME，想切换成为KDE 
+　　1）首先退出X-win 
+　　2）首先执行 switchdesk KDE 
+　　3）然后执行startx运行X-win时，桌面就是KDE的了 
+　　2.切换成为GNOME 如果现然是KDE，想切换成为GNOME 
+　　1）首先退出X-Win 
+　　2）首先执行 switchdesk GNOME 
+　　3）然后执行startx运行X-win时，桌面就是GNOME
+
+
+作者Blog：http://blog.csdn.net/fgwf1/
+
+
+GNOME和KDE的切换
+
+一、设置GNOME或者KDE为默认的启动桌面环境
+
+方法1：修改/etc/sysconfig/desktop，根据需要将“DESKTOP”后面的内容改为KDE或GNOME。
+方法2：在当前用户目录下建立“.xinitrc”这个文件(注意文件名前有一个点号，代表建立的是一个隐藏文件)，文件的内容就一行startkde或gnome-session，根据自己的需要选择KDE或GNOME。
+
+二、GNOME和KDE的切换（“#”后面为输入命令）
+
+1.如果需要切换到GNOME：
+#switchdesk gnome  
+
+2.如果需要切换到KDE：
+#switchdesk kde 
+
+

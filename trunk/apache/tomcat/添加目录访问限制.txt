@@ -1,0 +1,6 @@
+<Context path="/manager" privileged="true"
+
+         docBase="F:\\Tomcat 6.0\\webapps\\manager">
+
+<Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127\.0\.0\.1,210\.28\.70\.239" />
+</Context>

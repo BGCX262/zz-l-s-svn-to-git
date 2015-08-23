@@ -1,0 +1,899 @@
+From: <ÓÉ Windows Internet Explorer 7 ±£´æ>
+Subject: Using PSFTP to transfer files securely
+Date: Mon, 24 Oct 2011 11:03:39 +0800
+MIME-Version: 1.0
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.3790.4862
+
+=EF=BB=BF<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" =
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<HTML><HEAD><TITLE>Using PSFTP to transfer files securely</TITLE>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dutf-8"><LINK=20
+href=3D"Chapter5.html" rel=3Dprevious><LINK href=3D"index.html" =
+rel=3DToC><LINK=20
+href=3D"index.html" rel=3Dup><LINK href=3D"IndexPage.html" =
+rel=3Dindex><LINK=20
+href=3D"Chapter7.html" rel=3Dnext>
+<META content=3D"MSHTML 6.00.6000.17104" name=3DGENERATOR></HEAD>
+<BODY>
+<P><A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html">P=
+revious</A>=20
+| <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/index.html">Cont=
+ents</A>=20
+| <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/IndexPage.html">=
+Index</A>=20
+| <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter7.html">N=
+ext</A></P>
+<UL>
+  <LI><A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp">Chapter=20
+  6: Using PSFTP to transfer files securely</A>=20
+  <UL>
+    <LI><A=20
+    =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-starting">6.1=20
+    Starting PSFTP</A>=20
+    <UL>
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-option-b">6.1.1=20
+      <CODE>-b</CODE>: specify a file containing batch commands</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-option-bc">6.1.2=20
+      <CODE>-bc</CODE>: display batch commands as they are run</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-option-be">6.1.3=20
+      <CODE>-be</CODE>: continue batch processing on errors</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-usage-options-batch">6.1.4=20
+      <CODE>-batch</CODE>: avoid interactive prompts</A> </LI></UL>
+    <LI><A=20
+    =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-commands">6.2=20
+    Running PSFTP</A>=20
+    <UL>
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-quoting">6.2.1=20
+      General quoting rules for PSFTP commands</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-wildcards">6.2.2=20
+      Wildcards in PSFTP</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-open">6.2.3=20
+      The <CODE>open</CODE> command: start a session</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-quit">6.2.4=20
+      The <CODE>quit</CODE> command: end your session</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-close">6.2.5=20
+      The <CODE>close</CODE> command: close your connection</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-help">6.2.6=20
+      The <CODE>help</CODE> command: get quick online help</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-cd">6.2.7=20
+      The <CODE>cd</CODE> and <CODE>pwd</CODE> commands: changing the =
+remote=20
+      working directory</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-lcd">6.2.8=20
+      The <CODE>lcd</CODE> and <CODE>lpwd</CODE> commands: changing the =
+local=20
+      working directory</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-get">6.2.9=20
+      The <CODE>get</CODE> command: fetch a file from the server</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-put">6.2.10=20
+      The <CODE>put</CODE> command: send a file to the server</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-mgetput">6.2.11=20
+      The <CODE>mget</CODE> and <CODE>mput</CODE> commands: fetch or =
+send=20
+      multiple files</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-regetput">6.2.12=20
+      The <CODE>reget</CODE> and <CODE>reput</CODE> commands: resuming =
+file=20
+      transfers</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-dir">6.2.13=20
+      The <CODE>dir</CODE> command: list remote files</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-chmod">6.2.14=20
+      The <CODE>chmod</CODE> command: change permissions on remote =
+files</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-del">6.2.15=20
+      The <CODE>del</CODE> command: delete remote files</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-mkdir">6.2.16=20
+      The <CODE>mkdir</CODE> command: create remote directories</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-rmdir">6.2.17=20
+      The <CODE>rmdir</CODE> command: remove remote directories</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-mv">6.2.18=20
+      The <CODE>mv</CODE> command: move and rename remote files</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-pling">6.2.19=20
+      The <CODE>!</CODE> command: run a local Windows command</A> =
+</LI></UL>
+    <LI><A=20
+    =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-pubkey">6.3=20
+    Using public key authentication with PSFTP</A> </LI></UL></LI></UL>
+<H1><A name=3Dpsftp></A><A name=3DC6></A>Chapter 6: Using <A =
+name=3Di0></A>PSFTP to=20
+transfer files securely</H1>
+<P><A name=3Di1></A>PSFTP, the PuTTY SFTP client, is a tool for <A=20
+name=3Di2></A>transferring files securely between computers using an SSH =
+
+connection. </P>
+<P>PSFTP differs from PSCP in the following ways: </P>
+<UL>
+  <LI>PSCP should work on virtually every SSH server. PSFTP uses the new =
+<A=20
+  name=3Di3></A>SFTP protocol, which is a feature of SSH-2 only. (PSCP =
+will also=20
+  use this protocol if it can, but there is an SSH-1 equivalent it can =
+fall back=20
+  to if it cannot.)=20
+  <LI>PSFTP allows you to run an interactive file transfer session, much =
+like=20
+  the Windows <A name=3Di4></A><CODE>ftp</CODE> program. You can list =
+the contents=20
+  of directories, browse around the file system, issue multiple =
+<CODE>get</CODE>=20
+  and <CODE>put</CODE> commands, and eventually log out. By contrast, =
+PSCP is=20
+  designed to do a single file transfer operation and immediately =
+terminate.=20
+  </LI></UL>
+<H2><A name=3Dpsftp-starting></A><A name=3DS6.1></A>6.1 Starting =
+PSFTP</H2>
+<P>The usual way to start PSFTP is from a command prompt, much like =
+PSCP. To do=20
+this, it will need either to be on your <A =
+name=3Di5></A><CODE>PATH</CODE> or in=20
+your current directory. To add the directory containing PSFTP to your=20
+<CODE>PATH</CODE> environment variable, type into the console window: =
+</P><PRE><CODE>set PATH=3DC:\path\to\putty\directory;%PATH%
+</CODE></PRE>
+<P>Unlike PSCP, however, PSFTP has no complex command-line syntax; you =
+just=20
+specify a host name and perhaps a user name: </P><PRE><CODE>psftp =
+server.example.com
+</CODE></PRE>
+<P>or perhaps </P><PRE><CODE>psftp fred@server.example.com
+</CODE></PRE>
+<P>Alternatively, if you just type <CODE>psftp</CODE> on its own (or=20
+double-click the PSFTP icon in the Windows GUI), you will see the PSFTP =
+prompt,=20
+and a message telling you PSFTP has not connected to any server: =
+</P><PRE><CODE>C:\&gt;psftp
+psftp: no hostname specified; use "open host.name" to connect
+psftp&gt;
+</CODE></PRE>
+<P>At this point you can type <CODE>open server.example.com</CODE> or =
+<CODE>open=20
+fred@server.example.com</CODE> to start a session. </P>
+<P>PSFTP accepts all the general command line options supported by the =
+PuTTY=20
+tools, except the ones which make no sense in a file transfer utility. =
+See <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter3.html#us=
+ing-general-opts">section=20
+3.8.3</A> for a description of these options. (The ones not supported by =
+PSFTP=20
+are clearly marked.) </P>
+<P>PSFTP also supports some of its own options. The following sections =
+describe=20
+PSFTP's specific command-line options. </P>
+<H3><A name=3Dpsftp-option-b></A><A name=3DS6.1.1></A>6.1.1 <A=20
+name=3Di6></A><CODE>-b</CODE>: specify a file containing batch =
+commands</H3>
+<P>In normal operation, PSFTP is an interactive program which displays a =
+command=20
+line and accepts commands from the keyboard. </P>
+<P>If you need to do automated tasks with PSFTP, you would probably =
+prefer to <A=20
+name=3Di7></A>specify a set of commands in advance and have them =
+executed=20
+automatically. The <CODE>-b</CODE> option allows you to do this. You use =
+it with=20
+a file name containing batch commands. For example, you might create a =
+file=20
+called <CODE>myscript.scr</CODE> containing lines like this: =
+</P><PRE><CODE>cd /home/ftp/users/jeff
+del jam-old.tar.gz
+ren jam.tar.gz jam-old.tar.gz
+put jam.tar.gz
+chmod a+r jam.tar.gz
+</CODE></PRE>
+<P>and then you could run the script by typing </P><PRE><CODE>psftp =
+user@hostname -b myscript.scr
+</CODE></PRE>
+<P>When you run a batch script in this way, PSFTP will abort the script =
+if any=20
+command fails to complete successfully. To change this behaviour, you =
+can add=20
+the <CODE>-be</CODE> option (<A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-option-be">section=20
+6.1.3</A>). </P>
+<P>PSFTP will terminate after it finishes executing the batch script. =
+</P>
+<H3><A name=3Dpsftp-option-bc></A><A name=3DS6.1.2></A>6.1.2 <A=20
+name=3Di8></A><CODE>-bc</CODE>: display batch commands as they are =
+run</H3>
+<P>The <CODE>-bc</CODE> option alters what PSFTP displays while =
+processing a=20
+batch script specified with <CODE>-b</CODE>. With the <CODE>-bc</CODE> =
+option,=20
+PSFTP will display prompts and commands just as if the commands had been =
+typed=20
+at the keyboard. So instead of seeing this: </P><PRE><CODE>C:\&gt;psftp =
+fred@hostname -b batchfile
+Sent username "fred"
+Remote working directory is /home/fred
+Listing directory /home/fred/lib
+drwxrwsr-x    4 fred     fred         1024 Sep  6 10:42 .
+drwxr-sr-x   25 fred     fred         2048 Dec 14 09:36 ..
+drwxrwsr-x    3 fred     fred         1024 Apr 17  2000 jed
+lrwxrwxrwx    1 fred     fred           24 Apr 17  2000 timber
+drwxrwsr-x    2 fred     fred         1024 Mar 13  2000 trn
+</CODE></PRE>
+<P>you might see this: </P><PRE><CODE>C:\&gt;psftp fred@hostname -bc -b =
+batchfile
+Sent username "fred"
+Remote working directory is /home/fred
+psftp&gt; dir lib
+Listing directory /home/fred/lib
+drwxrwsr-x    4 fred     fred         1024 Sep  6 10:42 .
+drwxr-sr-x   25 fred     fred         2048 Dec 14 09:36 ..
+drwxrwsr-x    3 fred     fred         1024 Apr 17  2000 jed
+lrwxrwxrwx    1 fred     fred           24 Apr 17  2000 timber
+drwxrwsr-x    2 fred     fred         1024 Mar 13  2000 trn
+psftp&gt; quit
+</CODE></PRE>
+<H3><A name=3Dpsftp-option-be></A><A name=3DS6.1.3></A>6.1.3 <A=20
+name=3Di9></A><CODE>-be</CODE>: continue batch processing on errors</H3>
+<P>When running a batch file, this additional option causes PSFTP to =
+continue=20
+processing even if a command fails to complete successfully. </P>
+<P>You might want this to happen if you wanted to delete a file and =
+didn't care=20
+if it was already not present, for example. </P>
+<H3><A name=3Dpsftp-usage-options-batch></A><A name=3DS6.1.4></A>6.1.4 =
+<A=20
+name=3Di10></A><CODE>-batch</CODE>: avoid interactive prompts</H3>
+<P>If you use the <CODE>-batch</CODE> option, PSFTP will never give an=20
+interactive prompt while establishing the connection. If the server's =
+host key=20
+is invalid, for example (see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter2.html#gs=
+-hostkey">section=20
+2.2</A>), then the connection will simply be abandoned instead of asking =
+you=20
+what to do next. </P>
+<P>This may help PSFTP's behaviour when it is used in automated scripts: =
+using=20
+<CODE>-batch</CODE>, if something goes wrong at connection time, the =
+batch job=20
+will fail rather than hang. </P>
+<H2><A name=3Dpsftp-commands></A><A name=3DS6.2></A>6.2 Running =
+PSFTP</H2>
+<P>Once you have started your PSFTP session, you will see a=20
+<CODE>psftp&gt;</CODE> prompt. You can now type commands to perform=20
+file-transfer functions. This section lists all the available commands. =
+</P>
+<P>Any line starting with a <CODE>#</CODE> will be treated as a <A=20
+name=3Di11></A>comment and ignored. </P>
+<H3><A name=3Dpsftp-quoting></A><A name=3DS6.2.1></A>6.2.1 <A =
+name=3Di12></A>General=20
+quoting rules for PSFTP commands</H3>
+<P>Most PSFTP commands are considered by the PSFTP command interpreter =
+as a=20
+sequence of words, separated by spaces. For example, the command =
+<CODE>ren=20
+oldfilename newfilename</CODE> splits up into three words: =
+<CODE>ren</CODE> (the=20
+command name), <CODE>oldfilename</CODE> (the name of the file to be =
+renamed),=20
+and <CODE>newfilename</CODE> (the new name to give the file). </P>
+<P>Sometimes you will need to specify <A name=3Di13></A>file names that=20
+<EM>contain</EM> spaces. In order to do this, you can surround the file =
+name=20
+with double quotes. This works equally well for local file names and =
+remote file=20
+names: </P><PRE><CODE>psftp&gt; get "spacey file name.txt" "save it =
+under this name.txt"
+</CODE></PRE>
+<P>The double quotes themselves will not appear as part of the file =
+names; they=20
+are removed by PSFTP and their only effect is to stop the spaces inside =
+them=20
+from acting as word separators. </P>
+<P>If you need to <EM>use</EM> a double quote (on some types of remote =
+system,=20
+such as Unix, you are allowed to use double quotes in file names), you =
+can do=20
+this by doubling it. This works both inside and outside double quotes. =
+For=20
+example, this command </P><PRE><CODE>psftp&gt; ren ""this"" "a file with =
+""quotes"" in it"
+</CODE></PRE>
+<P>will take a file whose current name is <CODE>"this"</CODE> (with a =
+double=20
+quote character at the beginning and the end) and rename it to a file =
+whose name=20
+is <CODE>a file with "quotes" in it</CODE>. </P>
+<P>(The one exception to the PSFTP quoting rules is the <CODE>!</CODE> =
+command,=20
+which passes its command line straight to Windows without splitting it =
+up into=20
+words at all. See <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-cmd-pling">section=20
+6.2.19</A>.) </P>
+<H3><A name=3Dpsftp-wildcards></A><A name=3DS6.2.2></A>6.2.2 Wildcards =
+in PSFTP</H3>
+<P>Several commands in PSFTP support =E2=80=98<A =
+name=3Di14></A>wildcards=E2=80=99 to select=20
+multiple files. </P>
+<P>For <EM>local</EM> file specifications (such as the first argument to =
+
+<CODE>put</CODE>), wildcard rules for the local operating system are =
+used. For=20
+instance, PSFTP running on Windows might require the use of =
+<CODE>*.*</CODE>=20
+where PSFTP on Unix would need <CODE>*</CODE>. </P>
+<P>For <EM>remote</EM> file specifications (such as the first argument =
+to=20
+<CODE>get</CODE>), PSFTP uses a standard wildcard syntax (similar to <A=20
+name=3Di15></A>POSIX wildcards): </P>
+<UL>
+  <LI><CODE>*</CODE> matches any sequence of characters (including a =
+zero-length=20
+  sequence).=20
+  <LI><CODE>?</CODE> matches exactly one character.=20
+  <LI><CODE>[abc]</CODE> matches exactly one character which can be=20
+  <CODE>a</CODE>, <CODE>b</CODE>, or <CODE>c</CODE>.=20
+  <P><CODE>[a-z]</CODE> matches any character in the range =
+<CODE>a</CODE> to=20
+  <CODE>z</CODE>. </P>
+  <P><CODE>[^abc]</CODE> matches a single character that is <EM>not</EM> =
+
+  <CODE>a</CODE>, <CODE>b</CODE>, or <CODE>c</CODE>. </P>
+  <P>Special cases: <CODE>[-a]</CODE> matches a literal hyphen =
+(<CODE>-</CODE>)=20
+  or <CODE>a</CODE>; <CODE>[^-a]</CODE> matches all other characters.=20
+  <CODE>[a^]</CODE> matches a literal caret (<CODE>^</CODE>) or =
+<CODE>a</CODE>.=20
+  </P>
+  <LI><CODE>\</CODE> (backslash) before any of the above characters (or =
+itself)=20
+  removes that character's special meaning. </LI></UL>
+<P>A leading period (<CODE>.</CODE>) on a filename is not treated =
+specially,=20
+unlike in some Unix contexts; <CODE>get *</CODE> will fetch all files, =
+whether=20
+or not they start with a leading period. </P>
+<H3><A name=3Dpsftp-cmd-open></A><A name=3DS6.2.3></A>6.2.3 The =
+<CODE>open</CODE>=20
+command: start a session</H3>
+<P>If you started PSFTP by double-clicking in the GUI, or just by typing =
+
+<CODE>psftp</CODE> at the command line, you will need to open a =
+connection to an=20
+SFTP server before you can issue any other commands (except =
+<CODE>help</CODE>=20
+and <CODE>quit</CODE>). </P>
+<P>To create a connection, type <CODE>open host.name</CODE>, or if you =
+need to=20
+specify a user name as well you can type <CODE>open =
+user@host.name</CODE>. You=20
+can optionally specify a port as well: <CODE>open user@host.name =
+22</CODE>. </P>
+<P>Once you have issued this command, you will not be able to issue it =
+again,=20
+<EM>even</EM> if the command fails (for example, if you mistype the host =
+name or=20
+the connection times out). So if the connection is not opened =
+successfully,=20
+PSFTP will terminate immediately. </P>
+<H3><A name=3Dpsftp-cmd-quit></A><A name=3DS6.2.4></A>6.2.4 The =
+<CODE>quit</CODE>=20
+command: end your session</H3>
+<P>When you have finished your session, type the command =
+<CODE>quit</CODE> to=20
+close the connection, terminate PSFTP and return to the command line (or =
+just=20
+close the PSFTP console window if you started it from the GUI). </P>
+<P>You can also use the <CODE>bye</CODE> and <CODE>exit</CODE> commands, =
+which=20
+have exactly the same effect. </P>
+<H3><A name=3Dpsftp-cmd-close></A><A name=3DS6.2.5></A>6.2.5 The =
+<CODE>close</CODE>=20
+command: close your connection</H3>
+<P>If you just want to close the network connection but keep PSFTP =
+running, you=20
+can use the <CODE>close</CODE> command. You can then use the =
+<CODE>open</CODE>=20
+command to open a new connection. </P>
+<H3><A name=3Dpsftp-cmd-help></A><A name=3DS6.2.6></A>6.2.6 The =
+<CODE>help</CODE>=20
+command: get quick online help</H3>
+<P>If you type <CODE>help</CODE>, PSFTP will give a short list of the =
+available=20
+commands. </P>
+<P>If you type <CODE>help</CODE> with a command name - for example, =
+<CODE>help=20
+get</CODE> - then PSFTP will give a short piece of help on that =
+particular=20
+command. </P>
+<H3><A name=3Dpsftp-cmd-cd></A><A name=3DS6.2.7></A>6.2.7 The =
+<CODE>cd</CODE> and=20
+<CODE>pwd</CODE> commands: changing the remote <A name=3Di16></A>working =
+
+directory</H3>
+<P>PSFTP maintains a notion of your =E2=80=98working directory=E2=80=99 =
+on the server. This is=20
+the default directory that other commands will operate on. For example, =
+if you=20
+type <CODE>get filename.dat</CODE> then PSFTP will look for=20
+<CODE>filename.dat</CODE> in your remote working directory on the =
+server. </P>
+<P>To change your remote working directory, use the <CODE>cd</CODE> =
+command. If=20
+you don't provide an argument, <CODE>cd</CODE> will return you to your =
+home=20
+directory on the server (more precisely, the remote directory you were =
+in at the=20
+start of the connection). </P>
+<P>To display your current remote working directory, type =
+<CODE>pwd</CODE>. </P>
+<H3><A name=3Dpsftp-cmd-lcd></A><A name=3DS6.2.8></A>6.2.8 The =
+<CODE>lcd</CODE> and=20
+<CODE>lpwd</CODE> commands: changing the local <A name=3Di17></A>working =
+
+directory</H3>
+<P>As well as having a working directory on the remote server, PSFTP =
+also has a=20
+working directory on your local machine (just like any other Windows =
+process).=20
+This is the default local directory that other commands will operate on. =
+For=20
+example, if you type <CODE>get filename.dat</CODE> then PSFTP will save =
+the=20
+resulting file as <CODE>filename.dat</CODE> in your local working =
+directory.=20
+</P>
+<P>To change your local working directory, use the <CODE>lcd</CODE> =
+command. To=20
+display your current local working directory, type <CODE>lpwd</CODE>. =
+</P>
+<H3><A name=3Dpsftp-cmd-get></A><A name=3DS6.2.9></A>6.2.9 The =
+<CODE>get</CODE>=20
+command: fetch a file from the server</H3>
+<P>To <A name=3Di18></A>download a file from the server and store it on =
+your local=20
+PC, you use the <CODE>get</CODE> command. </P>
+<P>In its simplest form, you just use this with a file name: =
+</P><PRE><CODE>get myfile.dat
+</CODE></PRE>
+<P>If you want to store the file locally under a different name, specify =
+the=20
+local file name after the remote one: </P><PRE><CODE>get myfile.dat =
+newname.dat
+</CODE></PRE>
+<P>This will fetch the file on the server called =
+<CODE>myfile.dat</CODE>, but=20
+will save it to your local machine under the name =
+<CODE>newname.dat</CODE>. </P>
+<P>To fetch an entire directory <A name=3Di19></A>recursively, you can =
+use the=20
+<CODE>-r</CODE> option: </P><PRE><CODE>get -r mydir
+get -r mydir newname
+</CODE></PRE>
+<P>(If you want to fetch a file whose name starts with a hyphen, you may =
+have to=20
+use the <CODE>--</CODE> special argument, which stops <CODE>get</CODE> =
+from=20
+interpreting anything as a switch after it. For example, =
+=E2=80=98<CODE>get --=20
+-silly-name-</CODE>=E2=80=99.) </P>
+<H3><A name=3Dpsftp-cmd-put></A><A name=3DS6.2.10></A>6.2.10 The =
+<CODE>put</CODE>=20
+command: send a file to the server</H3>
+<P>To <A name=3Di20></A>upload a file to the server from your local PC, =
+you use=20
+the <CODE>put</CODE> command. </P>
+<P>In its simplest form, you just use this with a file name: =
+</P><PRE><CODE>put myfile.dat
+</CODE></PRE>
+<P>If you want to store the file remotely under a different name, =
+specify the=20
+remote file name after the local one: </P><PRE><CODE>put myfile.dat =
+newname.dat
+</CODE></PRE>
+<P>This will send the local file called <CODE>myfile.dat</CODE>, but =
+will store=20
+it on the server under the name <CODE>newname.dat</CODE>. </P>
+<P>To send an entire directory <A name=3Di21></A>recursively, you can =
+use the=20
+<CODE>-r</CODE> option: </P><PRE><CODE>put -r mydir
+put -r mydir newname
+</CODE></PRE>
+<P>(If you want to send a file whose name starts with a hyphen, you may =
+have to=20
+use the <CODE>--</CODE> special argument, which stops <CODE>put</CODE> =
+from=20
+interpreting anything as a switch after it. For example, =
+=E2=80=98<CODE>put --=20
+-silly-name-</CODE>=E2=80=99.) </P>
+<H3><A name=3Dpsftp-cmd-mgetput></A><A name=3DS6.2.11></A>6.2.11 The=20
+<CODE>mget</CODE> and <CODE>mput</CODE> commands: fetch or send multiple =
+
+files</H3>
+<P><CODE>mget</CODE> works almost exactly like <CODE>get</CODE>, except =
+that it=20
+allows you to specify more than one file to fetch at once. You can do =
+this in=20
+two ways: </P>
+<UL>
+  <LI>by giving two or more explicit file names (=E2=80=98<CODE>mget =
+file1.txt=20
+  file2.txt</CODE>=E2=80=99)=20
+  <LI>by using a wildcard (=E2=80=98<CODE>mget *.txt</CODE>=E2=80=99). =
+</LI></UL>
+<P>Every argument to <CODE>mget</CODE> is treated as the name of a file =
+to fetch=20
+(unlike <CODE>get</CODE>, which will interpret at most one argument like =
+that,=20
+and a second argument will be treated as an alternative name under which =
+to=20
+store the retrieved file), or a <A name=3Di22></A>wildcard expression =
+matching=20
+more than one file. </P>
+<P>The <CODE>-r</CODE> and <CODE>--</CODE> options from <CODE>get</CODE> =
+are=20
+also available with <CODE>mget</CODE>. </P>
+<P><CODE>mput</CODE> is similar to <CODE>put</CODE>, with the same =
+differences.=20
+</P>
+<H3><A name=3Dpsftp-cmd-regetput></A><A name=3DS6.2.12></A>6.2.12 The=20
+<CODE>reget</CODE> and <CODE>reput</CODE> commands: <A =
+name=3Di23></A>resuming=20
+file transfers</H3>
+<P>If a file transfer fails half way through, and you end up with half =
+the file=20
+stored on your disk, you can resume the file transfer using the=20
+<CODE>reget</CODE> and <CODE>reput</CODE> commands. These work exactly =
+like the=20
+<CODE>get</CODE> and <CODE>put</CODE> commands, but they check for the =
+presence=20
+of the half-written destination file and start transferring from where =
+the last=20
+attempt left off. </P>
+<P>The syntax of <CODE>reget</CODE> and <CODE>reput</CODE> is exactly =
+the same=20
+as the syntax of <CODE>get</CODE> and <CODE>put</CODE>: =
+</P><PRE><CODE>reget myfile.dat
+reget myfile.dat newname.dat
+reget -r mydir
+</CODE></PRE>
+<P>These commands are intended mainly for resuming interrupted =
+transfers. They=20
+assume that the remote file or directory structure has not changed in =
+any way;=20
+if there have been changes, you may end up with corrupted files. In =
+particular,=20
+the <CODE>-r</CODE> option will not pick up changes to files or =
+directories=20
+already transferred in full. </P>
+<H3><A name=3Dpsftp-cmd-dir></A><A name=3DS6.2.13></A>6.2.13 The =
+<CODE>dir</CODE>=20
+command: <A name=3Di24></A>list remote files</H3>
+<P>To list the files in your remote working directory, just type=20
+<CODE>dir</CODE>. </P>
+<P>You can also list the contents of a different directory by typing=20
+<CODE>dir</CODE> followed by the directory name: </P><PRE><CODE>dir =
+/home/fred
+dir sources
+</CODE></PRE>
+<P>And you can list a subset of the contents of a directory by providing =
+a=20
+wildcard: </P><PRE><CODE>dir /home/fred/*.txt
+dir sources/*.c
+</CODE></PRE>
+<P>The <CODE>ls</CODE> command works exactly the same way as =
+<CODE>dir</CODE>.=20
+</P>
+<H3><A name=3Dpsftp-cmd-chmod></A><A name=3DS6.2.14></A>6.2.14 The=20
+<CODE>chmod</CODE> command: change permissions on remote files</H3>
+<P><A name=3Di25></A>PSFTP allows you to modify the file permissions on =
+files and=20
+directories on the server. You do this using the <CODE>chmod</CODE> =
+command,=20
+which works very much like the Unix <CODE>chmod</CODE> command. </P>
+<P>The basic syntax is <CODE>chmod modes file</CODE>, where =
+<CODE>modes</CODE>=20
+represents a modification to the file permissions, and <CODE>file</CODE> =
+is the=20
+filename to modify. You can specify multiple files or wildcards. For =
+example:=20
+</P><PRE><CODE>chmod go-rwx,u+w privatefile
+chmod a+r public*
+chmod 640 groupfile1 groupfile2
+</CODE></PRE>
+<P>The <CODE>modes</CODE> parameter can be a set of octal digits in the =
+Unix=20
+style. (If you don't know what this means, you probably don't want to be =
+using=20
+it!) Alternatively, it can be a list of permission modifications, =
+separated by=20
+commas. Each modification consists of: </P>
+<UL>
+  <LI>The people affected by the modification. This can be =
+<CODE>u</CODE> (the=20
+  owning user), <CODE>g</CODE> (members of the owning group), or =
+<CODE>o</CODE>=20
+  (everybody else - =E2=80=98others=E2=80=99), or some combination of =
+those. It can also be=20
+  <CODE>a</CODE> (=E2=80=98all=E2=80=99) to affect everybody at once.=20
+  <LI>A <CODE>+</CODE> or <CODE>-</CODE> sign, indicating whether =
+permissions=20
+  are to be added or removed.=20
+  <LI>The actual permissions being added or removed. These can be <A=20
+  name=3Di26></A><CODE>r</CODE> (permission to read the file), <A=20
+  name=3Di27></A><CODE>w</CODE> (permission to write to the file), and =
+<A=20
+  name=3Di28></A><CODE>x</CODE> (permission to execute the file, or in =
+the case of=20
+  a directory, permission to access files within the directory). =
+</LI></UL>
+<P>So the above examples would do: </P>
+<UL>
+  <LI>The first example: <CODE>go-rwx</CODE> removes read, write and =
+execute=20
+  permissions for members of the owning group and everybody else (so the =
+only=20
+  permissions left are the ones for the file owner). <CODE>u+w</CODE> =
+adds write=20
+  permission for the file owner.=20
+  <LI>The second example: <CODE>a+r</CODE> adds read permission for =
+everybody to=20
+  all files and directories starting with =E2=80=98public=E2=80=99. =
+</LI></UL>
+<P>In addition to all this, there are a few extra special cases for <A=20
+name=3Di29></A>Unix systems. On non-Unix systems these are unlikely to =
+be useful:=20
+</P>
+<UL>
+  <LI>You can specify <CODE>u+s</CODE> and <CODE>u-s</CODE> to add or =
+remove the=20
+  Unix <A name=3Di30></A>set-user-ID bit. This is typically only useful =
+for=20
+  special purposes; refer to your Unix documentation if you're not sure =
+about=20
+  it.=20
+  <LI>You can specify <CODE>g+s</CODE> and <CODE>g-s</CODE> to add or =
+remove the=20
+  Unix <A name=3Di31></A>set-group-ID bit. On a file, this works =
+similarly to the=20
+  set-user-ID bit (see your Unix documentation again); on a directory it =
+ensures=20
+  that files created in the directory are accessible by members of the =
+group=20
+  that owns the directory.=20
+  <LI>You can specify <CODE>+t</CODE> and <CODE>-t</CODE> to add or =
+remove the=20
+  Unix =E2=80=98<A name=3Di32></A>sticky bit=E2=80=99. When applied to a =
+directory, this means=20
+  that the owner of a file in that directory can delete the file =
+(whereas=20
+  normally only the owner of the <EM>directory</EM> would be allowed =
+to).=20
+</LI></UL>
+<H3><A name=3Dpsftp-cmd-del></A><A name=3DS6.2.15></A>6.2.15 The =
+<CODE>del</CODE>=20
+command: delete remote files</H3>
+<P>To <A name=3Di33></A>delete a file on the server, type =
+<CODE>del</CODE> and=20
+then the filename or filenames: </P><PRE><CODE>del oldfile.dat
+del file1.txt file2.txt
+del *.o
+</CODE></PRE>
+<P>Files will be deleted without further prompting, even if multiple =
+files are=20
+specified. </P>
+<P><CODE>del</CODE> will only delete files. You cannot use it to delete=20
+directories; use <CODE>rmdir</CODE> for that. </P>
+<P>The <CODE>rm</CODE> command works exactly the same way as =
+<CODE>del</CODE>.=20
+</P>
+<H3><A name=3Dpsftp-cmd-mkdir></A><A name=3DS6.2.16></A>6.2.16 The=20
+<CODE>mkdir</CODE> command: create remote directories</H3>
+<P>To <A name=3Di34></A>create a directory on the server, type =
+<CODE>mkdir</CODE>=20
+and then the directory name: </P><PRE><CODE>mkdir newstuff
+</CODE></PRE>
+<P>You can specify multiple directories to create at once: =
+</P><PRE><CODE>mkdir dir1 dir2 dir3
+</CODE></PRE>
+<H3><A name=3Dpsftp-cmd-rmdir></A><A name=3DS6.2.17></A>6.2.17 The=20
+<CODE>rmdir</CODE> command: remove remote directories</H3>
+<P>To <A name=3Di35></A>remove a directory on the server, type =
+<CODE>rmdir</CODE>=20
+and then the directory name or names: </P><PRE><CODE>rmdir oldstuff
+rmdir *.old ancient
+</CODE></PRE>
+<P>Directories will be deleted without further prompting, even if =
+multiple=20
+directories are specified. </P>
+<P>Most SFTP servers will probably refuse to remove a directory if the =
+directory=20
+has anything in it, so you will need to delete the contents first. </P>
+<H3><A name=3Dpsftp-cmd-mv></A><A name=3DS6.2.18></A>6.2.18 The =
+<CODE>mv</CODE>=20
+command: move and <A name=3Di36></A>rename remote files</H3>
+<P>To rename a single file on the server, type <CODE>mv</CODE>, then the =
+current=20
+file name, and then the new file name: </P><PRE><CODE>mv oldfile newname
+</CODE></PRE>
+<P>You can also move the file into a different directory and change the =
+name:=20
+</P><PRE><CODE>mv oldfile dir/newname
+</CODE></PRE>
+<P>To move one or more files into an existing subdirectory, specify the =
+files=20
+(using wildcards if desired), and then the destination directory: =
+</P><PRE><CODE>mv file dir
+mv file1 dir1/file2 dir2
+mv *.c *.h ..
+</CODE></PRE>
+<P>The <CODE>rename</CODE> and <CODE>ren</CODE> commands work exactly =
+the same=20
+way as <CODE>mv</CODE>. </P>
+<H3><A name=3Dpsftp-cmd-pling></A><A name=3DS6.2.19></A>6.2.19 The =
+<CODE>!</CODE>=20
+command: run a <A name=3Di37></A>local Windows command</H3>
+<P>You can run local Windows commands using the <CODE>!</CODE> command. =
+This is=20
+the only PSFTP command that is not subject to the command quoting rules =
+given in=20
+<A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-quoting">section=20
+6.2.1</A>. If any command line begins with the <CODE>!</CODE> character, =
+then=20
+the rest of the line will be passed straight to Windows without further=20
+translation. </P>
+<P>For example, if you want to move an existing copy of a file out of =
+the way=20
+before downloading an updated version, you might type: =
+</P><PRE><CODE>psftp&gt; !ren myfile.dat myfile.bak
+psftp&gt; get myfile.dat
+</CODE></PRE>
+<P>using the Windows <CODE>ren</CODE> command to rename files on your =
+local PC.=20
+</P>
+<H2><A name=3Dpsftp-pubkey></A><A name=3DS6.3></A>6.3 Using <A =
+name=3Di38></A>public=20
+key authentication with PSFTP</H2>
+<P>Like PuTTY, PSFTP can authenticate using a public key instead of a =
+password.=20
+There are three ways you can do this. </P>
+<P>Firstly, PSFTP can use PuTTY saved sessions in place of hostnames. So =
+you=20
+might do this: </P>
+<UL>
+  <LI>Run PuTTY, and create a PuTTY saved session (see <A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html#co=
+nfig-saving">section=20
+  4.1.2</A>) which specifies your private key file (see <A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html#co=
+nfig-ssh-privkey">section=20
+  4.20.8</A>). You will probably also want to specify a username to log =
+in as=20
+  (see <A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html#co=
+nfig-username">section=20
+  4.14.1</A>).=20
+  <LI>In PSFTP, you can now use the name of the session instead of a =
+hostname:=20
+  type <CODE>psftp sessionname</CODE>, where <CODE>sessionname</CODE> is =
+
+  replaced by the name of your saved session. </LI></UL>
+<P>Secondly, you can supply the name of a private key file on the =
+command line,=20
+with the <CODE>-i</CODE> option. See <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter3.html#us=
+ing-cmdline-identity">section=20
+3.8.3.18</A> for more information. </P>
+<P>Thirdly, PSFTP will attempt to authenticate using Pageant if Pageant =
+is=20
+running (see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter9.html#pa=
+geant">chapter=20
+9</A>). So you would do this: </P>
+<UL>
+  <LI>Ensure Pageant is running, and has your private key stored in it.=20
+  <LI>Specify a user and host name to PSFTP as normal. PSFTP will =
+automatically=20
+  detect Pageant and try to use the keys within it. </LI></UL>
+<P>For more general information on public-key authentication, see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter8.html#pu=
+bkey">chapter=20
+8</A>. </P>
+<HR>
+
+<P>If you want to provide feedback on this manual or on the PuTTY tools=20
+themselves, see the <A=20
+href=3D"http://www.chiark.greenend.org.uk/~sgtatham/putty/feedback.html">=
+Feedback=20
+page</A>.</P>
+<ADDRESS>[PuTTY release 0.61]</ADDRESS></BODY></HTML>

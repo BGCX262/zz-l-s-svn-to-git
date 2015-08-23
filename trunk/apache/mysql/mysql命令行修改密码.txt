@@ -1,0 +1,59 @@
+**********************************************
+新装好的mysql在进入mysql工具时，总是有错误提示:
+# mysql -u root -p
+Enter password:
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+或者
+# mysql -u root -p password 'newpassword'
+Enter password:
+mysqladmin: connect to server at 'localhost' failed
+error: 'Access denied for user 'root'@'localhost' (using password: YES)' 
+
+解决方法了。本
+方法操作很简单，如下：
+# /etc/init.d/mysqld stop
+# mysqld_safe --user=mysql --skip-grant-tables --skip-networking &
+# mysql -u root mysql
+mysql> UPDATE user SET Password=PASSWORD('newpassword') where USER='root' and host='root' or host='localhost';//把空的用户密码都修改成非空的密码就行了。
+mysql> FLUSH PRIVILEGES;
+mysql> quit 
+
+# /etc/init.d/mysqld restart
+# mysql -uroot -p
+Enter password: <输入新设的密码newpassword> 
+
+*********************************************
+/usr/bin/mysqladmin -u root password 'xxxxxx'
+ mysql -u root -p
+mysql -u root		#no password
+
+
+
+
+
+
+**********************************************
+mysql> use mysql
+Database changed
+mysql> select user,host,password from user;
++--------+-----------+
+| user   | host      |
++--------+-----------+
+| root   | 127.0.0.1 |
+|        | linux193  |
+| root   | linux193  |
+|        | localhost |
+| 302637 | localhost |
+| root   | localhost |
++--------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> update user set password = PASSWORD('xxxxxx')
+    -> where user='root';
+Query OK, 3 rows affected (0.02 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+
+
+
+

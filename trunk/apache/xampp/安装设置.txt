@@ -1,0 +1,258 @@
+进入 Linux shell 并以系统管理员的身份登录：
+su
+
+
+将下载的压缩文件释放到 /opt：
+tar xvfz xampp-linux-1.7.3a.tar.gz -C /opt
+
+警告： 只允许使用上述命令安装 XAMPP。不要使用任何 Microsoft Windows 工具释放压缩文件，这没有用。
+
+使用下面的命令开始运行 XAMPP：
+/opt/lampp/lampp start
+
+您应该能在屏幕上看到类似下面的提示信息：
+
+Starting XAMPP 1.7.3a...
+LAMPP: Starting Apache...
+LAMPP: Starting MySQL...
+LAMPP started.
+
+
+好了。Apache 和 MySQL 正在运行中。
+
+要修正绝大部分的安全薄弱环节，只需执行以下命令： 
+
+/opt/lampp/lampp security
+
+(注意：xampp页面的登录用户名是“lampp”）
+
+
+
+XAMPP for Linux 的安装及配置
+
+1. 下载xampp并安装
+
+下载地址：http://www.apachefriends.org
+
+安装
+
+下载完成后，只要输入下列命令：
+
+(1).进入Linux命令模式，切换成为系统管理者：
+
+su
+
+(2).将下载的压缩档解压缩到 /opt下：
+
+tar xvfz xampp-linux-1.5.3a.tar.gz -C /opt
+
+注意：请使用这些指令来安装XAMPP，不要使用任何微软操作系统底下的工具程序来解压缩档案， 它会使得程序无法正确执行。
+
+注意2：这个指令会覆盖掉旧有的XAMPP版本。
+
+这样就完成了。XAMPP现在已经安装在 /opt/lampp 目录下了。
+
+启动
+
+要启动XAMPP只要执行下列的指令：
+
+/opt/lampp/lampp start
+
+现在在你的画面上，你会看到类似下方的这些讯息：
+
+Starting XAMPP 1.5.3a...
+LAMPP: Starting Apache...
+LAMPP: Starting MySQL...
+LAMPP started.
+
+Apache 和 MySQL 现在已经启动了。
+
+
+2. 从缺省PHP5切换到PHP 4.3.11
+
+/opt/lampp/lampp php4
+
+
+3. 修改httpd.conf
+
+(可选，在我安装的XAMPP里，默认是没有的。如果有需要，请手动添加)
+
+AddDefaultCharset ISO-8859-1
+到GB2312
+
+
+4. 修正xampp的安全问题
+
+设置LAMPP pages密码，关闭MySQL网络访问，修改ftp用户nobody的密码。
+
+/opt/lampp/lampp security
+
+修改MySQL数据库root用户密码
+
+/opt/lampp/bin/mysqladmin -u root password "newpassword"
+
+
+5.配置自动启动和关闭xampp
+
+找到这个文件 /etc/inittab (以CentOS为例)
+
+# Default runlevel. The runlevels used by RHS are:
+# 0 - halt (Do NOT set initdefault to this)
+# 1 - Single user mode
+# 2 - Multiuser, without NFS (The same as 3, if you do not have networking)
+# 3 - Full multiuser mode
+# 4 - unused
+# 5 - X11
+# 6 - reboot (Do NOT set initdefault to this)
+#
+id:5:initdefault: // 查看这个地方，知道runlevel是5
+
+# System initialization.
+si::sysinit:/etc/rc.d/rc.sysinit
+
+l0:0:wait:/etc/rc.d/rc 0
+l1:1:wait:/etc/rc.d/rc 1
+l2:2:wait:/etc/rc.d/rc 2
+l3:3:wait:/etc/rc.d/rc 3
+l4:4:wait:/etc/rc.d/rc 4
+l5:5:wait:/etc/rc.d/rc 5 // 对应这个文件夹
+l6:6:wait:/etc/rc.d/rc 6
+
+方案1：
+通过命令模式(终端)进入 /etc/rc.d/rc5.d 的目录.
+
+ln -s /opt/lampp/lampp S99lampp // 自动启动XAMPP
+
+ln -s /opt/lampp/lampp K01lampp // 停止自动启动
+
+
+方案2：
+
+如果你想分步启动，可以输入命令：vi /etc/rc.d/rc.local
+/opt/lampp/lampp ?startapcahe
+/opt/lampp/lampp ?startmysql
+/opt/lampp/lampp startssl
+/opt/lampp/lampp ?start?proftpd
+/opt/lampp/lampp start 表示全部启动
+
+6.修改MySQL缺省字符集为utf8，改my.cnf文件
+
+[client]
+default_character_set=utf8
+[mysqld]
+# default-character-set=utf8
+character-set-server = utf8
+collation-server = utf8_general_ci
+[mysql]
+default_character_set=utf8
+
+通过上面的设置后，再show variables like "%char%"看看，是否正确。(这个地方不明白在那里使用 show variables like "%char%")
+
+另外：修改MySQL缺省字符集为GBK，改my.cnf文件
+代码
+[mysqld]
+# default-character-set=gbk
+character-set-server = gbk
+collation-server = gbk_chinese_ci
+[client]
+default_character_set=gbk
+[mysql]
+default_character_set=gbk
+
+7. 如何允许或者禁止root通过SSH登陆(Fun-FreeBSD)？
+
+修改sshd_config配置文件，更改其中的条目PermitRootLogin no&line;yes 就可以了。
+(不知道在那里修改)
+
+8、 xampp 更新
+    下载更新包后解压，终端机中输入：xampp-upgrade/start
+
+--------------------------------------------------------------------------------
+附注：
+
+程序在那里？
+
+在典型的Unix系统里并没有所谓的系统设定或管理接口，而仅有所谓的设定档案，下表是包含在XAMPP中的相关软件设定档案概要。
+
+重要档案和目录
+
+/opt/lampp/bin/
+
+XAMPP指令的家目录。例如 /opt/lampp/bin/mysql 用来执行MySQL。
+
+/opt/lampp/htdocs/
+
+Apache 文件根目录。
+
+/opt/lampp/etc/httpd.conf
+
+Apache设定档案。
+
+/opt/lampp/etc/my.cnf
+
+MySQL设定档案。
+
+/opt/lampp/etc/php.ini
+
+PHP设定档案。
+
+/opt/lampp/etc/proftpd.conf
+
+ProFTPD设定档案。(从 0.9.5版后才有)
+
+/opt/lampp/phpmyadmin/config.inc.php
+
+phpMyAdmin设定档案。
+
+卸载Xampp
+rm -rf /opt/lampp/lampp
+
+备份
+
+做为系统安全保障的一部分，及时、全面的备份是一项必不可少的工作。数据库以及各软件的配置文件、日志等，经常会使管理员晕头转向，一不小心就会漏掉一项。而XAMPP则让这一工作变得非常简单，输入下面的命令就可一步完成：
+
+/opt/lampp/lampp backup ****
+
+命令后面跟着的是MySQL 的 root 用户的密码。命令执行后会看到下面的内容：
+
+Backing up databases...
+
+Backing up configuration, log and htdocs files...
+
+Calculating checksums...
+
+Building final backup file...
+
+Backup finished.
+
+Take care of /opt/lampp/backup/xampp-backup-19-02-06.sh
+
+恢复
+
+恢复以前的备份，只需以 root 用户身份运行下面的命令：
+
+# sh /opt/lampp/backup/xampp-backup-19-02-06.sh ****
+
+命令后面跟着的是MySQL 的 root 用户的密码，这时用户将看到如下信息：
+
+Checking integrity of files...
+
+Restoring configuration, log and htdocs files...
+
+Checking versions...
+
+Installed: XAMPP 1.5.1
+
+Backup from: XAMPP 1.5.1
+
+Restoring MySQL databases...
+
+Restoring MySQL user databases...
+
+Backup complete. Have fun!
+
+You may need to restart XAMPP to complete the restore.
+
+恢复完后，需要重新启动XAMPP，才能使恢复的数据可用。
+ 
+ 

@@ -1,0 +1,136 @@
+20111121 使用tomcat脚本设置开机
+******************************************
+#!/bin/bash
+
+#chkconfig: 2345 87 04
+
+#description: LISTENER daemons
+
+#
+
+
+
+CALA_HOME=/usr/local/tomcat
+#ORA_OWNER=oracle
+
+
+
+case "$1" in
+
+'start')
+
+#su - $ORA_OWNER -c "$ORA_HOME/bin/lsnrctl start"
+
+
+
+JAVA_HOME=/usr/java/default
+
+CLASSPATH=$JAVA_HOME/lib
+
+PATH=$PATH:$JAVA_HOME/bin
+export PATH CLASSPATH JAVA_HOME
+
+
+
+$CALA_HOME/bin/startup.sh
+
+
+
+;;
+
+
+
+'stop')
+
+#su - $ORA_OWNER -c "$ORA_HOME/bin/lsnrctl stop"
+
+$CALA_HOME/bin/shutdown.sh
+
+;;
+
+
+
+'restart')
+
+$0 stop
+
+$0 start
+
+;;
+
+
+
+esac
+
+*************************************************
+需要修改selinux属性为system_u:object_r:initrc_exec_t
+restorecon -v tomcat
+
+
+
+
+20111109   修改/etc/init.d/start_tomcat权限为755，成功  
+#############/etc/init.d/start_tomcat#########
+#!/bin/bash
+
+
+JAVA_HOME=/usr/java/default
+CLASSPATH=$JAVA_HOME/lib
+PATH=$PATH:$JAVA_HOME/bin
+export PATH CLASSPATH JAVA_HOME
+
+/usr/local/tomcat/bin/startup.sh
+#############################################
+chmod 755 /etc/init.d/start_tomcat
+
+##安装jdk，在/etc/profile中配置java环境变量
+JAVA_HOME=/usr/java/default
+CLASSPATH=.:$JAVA_HOME/lib
+PATH=$PATH:$JAVA_HOME/bin
+export PATH CLASSPATH JAVA_HOME
+
+
+创建随系统启动和关闭的链接：
+
+
+   ######## ln -s /usr/local/tomcat/bin/startup.sh /etc/init.d/start_tomcat  
+
+   # ln -s  /etc/init.d/start_tomcat  /etc/rc.d/rc2.d/S86start_tomcat  
+
+   # ln -s  /etc/init.d/start_tomcat  /etc/rc.d/rc3.d/S86start_tomcat  
+
+   # ln -s  /etc/init.d/start_tomcat  /etc/rc.d/rc5.d/S86start_tomcat  
+
+
+加入自动关闭链接，命令如下：
+
+    # ln -s /usr/local/tomcat/bin/shutdown.sh /etc/init.d/stop_tomcat  
+
+    # ln -s   /etc/init.d/stop_tomcat /etc/rc.d/rc0.d/K14stop_tomcat
+
+    # ln -s   /etc/init.d/stop_tomcat /etc/rc.d/rc3.d/K14stop_tomcat
+
+    # ln -s   /etc/init.d/stop_tomcat /etc/rc.d/rc5.d/K14stop_tomcat
+
+
+设置完毕，可以重启看看效果了。
+
+linux:~ # reboot
+
+
+test@linux:~> ps -ef | grep tomcat
+
+oracle    5284     1  0 21:59 ?        00:00:00 ora_pmon_orcl
+oracle    5289     1  0 21:59 ?        00:00:00 ora_dbw0_orcl
+oracle    5291     1  0 21:59 ?        00:00:00 ora_lgwr_orcl
+oracle    5293     1  0 21:59 ?        00:00:00 ora_ckpt_orcl
+oracle    5295     1  1 21:59 ?        00:00:00 ora_smon_orcl
+oracle    5297     1  0 21:59 ?        00:00:00 ora_reco_orcl
+oracle    5299     1  0 21:59 ?        00:00:00 ora_cjq0_orcl
+oracle    5301     1  0 21:59 ?        00:00:00 ora_qmn0_orcl
+oracle    5303     1  0 21:59 ?        00:00:00 ora_s000_orcl
+oracle    5305     1  0 21:59 ?        00:00:00 ora_d000_orcl
+hrj       5413  5393  0 22:00 pts/1    00:00:00 grep ora
+
+
+启动成功！

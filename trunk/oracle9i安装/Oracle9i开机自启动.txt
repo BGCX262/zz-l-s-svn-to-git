@@ -1,0 +1,75 @@
+20111107    找次方法，成功,但又问题：未登陆时无法启动
+
+Oracle9i开机自启动
+ 
+1.修改/etc/oratab文件，后面的dbstart和dbshut依据这个文件启动数据库：
+
+orcl:/opt/oracle/920:Y
+
+2.创建数据库初始化文件：
+
+cp $ORACLE_BASE/admin/$ORACLE_SID/pfile/init$ORACLE_SID.ora.* $ORACLE_HOME/dbs/init$ORACLE_SID.ora
+
+sql> create spfile from pfile;
+
+3.接下来在/etc/init.d下建立系统自动启动和关机前自动关闭Oracle的脚本文件，分别如下： 
+vi start_oracle.sh（开机后启动oracle数据库脚本）：
+
+#!/bin/bash
+#this script is used to start the oracle
+su - oracle -c "/opt/oracle/920/bin/dbstart"
+
+su - oracle -c "/opt/oracle/920/bin/lsnrctl start"
+
+
+ chmod a+x /etc/init.d/start_oracle.sh
+
+vi stop_oracle.sh（关机前停止oracle数据库脚本）：
+
+#!/bin/bash
+#this script is used to stop the oracle
+
+"/opt/oracle/920/bin/lsnrctl stop"
+
+su - oracle -c "/opt/oracle/920/bin/dbshut" 
+
+
+chmod a+x /etc/init.d/stop_oracle.sh 
+
+
+
+4.创建随系统启动和关闭的链接：
+在/etc/rc2.d下加入自动启动链接，命令如下：
+
+chmod 751 /etc/rc.d/init.d/*_oracle.sh
+
+    ln -s  /etc/init.d/start_oracle.sh  /etc/rc.d/rc2.d/S16start_oracle  
+
+
+在/etc/rc0.d下加入自动关闭链接，命令如下：
+
+     ln -s   /etc/init.d/stop_oracle.sh /etc/rc.d/rc0.d/K01stop_oracle
+
+接着cp这两个链接在/etc/rc.d/rcN.d(N=3,5)下各一份
+
+设置完毕，可以重启看看效果了。
+
+linux:~ # reboot
+
+
+test@linux:~> ps -ef | grep ora
+
+oracle    5284     1  0 21:59 ?        00:00:00 ora_pmon_orcl
+oracle    5289     1  0 21:59 ?        00:00:00 ora_dbw0_orcl
+oracle    5291     1  0 21:59 ?        00:00:00 ora_lgwr_orcl
+oracle    5293     1  0 21:59 ?        00:00:00 ora_ckpt_orcl
+oracle    5295     1  1 21:59 ?        00:00:00 ora_smon_orcl
+oracle    5297     1  0 21:59 ?        00:00:00 ora_reco_orcl
+oracle    5299     1  0 21:59 ?        00:00:00 ora_cjq0_orcl
+oracle    5301     1  0 21:59 ?        00:00:00 ora_qmn0_orcl
+oracle    5303     1  0 21:59 ?        00:00:00 ora_s000_orcl
+oracle    5305     1  0 21:59 ?        00:00:00 ora_d000_orcl
+hrj       5413  5393  0 22:00 pts/1    00:00:00 grep ora
+
+
+启动成功！

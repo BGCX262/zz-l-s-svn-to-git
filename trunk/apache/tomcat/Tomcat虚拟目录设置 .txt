@@ -1,0 +1,62 @@
+Tomcat虚拟目录设置 .
+2008-01-14 11:12 2879人阅读 评论(3) 收藏 举报 
+     在Tcomcat目录里的，默认配置情况下把web应用放到webapps目录里面．默认配置中．webapps就像是站点的根目录一样．但是．如果网站很多．放多了会觉得混乱．那么我们这里的情况就是要把web应用放在另外一个地方．但是又要做成Tomcat的虚拟目录． 
+
+ 这里给出三个方法:
+
+ 
+
+ 第一个:(不推荐):
+
+更改server.xml.用记事本打开该文件.在<Host>和</host>之间加上
+ <Context path="/site" docBase="c:/site" reloadable="true" debug="0">
+ </Context>
+ 参数:path 表示在浏览器中输入http://localhost:8080/site
+     docBase表示你的程序包的物理绝对路径，默认的相对路径是$Tomcat_Home$/webapps
+
+ 
+
+第二个:(推荐,便与维护)
+
+直接在$tomcat_home$/conf/catalina/localhost目录下写配置文件，文件名任意取，最好是跟你的web应用相同便于管理，如site.xml内容为
+<Context path="/site" docBase="c:/site" reloadable="true" debug="0">
+ </Context>
+
+注意:以上使用的是tomcat5.x，Tomcat6.0的/conf目录下不再有/catalina/localhost等目录，但是该方法仍可行，只需将context片段文件放至/conf目录下即可
+
+ 
+
+ 第三个:更改整个根目录：
+
+找到<Host name="localhost" debug="0" appBase="webapps" 
+  unpackWARs="true" autoDeploy="true">
+ 将appBase的设置成期望的路径（绝对路径）
+ 出现的问题：输入：http://localhost:8080/没有出现默认的页面
+ 原因当然是更改了路径造成的。解决是把文件拷过来，或者再把原来默认的设成虚拟路径。
+
+ 配置JDBC连接池
+
+直接在我们之前配置虚拟目录中的<Context path="/site" docBase="c:/site" reloadable="true" debug="0">
+ </Context>
+加入下面这些内容
+
+<Resource name="jdbc/MySqlDS" auth="Container" type="ｊａｖａx.sql.DataSource"
+         maxActive="100" maxIdle="30" maxWait="10000"
+         username="DBusername" password="DBpassword" driverClassName="com.mysql.jdbc.Driver"
+         url="jdbc:mysql://127.0.0.1:3306/DBNAME?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=gb2312"/>
+
+整个配置变为如下:
+
+<Context path="/site" docBase="c:/site" reloadable="true" debug="0">
+             
+      <Resource name="jdbc/MySqlDS" auth="Container" type="javax.sql.DataSource"
+         maxActive="100" maxIdle="30" maxWait="10000"
+         username="DBusername" password="DBpasswrod" driverClassName="com.mysql.jdbc.Driver"
+         url="jdbc:mysql://127.0.0.1:3306/DB?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=gb2312"/>
+
+             
+</Context>
+
+根据实际情况可以自己更改上面斜体的部分.
+
+

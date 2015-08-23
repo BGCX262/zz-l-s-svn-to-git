@@ -1,0 +1,132 @@
+Linux下如何安装网卡 
+
+ 
+ 
+网卡是Linux服务器中最重要网络设备。据统计，Linux网络故障有35％在物理层、25％在数据链路层、10％在网络层、10％在传输层、10％在对话、7％在表示层、3％在应用层。由此可以看出，网络故障通常发生在网络七层模型的下三层，即物理层、链路层和网络层。对应于实际网络也就是使用的网络线缆、网卡、交换机、路由器等设备故障。Linux的网络实现是模仿FreeBSD的，它支持FreeBSD的带有扩展的Sockets（套接字）和TCP/IP协议。它支持两个主机间的网络连接和Sockets通讯模型，实现了两种类型的Sockets：BSD Sockets和INET Sockets。它为不同的通信模型和服务质量提供了两种传输协议，即不可靠的、基于消息的UDP传输协议和可靠的、基于流的传输协议TCP，并且都是在IP网络协议上实现的。INET sockets是在以上两个协议及IP协议之上实现的。 
+
+　　由于交换机、路由器通常独立于Linux或者其他操作系统。网卡设置故障是造成Linux 服务器故障最主要原因。可能因为硬件的质量或性能、磨损老化、人为误操作、不正确的网络设置、管理问题、Linux软件的BUG、系统受到黑客攻击和Linux病毒等原因造成。 
+
+　　Linux 服务器网卡故障排除的思路是：应当遵循先硬件后软件的方法。因为硬件如果出现物理损坏那么如何设定网卡都不能解决故障。解决问题的方法可以从自身Linux计算机的网卡查起，如果确定硬件没有问题了，再来考虑软件的设定。 
+
+　　1. 网卡的选择 
+
+　　一般来说，2.4版本以后的 Linux可以支持的网卡芯片组数量已经很完备了，包括著名厂商如：Intel 以及使用广泛的 RealTek, Via 等网卡芯片都已经被支持，所以使用者可以很轻易的设定好他们的网络卡。但是由于Linux发行版本众多（目前超过188个），使用前最好查看Linux发行版本的文档。以Redhat Linux 9.0为例，这个设备列表在Ethernet- HOWTO文档中。另外最直接的方法是查看一个目录：/lib/modules/release/kernel/drivers/net,其中release是内核版本，可以使用命令：“uname -r”获得。对于Redhat Linux 9.0是2.4.20-8。 
+
+　　#ls /lib/modules/2.4.20-8/kernel/drivers/net/ 
+
+　　3c501.o atp.o eth16i.o ni52.o smc-ultra.o 
+
+　　3c503.o bonding.o ethertap.o ni65.o starfire.o 
+
+　　3c505.o cs89x0.o ewrk3.o ns83820.o strip.o 
+
+　　3c507.o de4x5.o fc pcmcia sundance.o 
+
+　　3c509.o de600.o fealnx.o pcnet32.o sungem.o 
+
+　　3c515.o de620.o hamachi.o plip.o sunhme.o 
+
+　　3c59x.o defxx.o hamradio ppp_async.o tc35815.o 
+
+　　8139cp.o depca.o hp100.o ppp_deflate.o tg3.o 
+
+　　8139too.o dgrs.o hp.o ppp_generic.o tlan.o 
+
+　　82596.o dl2k.o hp-plus.o ppp_synctty.o tokenring 
+
+　　8390.o dmfe.o irda r8169.o tulip 
+
+　　ac3200.o dummy.o lance.o rcpci.o tulip_old 
+
+　　acenic.o e100 lne390.o sb1000.o tun.o 
+
+　　aironet4500_card.o e1000 lp486e.o shaper.o via-rhine.o 
+
+　　aironet4500_core.o e2100.o mii.o sis900.o wan 
+
+　　aironet4500_proc.o eepro100.o natsemi.o sk98lin wavelan.o 
+
+　　amd8111e.o eepro.o ne2k-pci.o skfp wd.o 
+
+　　appletalk eexpress.o ne3210.o slhc.o winbond-840.o 
+
+　　arlan.o epic100.o ne.o slip.o wireless 
+
+　　arlan-proc.o eql.o netconsole.o smc9194.o wireless_old 
+
+　　at1700.o es3210.o ni5010.o smc-ultra32.o yellowfin.o 
+
+　　可以看到这个目录列出所有Linux内核支持的网络设备驱动程序。其中大部分是以太网卡（8139、3COM、Intel）。也有一些是其他类型设备。对于初学者应当尽量选择目录中已经列出的网卡。注意以.o 后缀结束的文件就是驱动程序。而没有后缀的是驱动程序目录（红色）。 
+
+　　2.检查网卡是否加载： 
+
+　　驱动硬件是操作系统最基本的功能，操作系统通过各种驱动程序来驾驭硬件设备，和Windows系统不同Linux内核目前采用可加载的模块化设计（LKMs Loadable Kernel Modules），就是将最基本的核心代码编译在内核中，网卡驱动程序是作为内核模块动态加载的。可以使用命令“lsmod”查看加载情况： 
+
+　　## lsmod 
+
+　　Module Size Used by 
+
+　　dm_mod 54741 0 
+
+　　button 6481 0 
+
+　　battery 8901 0 
+
+　　ac 4805 0 
+
+　　md5 4033 1 
+
+　　joydev 10241 0 
+
+　　uhci_hcd 31065 0 
+
+　　ehci_hcd 30917 0 
+
+　　snd_via82xx 26437 0 
+
+　　snd_ac97_codec 63889 1 snd_via82xx 
+
+　　snd_pcm_oss 49017 0 
+
+　　soundcore 9889 1 snd 
+
+　　tulip 45025 1 
+
+　　via_rhine 23113 2 
+
+　　mii 4673 1 via_rhine 
+
+　　ext3 116809 2 
+
+　　jbd 71257 1 ext3 
+
+　　对每行而言，第一列是模块名称；第二列是模块大小；第三列是调用数。调用数后面的信息对每个模块而言都有所不同。如果 (unused) 被列在某模块的那行中，该模块当前就没在使用。如果 (autoclean) 被列在某模块的那行中，该模块可以被 rmmod -a 命令自动清洗。当这个命令被执行后，所有自从上次被自动清洗后未被使用的被标记了“autoclean”的模块都会被卸载。丛以上红色粗体字符可以看到笔者Linux计算机中两块网卡模块：tulip和via_rhine 已经加载。对应的网卡商业型号分别是： 
+
+　　tulip：Lite-On Communications Inc LNE100TX [Linksys EtherFast 10/100] 
+
+　　via_rhine：Via VT6102[Rhine-II] 常见主板集成网卡。 
+
+　　如果没有检测到硬件，用硬件检测程序kuduz检测网卡，它和Windows中添加新硬件差不多。kudzu程序是通过查看/usr/share/hwdata/目录下的文件识别各种硬件设备的。如果核心支持该硬件，并且有该驱动程序就可自动装载。首先说明的是Linux下对网卡的支持往往是只对芯片的,所以对某些不是很著名的网卡,往往需要知道它的芯片型号以配置Linux.比如我的Top link网卡,就不存在Linux的驱动,但是因为它是NE2000兼容,所以把它当NE2000就可以在Linux下用了.所以当你有一块网卡不能用,在找Linux的驱动程序之前一定搞清楚这个网卡用的什么芯片,跟谁兼容,比如3c509,ne2000等。这样的型号一般都在网卡上最大的一快芯片上印着,抄下来就是了。对于ISA接口的NE2000卡,先要作的一件事情,是将网卡设定为Jumpless模式.很多现在的网卡缺省 都是PnP模式,这在Windows下的确能减少很多麻烦,但是Linux不支持,所以Linux下必须是Jumpless模式.一般所有网卡都有带的驱动盘和DOS下可执行的一个设定程序,用该程序将网卡设为 Jumpless。对于PCI网卡，可以使用命令来查看：lspci。在显示的列表中找到“Ethernet Controller”，记下厂商和型号。然后使用modprobe尝试加载正确的模块，比如modprobe 3c509。如果出现错误，说明该模块不存在。这时候你应该找到正确的模块并且重新编译。问题一般即可解决。 
+
+　　如果很不幸的，您使用的是比较罕见的一些网卡，或者是 Linux 核心支持不够的网卡，以致于在安装 Linux 时，并无法检测到网卡，那也不用担心，我们可以使用较为简单的核心模块编译来支持这张网卡。下面以笔者的3Com的3CR990-TX-97 网卡为例（一款具有安全特性网卡）看看如何进行模块编译。首先在其网站http://www.3com.com/infodeli/tools/nic/linuxdownload.htm 下载合适你使用内核版本的相关驱动程序，这里以2.4内核为例。 
+
+　　#wegt http://www.3com.com/infodeli/tools/nic/3c990-1.0.0a.tar.gz 
+
+　　另外在开始编译核心模块之前，因为驱动程序需要配合核心来编译，所以会使用到 kernel source 或者是 kernel header 的数据，此外，也需要编译器 ( compiler ) 的帮助，因此，先确定您的 Linux 系统当中已经下列软件的存在 ：kernel-source 、kernel 、gcc 、make。 
+
+　　#tar zxvf 3c990-1.0.0a.tar.gz 
+
+　　#make 
+
+　　此时会产生3c990.o 驱动模块。然后使用命令拷贝到相应地方然后查看加载是否正常。 
+
+　　#modprobe 3c990 
+
+　　#cp 3c990.o /lib/modules/2.4.20-8/kernel/drivers/net 
+
+　　# depmod -a 
+
+　　然后使用lsmod 命令检查加载情况，如果一切正常的话。可以让系统启动时自动加载该模块： 
+
+　　#echo “alias eth0 3c990”>;>; /etc/modules.conf 
+ 

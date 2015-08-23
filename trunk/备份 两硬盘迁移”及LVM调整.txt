@@ -1,0 +1,188 @@
+目的:
+我的Linux分区不够用了，Linux一直在下电驴。我的另外一个硬盘是windows格式的。我想格掉并把分区分给Linux用。 
+机器:
+台机:无显示器，两IDE硬盘，平时用SSH维护，网络挂时用串口做终端维护。
+本本:网络和串口访问台机Linux。
+
+台机开始分区情况:
+[root@CentOS5 ~]# fdisk -l
+Disk /dev/hda: 120.0 GB, 120034123776 bytes
+255 heads, 63 sectors/track, 14593 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+   Device Boot      Start         End      Blocks   Id  System
+/dev/hda1   *           1         651     5229126    b  W95 FAT32
+/dev/hda2             652       14593   111989115    f  W95 Ext'd (LBA)
+/dev/hda5             652       13972   107000901    b  W95 FAT32
+/dev/hda6           13973       14593     4988151    7  HPFS/NTFS
+Disk /dev/hdb: 61.4 GB, 61492838400 bytes
+255 heads, 63 sectors/track, 7476 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+   Device Boot      Start         End      Blocks   Id  System
+/dev/hdb1   *           1          13      104391   83  Linux
+/dev/hdb2              14        7476    59946547+  8e  Linux LVM
+[root@CentOS5 ~]# lvm pvs
+  PV         VG         Fmt  Attr PSize  PFree
+  /dev/hdb2  VolGroup00 lvm2 a-   57.16G    0
+[root@CentOS5 ~]# lvm lvs
+  LV          VG         Attr   LSize  Origin Snap%  Move Log Copy%  Convert
+  LogVol_opt  VolGroup00 -wi-ao 50.16G
+  LogVol_root VolGroup00 -wi-ao  5.84G
+  LogVol_swap VolGroup00 -wi-ao  1.16G
+CentOS的GRUB装在/hdb1, /hda1上装了个windows 2K. 目前BIOS设置了第一硬盘启动。使用widows 2K的OS loader 来启动grub再启动CentOS。如果改成第二硬盘启动可以直接启动GRUB。
+现在我具体想做的步骤:
+1.格掉hda成一个/boot分区和一个Linux LVM,比如 hda2成物理LVM Volume Group (vg00).
+2.把老Linux系统迁移到新的硬盘。Swap也放到新的硬盘。
+    A.包括把老的boot分区数据拷贝到新的boot分区
+    B.在新的vg00中建立新的Logic Volume (lv_root),把老的根分区数据拷进来。
+3.当新lv_root分区的系统可以启动的时候,把原来老硬盘空间回收，分配到新的vg中。
+具体操作步骤:
+正式开始,umount不用的分区。
+[root@CentOS5 opt]# fdisk /dev/hda
+The number of cylinders for this disk is set to 14593.
+There is nothing wrong with that, but this is larger than 1024,
+and could in certain setups cause problems with:
+1) software that runs at boot time (e.g., old versions of LILO)
+2) booting and partitioning software from other OSs
+   (e.g., DOS FDISK, OS/2 FDISK)
+Command (m for help): p
+Disk /dev/hda: 120.0 GB, 120034123776 bytes
+255 heads, 63 sectors/track, 14593 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+   Device Boot      Start         End      Blocks   Id  System
+/dev/hda1   *           1         651     5229126    b  W95 FAT32
+/dev/hda2             652       14593   111989115    f  W95 Ext'd (LBA)
+/dev/hda5             652       13972   107000901    b  W95 FAT32
+/dev/hda6           13973       14593     4988151    7  HPFS/NTFS
+先delete所有原来分区。
+Command (m for help): p
+Disk /dev/hda: 120.0 GB, 120034123776 bytes
+255 heads, 63 sectors/track, 14593 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+   Device Boot      Start         End      Blocks   Id  System
+建立两个分区,一个100M,激活为可启动。剩下的用来建PV。
+Disk /dev/hda: 120.0 GB, 120034123776 bytes
+255 heads, 63 sectors/track, 14593 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+   Device Boot      Start         End      Blocks   Id  System
+/dev/hda1   *           1          13      104391   83  Linux
+/dev/hda2              14       14593   117113850   83  Linux
+格式化100M的分区。挂载并拷贝boot内容。
+[root@CentOS5 opt]# mkfs.ext3 /dev/hda1
+[root@CentOS5 opt]# mkdir /mnt/hda1boot
+[root@CentOS5 opt]# mount /dev/hda1 /mnt/hda1boot/
+[root@CentOS5 ~]# cp -a /boot/* /mnt/hda1boot/
+安装grub到第一硬盘,安装到MBR。
+(我在虚拟机中测试时想用grub-install /dev/hda,有出错信息,所以这里用来下面的方法)
+grub> root (hd0,0)
+Filesystem type is ext2fs, partition type 0x83
+grub> setup (hd0)
+Checking if "/boot/grub/stage1" exists... no
+Checking if "/grub/stage1" exists... yes
+Checking if "/grub/stage2" exists... yes
+Checking if "/grub/e2fs_stage1_5" exists... yes
+Running "embed /grub/e2fs_stage1_5 (hd0)"...  15 sectors are embedded.
+succeeded
+Running "install /grub/stage1 (hd0) (hd0)1+15 p (hd0,0)/grub/stage2 /grub/grub.conf"... succeeded
+Done.
+下面准备好LVM。
+[root@CentOS5 ~]# pvcreate /dev/hda2
+  Physical volume "/dev/hda2" successfully created
+[root@CentOS5 ~]# pvscan
+  PV /dev/hdb2   VG VolGroup00   lvm2 [57.16 GB / 0    free]
+  PV /dev/hda2                   lvm2 [111.69 GB]
+  Total: 2 [168.84 GB] / in use: 1 [57.16 GB] / in no VG: 1 [111.69 GB]
+[root@CentOS5 ~]# vgcreate vg00 /dev/hda2
+  Volume group "vg00" successfully created
+[root@CentOS5 ~]# lvcreate -n lv_root -L 6000M vg00
+[root@CentOS5 ~]# lvscan
+  ACTIVE            '/dev/VolGroup00/LogVol_root' [5.84 GB] inherit
+  ACTIVE            '/dev/VolGroup00/LogVol_opt' [50.16 GB] inherit
+  ACTIVE            '/dev/VolGroup00/LogVol_swap' [1.16 GB] inherit
+  ACTIVE            '/dev/vg00/lv_root' [5.86 GB] inherit
+[root@CentOS5 ~]# mkdir /mnt/lvroot
+[root@CentOS5 ~]# mount /dev/vg00/lv_root /mnt/lvroot
+开始拷贝/分区下文件和目录:
+[root@CentOS5 ~]# cp -a /bin      /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /etc      /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /exports  /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /home     /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /lib      /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /net      /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /root     /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /sbin     /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /srv      /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /tftpboot /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /usr      /mnt/lvroot/
+[root@CentOS5 ~]# cp -a /var      /mnt/lvroot/
+建立些不拷的目录,同时保证权限一致:
+[root@CentOS5 /]# mkdir /mnt/lvroot/boot
+[root@CentOS5 /]# mkdir /mnt/lvroot/media
+[root@CentOS5 /]# mkdir /mnt/lvroot/misc
+[root@CentOS5 /]# mkdir /mnt/lvroot/opt
+[root@CentOS5 /]# mkdir /mnt/lvroot/mnt
+[root@CentOS5 /]# mkdir /mnt/lvroot/proc
+[root@CentOS5 /]# chmod -w /mnt/lvroot/proc/
+[root@CentOS5 /]# mkdir /mnt/lvroot/selinux
+[root@CentOS5 /]# mkdir /mnt/lvroot/sys
+[root@CentOS5 ~]# mkdir /mnt/lvroot/tmp
+[root@CentOS5 ~]# chmod 777 /mnt/lvroot/tmp
+[root@CentOS5 ~]# chmod +t /mnt/lvroot/tmp
+建立swap分区。
+[root@CentOS5 /]# lvcreate -n lv_swap -L 1200M vg00
+[root@CentOS5 /]# mkswap /dev/vg00/lv_swap
+开始修改grub和fstab。
+/mnt/hda1boot/grub/menu.lst文件中的root和kernel参数中的root=/dev/vg00/lv_root。
+
+  1 /dev/vg00/lv_root       /                       ext3    defaults        1 1
+  2 #LABEL=/boot             /boot                   ext3    defaults        1 2
+  3 /dev/hda1               /boot                   ext3    defaults        1 2
+  4 tmpfs                   /dev/shm                tmpfs   defaults        0 0
+  5 devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+  6 sysfs                   /sys                    sysfs   defaults        0 0
+  7 proc                    /proc                   proc    defaults        0 0
+  8 /dev/vg00/lv_swap      swap                    swap    defaults        0 0
+  9
+10 #/dev/VolGroup00/LogVol_opt             /opt            ext3    defaults        1 2
+检查下etc下虽开机启动的脚本。
+比如我要把rc.d中oracle相关的去掉。
+rc.local中的也去掉。
++++++++++++++++++++一切检查就绪,准备重启+++++++++++++++++++++++++++++++==
+接上串口线,我的台机没有显示器。:)
+哈哈可以的,看到了新的grub菜单。
+然后....
+Scanning logical volumes
+  Reading all physical volumes.  This may take a while...
+  Found volume group "VolGroup00" using metadata type lvm2
+  Found volume group "vg00" using metadata type lvm2
+Activating logical volumes
+  3 logical volume(s) in volume group "VolGroup00" now active
+Trying to resume from /dev/VolGroup00/LogVol_swap
+No suspend signature on swap, not resuming.
+Creating root device.
+Mounting root filesystem.
+mount: could notKernel panic - not syncing: Attempted to kill init!
+find filesystem  '/dev/root'
+Se
+我奇怪的是为什么我grub的kernel root参数设置了新的分区了啊,为什么系统还是从老的volume group "VolGroup00"启动?
+问题解决方法:
+参考文章:
+http://linux.chinaunix.net/bbs/archiver/tid-1030789.html
+开始按他的做了，还是不可以。
+觉得奇怪它怎么只去active VolGroup00的呢？
+后来仔细看了解压的initrd中的init，原来是那里写了启动哪个Volume Group。 手动修改启动vg00.swap root等也对应修改，打包initrd。
+后来看了下initrd，如果系统已经启动了，要生成个新的initrd很简单的。
+备份原来的initrd,然后用mkinitrd就可以生成个新的了。
+(1)生成个现在使用的kernel的initrd。
+/sbin/mkinitrd /boot/initrd-`uname -r`.img `uname -r`
+(2)生成xen内核的initrd。
+/sbin/mkinitrd /root/initrd-2.6.18-92.1.22.el5xen.img 2.6.18-92.1.22.el5xen
+当然不是随便的initrd都可以生成的，你需要有对应的kernel modules。
+mkinitrd会查看/etc/fstab文件，这也就是老的initrd只回去挂载老的Volume Group的原因。
+总结:
+这种方法迁移系统基本没什么损失，没有软件需要重装，我/opt的oracle拷贝回来后就可以启动了。
+主要是分区数据基本没变化。LVM很好用。
+参考文章:
+1.LVM howto:http://www.ibiblio.org/pub/Linux/docs/HOWTO/other-formats/pdf/LVM-HOWTO.pdf
+2.initrd Fix 参考文章:http://linux.chinaunix.net/bbs/archiver/tid-1030789.html
+3.Linux 初始 RAM 磁盘（initrd）概述:http://www.ibm.com/developerworks/cn/linux/l-initrd.html
+

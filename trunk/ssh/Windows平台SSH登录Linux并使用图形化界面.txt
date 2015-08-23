@@ -1,0 +1,44 @@
+Windows平台SSH登录Linux并使用图形化界面
+[日期：2011-09-06] 来源：Linux社区  作者：tianhuadihuo 
+
+ 
+ 
+我远程Linux主机使用的是CentOS 5.5,在Windows下一直用Putty/Poderosa ssh登陆远程主机，一直想能不能再putty terminal用tkdiff，gvim，emacs等起图形界面的程序，这样起不方便了很多，今天学了一招,可以用putty+xming.
+
+1.CentOS主机上允许SSH的X 
+#vi /etc/ssh/sshd_config
+取消这一行的注释——如果没有这一行则手动添加之：
+X11Forwrding yes
+
+2.Xming安装：
+
+Xming是一款开源的X Server
+
+主页：http://www.straightrunning.com/XmingNotes/
+SourceForge页面：http://sourceforge.net/projects/xming/
+
+最新版是6.9.0.31http://sourceforge.net/projects/xming/files/Xming/6.9.0.31/Xming-6-9-0-31-setup.exe/download
+
+安装完成后，运行XLaunch，一切使用默认，产生一个初始的配置文件，需要记住的是下图中标示出的“Display number”中的数字，此处使用默认的0
+
+
+
+启动完成后，在托盘区会出现一个“X”形状的图标，这表示Xming已经在运行了，将鼠标悬停上去，能看到当前使用的“Display number”。
+
+3. Putty或者Pietty安装：
+
+到Putty官方网站http://www.chiark.greenend.org.uk/~sgtatham/putty/
+
+http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html下载putty.exe
+
+运行PuTTY，在配置界面，选择“Connection-SSh-X11”，选中“Enable X11forwarding”，“X display location”中填上上一步中“Display number”中的数字，这里显示到本机，故需要填“localhost:0”。
+
+也可以使用Pietty: http://ntu.csie.org/~piaip/pietty/
+
+
+
+然后到session中save到Defalut Setting。
+
+3.然后再，putty终端下登陆到Centos主机，在命令行下gedit，就会看到直接起图形界面到windows下的桌面了。
+
+

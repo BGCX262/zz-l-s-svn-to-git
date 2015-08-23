@@ -1,0 +1,5 @@
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           1         487     3911796    b  W95 FAT32
+[root@localhost tmp]# mount -o iocharset=utf8 /dev/sda1 /mnt/usb
+
+[root@localhost tmp]# umount /mnt/usb

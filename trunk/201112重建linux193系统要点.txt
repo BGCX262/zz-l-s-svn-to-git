@@ -1,0 +1,20 @@
+● 目前系统整个恢复和迁移的不同硬盘方法尚在摸索中
+
+● 以下是对已有系统文件的系统重装
+
+● 安装系统，目前用的分区是root为一个分区，不分boot和usr等
+
+● 初步安装为x window、打印支持、mysql 、www等
+
+
+● 防火墙开ssh（先开22和1015，设置好后关22）、www、8080，cups是安装后自动打开
+
+● mysql的数据文件在/opt/mydata，需修改配置文件my.con和mysqld。
+www文件在/opt/php，配置文件/etc/httpd/conf/...
+tomcat在/opt/tomcat，配置文件/usr/local/tomcat...
+
+从backup中恢复/opt目录，/usr/local/tomcat,
+
+● www文件需要chcon，mysql还需chown mysql.mysql
+
+● cups注意，正常安装打印机后，还需修改mime.conv等文件。共享打印机需要smbaclenit等支持，用smb://xxx

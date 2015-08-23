@@ -1,0 +1,19 @@
+#!/bin/bash
+
+rpm --import http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
+
+cat > /etc/yum.repos.d/utterramblings.repo << "EFO"
+[utterramblings]
+name=Jason's Utter Ramblings Repo
+baseurl=http://www.jasonlitka.com/media/EL$releasever/$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
+EFO
+
+#vi /etc/yum.repos.d/utterramblings.repo
+yum install php
+yum install php-mysqli
+yum install php-mcrypt
+#yum update mysql
+php -v

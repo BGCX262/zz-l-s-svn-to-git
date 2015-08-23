@@ -1,0 +1,36 @@
+◆ opt目录下建立mydata目录
+
+◆ mysqladmin -u root -p shutdown
+
+◆ 把/var/lib/mysql整个目录移到/opt/mydata
+
+◆ my.cnf配置文件
+[root@linux193 etc]# find / -name my.cnf   	#没找到
+[root@linux193 etc]#ll /usr/share/mysql/my-medium*.cnf
+-rw-r--r-- 1 root root 4673 09-01 05:01 /usr/share/mysql/my-medium.cnf
+[root@linux193 etc]# cp /usr/share/mysql/my-medium*.cnf /etc/my.cnf
+[root@linux193 etc]# gedit my.cnf &
+
+????????????????????20111121 这个最终没有改变（见下文）
+#socket　 = /var/lib/mysql/mysql.sock（原内容，为了更稳妥用“#”注释此行）
+socket　 = /home/data/mysql/mysql.sock　（加上此行）
+?????????????????????????????????????????????
+
+◆ 修改MySQL启动脚本/etc/init.d/mysqld
+#datadir=/var/lib/mysql（注释此行）
+datadir=/home/data/mysql （加上此行）
+
+◆ 修改下数据库的权限
+chown -R mysql:mysql /opt/mydata
+chmod 700 /opt/mydata/test/
+chmod 660 /opt/mydata/test/*
+chmod 700 /opt/mydata/302637/
+chmod 660 /opt/mydata/302637/*
+chmod 700 /opt/mydata/mysql/
+chmod 660 /opt/mydata/mysql/*
+
+◆ 做一个mysql.sock 链接：
+[root@linux193 mysql]# ln -s /opt/mysql/mysql.sock /var/lib/mysql/mysql.sock
+
+◆ 20111121 /mysql.sock文件做链接无效，会使php访问mysql失效（在SELinux下），
+最终，只转移数据文件，而不改变mysql.sock位置

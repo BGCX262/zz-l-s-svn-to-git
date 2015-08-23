@@ -1,0 +1,161 @@
+--共享剪贴板
+[root@localhost Desktop]# vncconfig -nowin&
+[1] 6163不支持中文，重启无效vncconfig -iconic &
+
+********************* X window 有关剪贴描述*****************************
+使用鼠标选择一段字符，然后就能够在另外的程式里按鼠标中间，把字符粘贴过去。不论这个程式运行在哪里。
+
+看看更大的一个图景：您的屏幕上有三台机器上的 xterm, 两台机器上的 gvim，两台机器上的 mozilla 在显示，而他们都受本机的 FVWM 操纵，他们之间能够随意进行拷贝粘贴…… 从这里您能够初步体会到 Xwindow 的网络透明性，他使您方便的操作很多机器。
+***********************************************************************
+
+启动VNC Server 后直接打开浏览器，在地址栏中输入被控端的网址或IP地址，并在网址后加上“：5800＋显示编号”的端口号即可操控该计算机。
+
+例如：http://192.168.0.1:5801 (如果显示编号为1，一般第一次设置的显示编号都是1，就用5800＋1＝5801。)
+
+
+
+VNC的安装与使用
+
+本人的操作环境：被控端 Redhat9.0，主控端Windows XP。
+
+1．下载VNC Server与VNC viewer.
+
+VNC Server下载地址：http://www.Linuxeden.com/download/softdetail.php?softid=744
+
+VNC viewer下载地址：http://download.pchome.net/php/dl.php?sid=2603
+
+2．安装.
+
+rpm –Uvh VNC-3.3.6-2.i386.rpm (如果是源代码请看包里的说明)
+
+当下载了VNC的Linux版本后，可以解压文件到一个文件夹中，例如/home/VNC，然后复制文件VNCserver、VNCpasswd和XVNC到/usr/bin目录中。假如想要能够通过VNC服务器的整合Java界面远程控制Linux电脑，也得需去建立一个子目录/usr/local/VNC/classes。在建立此子目录之后，复制VNCJava.class文件到此目录中。（一般redhat 9.0自带以上文件，所以直接用终端执行就可以）。
+
+在Fedora 8上直接YUM下，巨方便。我从来不看怎么安装，这步骤的。
+
+3.在Linux上启动VNC Server
+
+执行VNCserver命令：
+
+[root@Linux root]# VNCserver
+
+You will require a password to access your desktops.
+
+Password: ----为了不想任何人都可以任意遥控此计算机。因此当第1次启动VNC server时，会要求设置网络遥控的密码。这个就是你的登陆VNC的密码一定要够安全。好像哪里的文章上讲可以配置用户的。不过80%的人群不会习惯区分用户的。因为VNC可以虚拟N个桌面的。霍霍，配合Linux的用户很好很强大。
+
+Creating default startup script /root/.VNC/xstartup
+
+Starting applications specified in /root/.VNC/xstartup
+
+Log file is /root/.VNC/Linux:1.log
+
+（经上述步骤后，便已启动了VNC Server。如果你想要更改VNC Server的密码，只要执行VNCpasswd命令即可。）
+
+5. 从浏览器远程遥控。
+
+启动VNC Server 后直接打开浏览器，在地址栏中输入被控端的网址或IP地址，并在网址后加上“：5800＋显示编号”的端口号即可操控该计算机。
+
+例如：http://192.168.0.1:5801 (如果显示编号为1，一般第一次设置的显示编号都是1，就用5800＋1＝5801。)
+
+如果看到窗口，就说明你成功，在密码框输入密码，就能远程控制了。
+
+没事谁用浏览器啊。。。。。无聊的一步
+
+6．设置VNCserver启动变量：
+
+为了使VNCserver在每次启动时保持不变的端口号（5901）
+
+在/etc/rc.d/rc.local文件中添加命令：
+
+rm -f /tmp/.X11-unix/X*
+
+rm -f /.VNC/*.pid
+
+rm -f /.VNC/*.log
+
+这样，每次启机，系统会先把上次非正常关机时留下的临时文件删除。
+
+8、结束VNC服务及远程桌面
+
+VNCserver -kill :1
+
+其它更详细的使用请用man查看。
+
+VNC内定的窗口管理器是twm与大家使用的可能不同，通过修改VNC的配置文件可以更换为自己喜欢的，方法如下：
+
+修改用户目录下的 .VNC/xstartup 文件
+
+#!/bin/sh
+
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+
+xsetroot -solid grey
+
+VNCconfig -iconic &
+
+xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+
+twm &
+
+将#!/bin/sh后面的内容全部注释掉，改成
+
+~/.Xclients
+
+保存文件
+
+现在可以测试修改是否成功，先kill VNCserver服务
+
+VNCserver -kill :
+
+或
+
+pa aux|grep XVNC
+
+kill PID
+
+重新启动VNCserver ，用VNCviewer连接远程桌面是不是已经变成自己喜欢的类型了。
+
+在前面有VNC server 设置的文章里, 我们已经可以在一个Linux的服务器上运行VNCserver来进行远程访问了,但需要注意的是：
+
+如果直接使用VNCviewer来进行访问，有两点不利因素:
+
+1. 口令传输是明文,很容易被侦听到.
+
+2. 防火墙需要打开59xx端口,这在通常的单位里是不可能的.
+
+幸运的是,我们有ssh这个强大的工具,象X11 Forwarding(另文论述),我们可以使用ssh隧道来保护通讯过程,下面就进行简单介绍.
+
+假设VNCserver运行在服务器 myserver (ip地址为:192.168.x.x)的屏幕1,也就是侦听 192.168.x.x:5901, 用户名为foo
+
+情形一: VNC客户端为Linux
+
+这种情形很简单,一般的Linux发行版本里面都默认安装了ssh套件.
+
+1. 用ssh登录到服务器
+
+ssh -L 5901:localhost:5901 -l foo myserver
+
+或者直接用ip地址
+
+ssh -L 5901:localhost:5901 -l foo 192.168.x.x
+
+2. 在本机的另外开的终端上,运行VNCviewer (或其它的类似工具)
+
+VNCviewer localhost:1
+
+情形二: VNC客户端为windows
+
+1. 下载一个ssh客户端,个人推荐putty,只有一个程序,不需要安装,简单而功能齐全. 到这里下载http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
+
+下载putty.exe到桌面上直接运行即可。
+
+2. 运行putty,输入服务器的ip地址,输入一个名字,这里myserver作为session的名字，按save保存。见附图一
+
+3. 单击对话框左边的tunnels来选择相关设置，在source port里输入5901，在Destination里输入localhost：5901，按Add添加，如附图二
+
+4. 单击左边session，回到session设置，按save重新保存。按open即可登录到服务器。
+
+5. 运行VNC-viewer （如果没有，到这里下载http://www.realVNC.com/download.html，只要一个 exe的文件就行），在Server里输入localhost:1,见附图三, 输入口令后一个Linux的桌面就会出现在windows里，并且是非常安全的，Cool 能玩到这步骤的都是我崇拜的对象。哈
+
+
+
+

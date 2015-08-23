@@ -1,0 +1,42 @@
+tar --exclude /proc --exclude /tmp --exclude /mnt --exclude /proc -jcvp -f /mnt/fat/c57_o9i_ful.tar.bz2 /
+出错，延时退出
+
+tar cvpzf /mnt/fat/?.tgz --exclude=/tmp --exclude=/media --exclude=/proc --exclude=/lost+found --exclude=/mnt --exclude=/sys /
+成功
+
+dd-gzip
+
+#!/bin/sh
+dd if=/dev/sda1 | gzip  >/opt/p-boot.dd.gz
+dd if=/dev/sda2 | gzip  >/opt/p-root.dd.gz
+#dd if=/dev/sda5 | gzip  >/mnt/fat/p-opt.dd dd.gz
+dd if=/dev/sda6 | gzip  >/opt/p-home.dd.gz
+
+ dump -0j -f /root/*.dump.bz2 /
+[root@rh9 c]# dump -z4 -0uf /mnt/c/sysbak-z4.dump /dev/hda1 	# 4级压缩
+
+20111018-allpartion
+# !bin/sh
+
+ dump -0j -f /mnt/fat/backup/c5-clr-boot.dump.bz2 /boot
+ dump -0j -f /mnt/fat/backup/c5-clr-home.dump.bz2 /home
+ dump -0j -f /mnt/fat/backup/c5-clr-opt.dump.bz2 /opt
+ dump -0j -f /mnt/fat/backup/c5-clr-usr.dump.bz2 /usr
+ dump -0j -f /mnt/fat/backup/c5-clr-usrlocal.dump.bz2 /usr/local
+ dump -0j -f /mnt/fat/backup/c5-clr-var.dump.bz2 /var
+ dump -0j -f /mnt/fat/backup/c5-clr-root.dump.bz2 /
+ 
+
+cd /mnt/2	#恢复分区的挂载点
+restore  -r -f /mnt/fat/backup/c5-clr-root.dump.bz2  #整个分区恢复，-i可以部分恢复   
+
+二次恢复失败
+
+201111123先用
+dump -z4 -0uf /mnt/c/sysbak-z4.dump /dev/hda1 	# 4级压缩
+得boot。dump和root。dump
+iso启动进入linux rescue，rm -rf /mnt/sysimage/*
+后重启再进rescue，进入相应目录，
+restore  -rf /mnt/fat/backup/c5-clr-root.dump
+后，重启成功
+再试，进入安装，分区后重启，进rescue，同上restore后，重启失败，修改"/"."/boot"卷标，再重启成功

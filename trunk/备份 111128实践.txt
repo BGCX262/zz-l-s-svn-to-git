@@ -1,0 +1,152 @@
+◆ 20111210 在linuxvm上实践
+恢复linux193 centos5成功
+原系统hda1是swap，hda2是root
+恢复为hda1为root，hda2为swap
+恢复为hda1是boot，hda2是root，hda4是swap失败
+方法基本同下，无特殊操作，可能因为升级过内核，因此有2个initrd。img，而重新生成的是老内核，因此要修改grub。conf默认启动老的
+
+◆ 20111209 在dell vm上实践centos5成功
+从lvm格式的tar恢复成hda1为swap，hda2为root
+用安装盘rescue模式，解压tar后
+安装grub
+修改meun.lst
+修改/etc/fstab,按/dev/hda1...格式
+用/sbin/mkinitrd /boot/initrd-`uname -r`.img `uname -r`恢复initrd.img
+
+
+◆ 20111210 在dell vm上实践centos6文本模式成功（都是lvm）
+dump：restore后grub，修改grub。conf，fstab，后运行mkinitrd（有出错信息，将proc移除和setenforce 0后照旧）
+重新安装livecd，只有root分区，用dump备份
+还原最后成功，但好像有几个要点
+1，需要ext4，可能是因为centos6版本原因
+2，用centos5恢复模式无法restore，可能也是版本问题
+3，恢复时尽量mount -o rw，acl ，且setenforce 0
+4，grub。conf和fstab中用uuid代表分区，好像这是6.x和fedora13以上版本要求的
+
+
+
+启动后停于设备检查部分，重新进rescue，
+删除proc
+ mkdir /mnt/rot/proc
+ 
+chmod -w /mnt/rot/proc/
+
+重启成功
+
+◆ 20111128 在linux193上实践
+
+（root与boot在同一分区，root数据2.2G）
+
+Disk /dev/hda: 40.0 GB, 40020664320 bytes
+255 heads, 63 sectors/track, 4865 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/hda1               5         130     1012095   82  Linux swap / Solaris
+/dev/hda2   *         131        2500    19037025   83  Linux
+/dev/hda3            3100        4865    14185395   83  Linux
+
+先用DD备份mbr和hda2（root分区所在）用gzip -9压缩（花费了数小时）
+free
+dd 。。。。
+再用dump备份root,z4压缩
+# free
+# dump -0 -u -z4 -f root.dump / # 5-10分钟完成
+
+重启，挂120g硬盘，未分区，试验
+
+先不恢复mbr，按源盘分区发，分2分区（不严格按blocks分）
+然后复原root.dump,并安装grub
+
+◆ 20111129 测试
+
+1）安装120g，为安装grub，重启成功（估计是因为未改变分区，先前的grub仍起作用）
+2）在40g上删除hda1swap和hda2root，创建2分区（未按block分），进g4l恢复40g111128/root.dd.gz
+[root@linux193 40g111128]# ll
+总计 2613736
+-rw-r--r-- 1 root root        401 11-28 21:59 40fdisk.txt
+-rwxr-xr-x 1 root root        251 11-28 21:58 backbash
+-rw-r--r-- 1 root root   10631653 11-28 21:59 etc.dump
+-rw-r--r-- 1 root root        512 11-28 21:59 mbr.dd
+-rw-r--r-- 1 root root   65777193 11-28 22:06 opt.dump
+-rw-r--r-- 1 root root 1936814051 11-28 22:26 root.dd.gz
+-rw-r--r-- 1 root root  630950895 11-28 22:05 usr.dump
+-rw-r--r-- 1 root root   29598523 11-28 22:06 var.dump
+重启grub失败，用centos6livecd进textmode
+# fsck -C -f -y -t ext3 /hda2
+# grub
+grub> find /boot/grub/stage1
+hd(0,1)
+grub> root (hd0,1)
+grub> setup (hd0)
+重启成功
+
+这次未恢复mbr，root分区较影像文件大很多，说明只要分区结构不变，用dd可以全盘恢复，另，root与swap的卷标未设置，而fstab是按卷标识别，说明卷标有可能是可以自动修复的（尚不确定）
+#cat /etc/fstab
+LABEL=/                 /                       ext3    defaults        1 1
+tmpfs                   /dev/shm                tmpfs   defaults        0 0
+devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+sysfs                   /sys                    sysfs   defaults        0 0
+proc                    /proc                   proc    defaults        0 0
+LABEL=SWAP-hda11        swap                    swap    defaults        0 0
+#/dev/hdc1               swap                    swap    defaults        0 0
+
+
+◆ 20111126 测试此法：
+fdisk -l > bak/vmfdiskinfo.txt
+Disk /dev/sda: 8589 MB, 8589934592 bytes
+255 heads, 63 sectors/track, 1044 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000c53
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           2          12       88357+  83  Linux
+/dev/sda2              13         120      867510   82  Linux swap / Solaris
+/dev/sda3             121         122       16065   83  Linux
+/dev/sda4             123        1044     7405965   83  Linux
+
+以下备份工作在ssh下完成
+dd if=/dev/sda  of=bak/vmmbr.dd bs=512 count=1
+dump -0 -u -z4 -f bak/vmroot-z4.dump /
+dump -0 -u -z4 -f bak/vmboot-z4.dump /boot
+
+-rw-r--r-- 1 root root    5110137 11-26 19:47 vmboot-z4.dump
+-rw-r--r-- 1 root root        594 2011-11-27 vmfdiskinfo.txt
+-rw-r--r-- 1 root root        512 2011-11-27 vmmbr.dd
+-rw-r--r-- 1 root root  388298256 11-26 19:45 vmroot-z4.dump
+
+
+开始还原，进f13 livecd
+结果失败
+
+◆ 第二次测试
+将系统只分为root和swap二个区
+dd if=/dev/sda  of=bak/vmmbr.dd bs=512 count=1
+dd if=/dev/sda1  of=bak/vmmbr.dd	#用dd备份root分区
+
+还原：
+用一全新磁盘，启动livecd
+dd  if=mbr.back of=/dev/sda bs=512 count=1   #先按原分区复原
+# partprobe /dev/sda
+mkfs和mkswap二分区
+dd if=bak/vmmbr.dd  of=/dev/sda1
+还需要grub安装
+#grub
+grub> find  /boot/grub/stage1	#有可能无效命令
+(hd0,6) 
+grub> root (hd0,0)
+grub> setup (hd0)   #把GRUB写到MBR上；
+启动成功
+
+用g4l还原单一root分区，用新磁盘试验
+先还原mbr，
+再mkswap分区，
+在restore分区
+重启成功（不需安装grub）
+
+◆ 20111126实践总结，
+目前只能成功还原dd备份，
+需要还原mbr（相当于必须还原整个磁盘）
+还原成功的系统是单个root分区

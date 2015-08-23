@@ -1,0 +1,198 @@
+◆********************* X window 有关剪贴描述*****************************
+使用鼠标选择一段字符，然后就能够在另外的程式里按鼠标中间，把字符粘贴过去。不论这个程式运行在哪里。
+
+看看更大的一个图景：您的屏幕上有三台机器上的 xterm, 两台机器上的 gvim，两台机器上的 mozilla 在显示，而他们都受本机的 FVWM 操纵，他们之间能够随意进行拷贝粘贴…… 从这里您能够初步体会到 Xwindow 的网络透明性，他使您方便的操作很多机器。
+***********************************************************************
+
+◆ 创建和使用虚拟盘ram1(最大16M)
+[root@gucuiwen babylinux]# dd if=/dev/zero of=/dev/ram1 bs=1M count=4
+[root@gucuiwen babylinux]# mkfs.ext2 -m0 /dev/ram1
+#mount /dev/ram1 /mnt/ram
+#mount floppy.img floppy -o loop -t vfat         /*如果软盘镜像为vfat文件系统*/
+
+◆ 创建和使用镜像
+dd if=/dev/zero of=floppy.img bs=1024 count=1440
+mkfs.vfat floppy.img                /*建格式化为vfat文件系统*/
+#cp kernel floppy   
+# umount floppy.img
+如果在mount 步骤出现"mount: unknown filesystem type 'vfat'"的提示，则需要查看并重建
+/lib/modules/2.6.xxx/modules.dep
+使用用depmod重新生成modules.dep，重启
+
+◆ 解开initrd.img并重新打包
+# mv initrd.img initrd.gz
+# gzip -d initrd.gz
+# cpio -i -d < initrd
+# rm initrd
+# 现在可以修改报内容了
+# find . | cpio -o -H newc > ../initrd.img
+
+
+◆ 查询版本（redhat系）
+ vi /etc/redhat-release
+
+
+◆ 在图形登陆界面转到文本登陆
+开机进入登录界面后，按ctrl+alt+f2,进入文本界面
+
+◆ 设置开机启动的服务（chkconfig）
+编写脚本xxx，拷贝至/etc/init.d/
+开头是：
+#!/bin/bash
+#chkconfig: 2345 87 04
+#description: LISTENER daemons
+#
+。。。
+chkconfig --add xxx  #添加启动
+chkconfig --level 2345 xxx  #设置启动级别
+chkconfig --list xxx  #查询启动
+
+
+◆ 抓包工具 
+ tcpdump -i eth0 -nn dst 210.28.70.237
+ tcpdump -i eth1 -nn port 8080
+
+◆ RedHat里没有这个文件，而是由/etc/rc.d/rc.sysinit这个脚本负责设置系统的hostname，它读取/etc /sysconfig/network这个文本文件，RedHat的hostname就是在这个文件里设置
+原文出自【比特网】，转载请保留原文链接：http://soft.chinabyte.com/os/281/11563281.shtml
+
+◆分割与合并压缩文件
+# split -b 1024 aa.gz
+# ls -l
+total 24
+-rw-r--r--    1 root     system         1848 May 05 10:33 aa.gz
+-rw-r--r--    1 root     system         1024 May 05 10:37 xaa
+-rw-r--r--    1 root     system          824 May 05 10:37 xab
+# cat x*>bb.gz
+split说明：“tar czvpf film | split -d -b 80m - film”将 film 目录分卷压缩，分卷大小80m， 输出文件名为 film_00 film_01 film_02 
+如果 "film_" 不加则输出 x00 x01 x02... 
+如果不加 "-d" 则后缀为 aa ab ac ...
+
+◆挂载光盘映像（软盘）
+mount -t iso9660 -o loop /mnt/fat/centos5/ CentOS_5.7_Final.iso /mnt/c5-iso 
+sudo mount -t iso9660 -o loop /dev/cdrom /mnt/cdrom
+mount floppy.img floppy -o loop -t vfat
+
+◆ 写iso文件（软盘）
+# mkisofs -r -V 'linux_file' -o /mnt/ext/193-ful-40g-111128.iso -graft-point /40g111128=/mnt/ext/40g111128
+
+dd if=/dev/zero of=floppy.img bs=512 count=2880
+mkfs.vfat floppy.img
+syslinux -s floppy.img
+mount floppy.img floppy -o loop -t vfat
+
+
+◆操作LVM
+ pvcreate /dev/sda2
+ pvscan
+ vgcreate vg00 /dev/hda2
+ vgscan
+  lvcreate -n lv_root -L 10000M vg00
+  lvcreate -n lv_swap -L 1024M vg00
+ lvscan
+ mkswap /dev/vg00/lv_swap
+ mkfs.ext /dev/vg00/lv_root
+ 
+
+◆设置Hostname
+[root@linux u01]# cat /etc/sysconfig/network
+NETWORKING=yes
+NETWORKING_IPV6=no
+HOSTNAME=dbs.sp.com
+修改上面红色的部分为你想设置的hostname
+
+◆重新挂载“/”，并挂载为rw（适用于恢复模式是的只读挂载）
+# mount -o remount,rw,auto /
+
+
+◆获得UUID
+# blkid
+
+　　/dev/sda1: UUID="9ADAAB4DDAAB250B" TYPE="ntfs"
+
+　　/dev/sdb1: UUID="B2FCDCFBFCDCBAB5" TYPE="ntfs"
+
+
+
+◆swap激活
+[root@yufei ~]# free
+[root@yufei ~]# swapon /dev/sdb7
+
+
+◆SELinux 安全上下文设置,解决http不正常问题
+chcon  --reference=/var/www/html -R php
+restorecon -Rv php/err
+
+◆ssh传送文件
+ scp *.gz zz@x232:./
+
+◆查询安全日志，后100条
+# tail -100 /var/log/secure
+查询系统日志，后100条
+# tail -100 /var/log/messages
+
+◆查询对方开放的端口
+# nmap 180.153.127.111
+
+◆查看相关进程
+# ps -ef | grep ora
+
+
+◆查看网络端口占用
+# netstat -a
+# netstat -tln|grep 8080 
+lsof -i :8080 -n
+
+◆将下载的压缩文件释放到 /opt：
+tar xvfz xampp-linux-1.7.3a.tar.gz -C /opt
+
+◆解iso影像
+ mount -o loop ./'Red Hat Linux_1.iso' /mnt/cdrom
+
+◆挂载cdrom
+mount -t auto /dev/cdrom /mnt/cdrom
+mount -t iso9660 /dev/cdrom /mnt/cdrom
+cp -r /mnt/cdrom /root/rh9  #拷贝整个目录
+
+◆临时释放防火墙
+ iptables -F
+ iptables -L -n	#列表
+
+◆查看当前以ora_开头的进程
+ ps -ax | grep -e ora_
+
+◆Df命令是以磁盘分区为单位查看文件系统，可以加上参数查看磁盘剩余空间信息，命令格式：
+　　df -hl
+　　显示格式为：　
+　　文件系统 容量 已用 可用 已用% 挂载点　
+　　/dev/hda5 487M 120M 342M 27% /　
+　　/dev/hda1 981M 21M 911M 3% /boot
+　　none 125M 0 125M 0% /dev/shm
+　　/dev/hda2 29G 4.9G 23G 18% /home
+　　/dev/hda3 20G 4.8G 14G 27% /usr
+　　/dev/hda7 24G 510M 22G 3% /var
+　　/dev/hdb2 75G 75G 0 100% /
+　　/dev/hdb2 75G 75G 0 100% /， 以此为例，表示的意思为：
+　HD硬盘接口的第二个硬盘（b），第二个分区（2），容量是75G，用了75G，可用是0，因此利用率是100%， 被挂载到根分区目录上（/）
+
+◆查找文件
+[root@localhost ~]# cd /
+[root@localhost /]# find ./ -name *lvm* -print
+
+◆[root@localhost ~]# locate -r lyns*
+warning: locate: could not open database: /var/lib/slocate/slocate.db: No such file or directory
+warning: You need to run the 'updatedb' command (as root) to create the database.
+Please have a look at /etc/updatedb.conf to enable the daily cron job.
+◆[root@localhost ~]# updatedb
+[root@localhost ~]# locate -r lyns*
+/usr/X11R6/lib/Server/config/cf/lynx.cf
+
+
+◆管理磁盘lvm，图形界面
+ /usr/share/system-config-lvm/system-config-lvm.py
+
+◆压缩解压缩
+# tar -zxvf tomcat.tar.gz -C opt
+压缩： tar -zcf miniui.tar.gz  。、miniui
+
+◆建立连接
+#ln -s jakarta-tomcat-4.1.31/ tomcat

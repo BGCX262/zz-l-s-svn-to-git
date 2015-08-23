@@ -1,0 +1,9 @@
+1.Q: I get a NOKEY warning from RPM, or I get a gpg signature error when using yum! 
+A: The NOKEY warning is not really a problem. It won't prevent you from doing anything. (The yum error, though, will usually prevent you from installing software.) 
+If you'd like to resolve it, do the following command to get the correct key for the site you're downloading from:
+
+You must be root to do any of this.
+
+?Red Hat and Fedora: 
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
+

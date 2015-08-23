@@ -1,0 +1,43 @@
+备份
+root 分区：
+tar cvpzf $BACKUP_FILE --exclude=/proc --exclude=/lost+found \
+                                --exclude=/etc/udev/rules.d/*-net.rules \
+                                --exclude=/backup.tgz --exclude=/mnt \
+                                --exclude=/sys --exclude=/home /
+
+/home (只备份目录架构)
+tar cvpfz /tmp/home_dir.tgz --no-recursion --files-from <( find /home -type d)
+
+
+恢复
+假如你的系统还能启动，而且不介意备份之后加上的文件存在，用下面的两句就可以了：
+root 分区：
+tar xvpfz /home/backup.tgz -C /
+
+/home
+tar xvpfz /home/home_dir.tgz -C /
+
+恢复后：
+ #mkdir /mnt/rot/boot
+
+ mkdir /mnt/rot/media
+
+ mkdir /mnt/rot/misc
+
+ #mkdir /mnt/rot/opt
+
+ mkdir /mnt/rot/mnt
+
+ mkdir /mnt/rot/proc
+
+ chmod -w /mnt/rot/proc/
+
+ mkdir /mnt/rot/selinux
+
+ mkdir /mnt/rot/sys
+
+ mkdir /mnt/rot/tmp
+
+ chmod 777 /mnt/rot/tmp
+
+ chmod +t /mnt/rot/tmp

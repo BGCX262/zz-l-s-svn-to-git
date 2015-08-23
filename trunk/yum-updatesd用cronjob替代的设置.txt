@@ -1,0 +1,33 @@
+yum-updatesd是CentOS 5中一个新的守护进程, 它替代了老的cron中yum的更新脚本.这个(新)脚本会频繁的检查更新,并根据配置下载或安装它们. 然而,这个守护进程对server来说并不好,因为它并不是在固定的时间运行 – 我可不想让我的服务器在一天当中最忙的时候下载和更新软件. 所以,它对服务器来说并不好.用下面的命令来禁止它:
+service yum-updatesd stop
+chkconfig –level 2345 yum-updatesd off
+
+另外,我并不喜欢用一个完全的守护进程来替代简单的cronjob就可以完成的很好的工作(尽管yum-updatesd似乎有一些有用的功能,比如为桌面用户提供的dbus集成功能)
+
+所以,我用自己喜欢的cronjob脚本替换了它. 用root用户执行下面的命令:
+
+cat << "EOF" > /etc/cron.daily/yumupdate
+#!/bin/sh
+# install any yum updates
+/usr/bin/yum -R 10 -e 0 -d 1 -y update yum > /var/log/yum.cron.log 2>&1
+/usr/bin/yum -R 120 -e 0 -d 1 -y update >> /var/log/yum.cron.log 2>&1
+if [ -s /var/log/yum.cron.log ]; then
+        /bin/cat /var/log/yum.cron.log | mail root -s "Yum update information" 2>&1
+fi
+EOF
+
+如果你想每星期清理一次软件包缓存(package cache),则执行下面的命令:
+
+cat << "EOF" > /etc/cron.weekly/yumclean
+#!/bin/sh
+# remove downloaded packages
+/usr/bin/yum -e 0 -d 0 clean packages
+EOF
+
+这将会生成两个脚本.它们会在早上4:00执行(在/etc/crontab中设定),然后自动地检查,下载并安装任何更新.如果有更新的话,它会发送一封邮件,没有则什么也不发送.
+
+(当然, 你需要把sendmail或其他任何你喜欢的邮件服务器配置好才能收到邮件)
+
+你可以配置yum使得它仅仅下载而不安装更新(仅仅 RTFM), 但是我从来没有遇到因为升级而使什么东西不好使了,升级的兼容性和质量一直都是很高的,所以我都使用自动更新.
+CentOS 4和这有些类似,它还有一个bootscript用来打开或关闭这个cronjob.
+

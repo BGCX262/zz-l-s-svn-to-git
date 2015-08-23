@@ -1,0 +1,101 @@
+ 5步完成LiveCD制作 
+2009-12-09 12:16:04
+标签：livecd 
+原创作品，允许转载，转载时请务必以超链接形式标明文章 原始出处 、作者信息和本声明。否则将追究法律责任。http://netocool.blog.51cto.com/61250/240618 
+我说的5步指5个步骤：
+1). 系统环境准备；
+2). 安装LiveCD创建工具；
+3). 创建LiveCD ISO；
+4). 把LiveCD ISO复制到存储器中，例如DVD，U盘；
+5). 测试
+ 
+开始之前，首先我们要了解LiveCD创建工具是怎样工作的：
+In a nutshell, the livecd-creator program    
+
+* Sets up a file for the ext3 file system that will contain all the data comprising the live CD    
+* Loopback mounts that file into the file system so there is an 
+installation root    
+* Bind mounts certain kernel file systems (/dev, /dev/pts, /proc, /sys, /selinux) inside the installation root    
+* Uses a configuration file to define the requested packages and 
+default configuration options. The format of this file is the same as is used for installing a system via kickstart.    
+* Installs, using yum, the requested packages into the installation 
+using the given repositories    
+* Optionally runs scripts as specified by the live CD configuration 
+file.    
+* Relabels the entire installation root (for SELinux)    
+*Creates a live CD specific initramfs that matches the installed 
+kernel    
+* Unmounts the kernel file systems mounted inside the installation 
+root    
+* Unmounts the installation root    
+* Creates a squashfs file system containing only the ext3 file 
+(compression)    
+* Configures the boot loader    
+* Creates an iso9660 bootable CD  
+ 
+第1步，安装系统环境：
+ 
+CentOS 5.2 Linux
+ 
+第2步，安装LiveCD创建工具：
+编辑/etc/yum.repos.d/centos-livecd.repo，加入如下的内容：
+# Name: CentOS LiveCD repository 
+[livecd] 
+name = CentOS $releasever - LiveCD 
+baseurl = http://www.nanotechnologies.qc.ca/propos/linux/centos-live/$basearch/live 
+enabled=1 
+protect=0 
+gpgkey = http://www.nanotechnologies.qc.ca/propos/linux/RPM-GPG-KEY-PGuay2010 
+保存之后，就可以使用yum来安装必须的LiveCD创建工具了：
+ 
+# yum install livecd-tools syslinux anaconda-runtime 
+ 
+第3步，创建LiveCD ISO，我们需要编辑kickstart配置文件，附件中有两个参考的kickstart文件：
+?  centos-livecd-minimal.ks: a minimalistic LiveCD 
+centos-livecd-desktop.ks: the CentOS LiveCD 
+ 
+首先在系统中创建LiveCD creator的工作目录：
+ 
+# mkdir /server/livecd 
+# cd /server/livecd
+ 
+把下载的ks-configure-file保存到目录/server/livecd中，下面就可以创建liveCD ISO了：
+ 
+# LANG=C livecd-creator --config=centos-livecd-minimal.ks --fslabel=CentOS-5.4-minimal
+ 
+成功后，就会产生一个CentOS-5.4-minimal.iso的文件．
+ 
+第4步，把LiveCD复制到USB中：
+插入你的U盘，当系统自动mount你的U盘后，检查你的U按mount的位置
+ 
+# LANG=C df -h 
+Filesystem                        Size    Used Avail Use% Mounted on 
+/dev/sda7                            25G    8.5G     15G    37% / 
+/dev/sda1                            99M     18M     76M    20% /boot 
+tmpfs                                1013M         0 1013M     0% /dev/shm 
+/dev/sdb1                         982M    8.0K    982M     1% /media/usbdisk 
+ 
+开始复制：
+# livecd-iso-to-disk CentOS-5.4-x86_64-LiveCD.iso /dev/sdb1 
+Verifying image... 
+/tmp/CentOS-5.4-x86_64-LiveCD.iso:     ad63c0a54086eb35e892d6e1292085e3 
+Fragment sums: 9e363badf4e9359c76ce8e324bdbd82847bed2dcc8e7e22ecbb2ddda2621 
+Fragment count: 20 
+Percent complete: 100.0%     Fragment[20/20] -> OK 
+100.0 
+The supported flag value is 0 
+The media check is complete, the result is: PASS. 
+
+It is OK to install from this media. 
+Already set up as live image.    Deleting old in fifteen seconds... 
+Copying live image to USB stick 
+Updating boot config file 
+Installing boot loader 
+USB stick set up as live image! 
+ 
+第5步，测试：插入U盘，重启电脑，选择U盘启动．
+ 
+如果使用Wimdows的朋友，请参考：http://www.pendrivelinux.com/usb-centos-5-live-install-via-windows/
+ 
+本文出自 “网络记忆棒” 博客，请务必保留此出处http://netocool.blog.51cto.com/61250/240618
+

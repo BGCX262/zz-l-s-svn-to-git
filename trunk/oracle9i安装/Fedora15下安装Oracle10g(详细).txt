@@ -1,0 +1,377 @@
+Fedora 15下安装oracle10.2.0.1
+	
+(一)版本说明:
+	(1)操作系统:Fedora 15 i386(32位)。
+	(2)oracle版本:Oracle 10.2.0.1 (10201_database_linux32.zip)
+
+(二)安装依赖包:
+	(1)kernel-headers-2.6.41.1-1.fc15.i686
+	(2)gcc(共三个)
+		gcc-4.6.1-9.fc15.i686
+		gcc-c++-4.6.1-9.fc15.i686
+		gcc-gfortran-4.6.1-9.fc15.i686
+	(3)glibc(共四个)
+		glibc-headers-2.14-5.i686
+		glibc-common-2.14-5.i686
+		glibc-devel-2.14-5.i686
+		glibc-2.14-5.i686
+	(4)libstdc++(共两个)
+		libstdc++-devel-4.6.1-9.fc15.i686
+		libstdc++-4.6.1-9.fc15.i686
+
+	(5)make-3.82-4.fc15.i686
+
+	(6)libgomp-4.6.1-9.fc15.i686
+	(7)libXp(共四个)
+		libXpm-3.5.8-3.fc15.i686
+		libXp-1.0.0-16.fc15.i686
+		libXp-devel-1.0.0-16.fc15.i686
+		libXpm-devel-3.5.8-3.fc15.i686
+	(8)binutils(共两个)
+		binutils-2.21.51.0.6-6.fc15.i686
+		binutils-devel-2.21.51.0.6-2.fc15.i686
+	(9)openmotif(共五个)  
+		openmotif-2.3.3-1.fc14.i686
+		openmotif-clients-2.3.3-1.fc14.i686
+		openmotif-demos-2.3.3-1.fc14.i686
+		openmotif-devel-2.3.3-1.fc14.i686
+		openmotif-mwm-2.3.3-1.fc14.i686
+
+	(10)compat-db(共四个)
+		compat-db47-4.7.25-19.fc15.i686
+		compat-db-headers-4.7.25-19.fc15.noarch
+		compat-db-4.7.25-19.fc15.i686
+		compat-db45-4.5.20-19.fc15.i686
+		compat-db46-4.6.21-19.fc15.i686
+	(11)compat-gcc(共三个)
+		compat-gcc-34-g77-3.4.6-22.fc15.i686
+		compat-gcc-34-c++-3.4.6-22.fc15.i686
+		compat-gcc-34-3.4.6-22.fc15.i686
+	(12)compat-libstdc++(共两个)
+		compat-libstdc++-296-2.96-143.1.i686
+		compat-libstdc++-33-3.2.3-47.3.i386
+	(13)compat-libf2c(共一个)
+		compat-libf2c-34-3.4.6-22.fc15.i686
+
+(三)修改系统版本:
+	#>  vim /etc/redhat-release
+		将版本修改为:Red Hat Enterprise Linux AS release 4 (Nahant Update 4)
+	#>  :wq
+
+(四)配置IP文件及HOST
+	
+
+	(1)修改IP
+	编辑/etc/sysconfig/network-scripts/ifcfg-xxx(你实际使用的网卡)
+
+	DEVICE=xxx()
+	BOOTPROTO=static
+	HWADDR=xxx(MAC)
+	ONBOOT=yes
+	IPADDR=192.168.1.102
+	NETMASK=255.255.255.0
+	GATEWAY=192.168.1.1
+	TYPE=Ethernet
+	示例：
+		[root@wanghua network-scripts]# cat ifcfg-bridged_conn
+		TYPE=Ethernet
+		BOOTPROTO=none
+		DEFROUTE=yes
+		IPV4_FAILURE_FATAL=yes
+		IPV6INIT=no
+		NAME=bridged_conn
+		UUID=c7f0a875-3fa0-43dc-82fd-7886d229acc1
+		ONBOOT=yes
+		IPADDR0=192.168.1.120
+		PREFIX0=24
+		GATEWAY0=192.168.1.1
+		DNS1=192.168.1.1
+		HWADDR=08:00:27:41:49:96
+
+	(2)修改host
+	#>  vim /etc/hosts
+		加入如下配置(格式如下：<IP-address>  <fully-qualified-machine-name>  <machine-name>)
+		192.168.1.120  wanghua.fedora
+	#>  :wq
+	
+	(3)#>  service network restart  使用网络配置生效
+
+
+
+
+
+
+
+(五)创建用户组,设定权限,以及编辑环境变量
+	
+	(1)创建Oracle组:
+		#>  groupadd oracle
+		#>  groupadd dba
+	(2)创建Oracle用户
+		#>  useradd -m -g oracle -G dba oracle 
+ 			(此处末尾的oracle为上边的用户名,而前一个oracle为创建的组
+			-m 表示为用户oracle 创建一个目录
+			-g 表示为用户指定一个初始组
+			-G 表示为用户指定一个附加组)
+		#>  passwd oracle
+			指定用户密码
+	(3)创建Oracle安装目录.
+		#>  mkdir -p /home/oracle/app/oracle/product/10.2.1/db_1
+			(-p强制创建)
+	(4)赋予Oracle用户访问的权限
+		#>  chown -R oracle.dba  /home/oracle
+		#>  chmod  -R 777 /home/oracle
+			(-rw------- (600)  只有属主有读,写权限
+			 -rw-r--r-- (644)  只有属主有读,写,权限,而属户和其他用户只有读权限
+			 -rwx------ (700)  只有属主有读,写,执行权限
+			 -rwxr-xr-x (755)  只有属主有读,写,执行权限,而属户和其他用户只有读,执行权限
+			 -rwx--x--x (711)  只有属主有读,写,执行权限,而属户和其他用户只有执行权限
+			 -rw-rw-rw- (666)  所有用户有读,写权限(不可取)
+			 -rwxrwxrwx (777)  所有用户有读,写,权限(不可取)
+			 对目录的2个普通设定
+			 drwx------ (700)  只有属主可在目录中读,写
+			 drwxr-xr-x (755)  所有用户可读此目录,但是只有属主才能改变目录中的内容) 
+
+(六)配置Linux内核参数
+	
+	(1)修改/etc/sysctl.conf
+		#>  vim /etc/sysctl.conf
+			加入下面的配置:
+			kernel.shmall = 2097152
+			kernel.shmmax = 2147483648
+			kernel.shmmni = 4096
+			kernel.sem = 250 32000 100 128
+			fs.file-max=6553600
+			net.ipv4.ip_local_port_range = 1024 65000
+			net.core.rmem_default=262144
+			net.core.rmem_max=262144
+			net.core.wmem_default=262144
+			net.core.wmem_max=262144
+		#>  :wq
+			说明:(Sysctl是一个允许您改变正在运行中的Linux系统的接口.它包含一些 TCP/IP 堆栈和虚拟内存系统的高级选项)
+			常用的内核参数的含义如下:
+			kernel.shmmax:表示单个共享内存段的最大值,以字节为单位,此值一般为物理内存的一半,不过大一点也没关系
+			kernel.shmmni:表示单个共享内存段的最小值,一般为4kB,即4096bit
+			kernel.shmall:表示可用共享内存的总量,单位是页,在32位系统上一页等于4kB,也就是4096字节
+			fs.file-max:表示文件句柄的最大数量。文件句柄表示在Linux系统中可以打开的文件数量
+			ip_local_port_range:表示端口的范围,为指定的内容
+			kernel.sem:表示设置的信号量,这4个参数内容大小固定
+			net.core.rmem_default:表示接收套接字缓冲区大小的缺省值(以字节为单位)
+			net.core.rmem_max:表示接收套接字缓冲区大小的最大值(以字节为单位)
+			net.core.wmem_default:表示发送套接字缓冲区大小的缺省值(以字节为单位)
+			net.core.wmem_max:表示发送套接字缓冲区大小的最大值(以字节为单位)
+		#>  sysctl -p
+			说明:sysctl.conf文件修改完毕后,接着执行sysctl -p使设置生效,
+		#>  /sbin/sysctl -p 
+			说明：执行/sbin/sysctl -p以检查配置的内容 
+
+			
+	(2)为oracle用户设置shell限制
+		#>  vim /etc/security/limits.conf
+			加入下面的配置:
+			oracle	soft  	nproc 	2047
+			oracle	hard  	nproc 	16384
+			oracle	soft  	nofile 	1024
+			oracle	hard	nofile 	65536
+		#>  :wq
+			说明：
+			limits.conf?文件实际是?Linux?PAM（插入式认证模块，Pluggable?Authentication?Modules）中?pam_limits.so?的配置文件，而且只针对于单个会话。
+			limits.conf的格式如下：username|@groupname?type?resource?limit
+			username|@groupname：设置需要被限制的用户名，组名前面加@和用户名区别。也可以用通配符*来做所有用户的限制。
+			type：  有soft，hard?和?-，soft?指的是当前系统生效的设置值。
+				hard?表明系统中所能设定的最大值。
+				soft?的限制不能比hard?限制高。
+				-?就表明同时设置了soft和hard的值。
+
+			resource：core?-?限制内核文件的大小
+				  date?-?最大数据大小
+				  fsize-?最大文件大小
+				  memlock?-?最大锁定内存地址空间
+				  nofile?-?打开文件的最大数目
+				  rss?-?最大持久设置大小
+				  stack?-?最大栈大小
+				  cpu?-?以分钟为单位的最多?CPU?时间
+				  noproc?-?进程的最大数目
+				  as?-?地址空间限制
+				  maxlogins?-?此用户允许登录的最大数目
+			 要使?limits.conf?文件配置生效，必须要确保?pam_limits.so?文件被加入到启动文件中。
+			 查看?/etc/pam.d/login?文件中有：session?required?/lib/security/pam_limits.so 
+		#>  vim /etc/pam.d/login 
+			加入下面内容
+			session required /lib/security/pam_limits.so
+
+		#>  :wq
+
+	(3)修改 /etc/selinux/config 
+		#>  vim /etc/selinux/config
+			设置如下：
+			SELINUX=disabled
+
+
+
+(七)配置oracle用户的环境变量
+
+	(1)修改/etc/csh.login
+		#>  vim /etc/csh.login
+			if(USER=="oracle")then
+			limit maxproc 16384
+			limit descriptors 65536
+			umask 022
+			endif
+		#>  :wq
+
+	(2)修改/home/oracle/.bash_profile
+		#>  vim /home/oracle/.bash_profile
+			
+			export ORACLE_BASE=/oracle/app/oracle
+			export ORACLE_HOME=$ORACLE_BASE/product/10.2.1/db_1
+			export ORACLE_SID=orcl
+			export PATH=.:${PATH}:$HOME/bin:$ORACLE_HOME/bin
+			export PATH=${PATH}:/usr/bin:/bin:/usr/bin/X11:/usr/local/bin
+			export PATH=${PATH}:$ORACLE_BASE/common/oracle/bin
+			export ORACLE_TERM=xterm
+			export TNS_ADMIN=$ORACLE_HOME/network/admin
+			export ORA_NLS10=$ORACLE_HOME/nls/data
+			export LD_LIBRARY_PATH=$ORACLE_HOME/lib
+			export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$ORACLE_HOME/oracm/lib
+			export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib:/usr/lib:/usr/local/lib
+			export CLASSPATH=$ORACLE_HOME/JRE
+			export CLASSPATH=${CLASSPATH}:$ORACLE_HOME/jlib
+			export CLASSPATH=${CLASSPATH}:$ORACLE_HOME/rdbms/jlib
+			export CLASSPATH=${CLASSPATH}:$ORACLE_HOME/network/jlib
+			export THREADS_FLAG=native
+			export TEMP=/tmp
+			export TMPDIR=/tmp
+			if [ $USER = "oracle" ]; then
+			  if [ $SHELL = "/bin/ksh" ]; then
+			    ulimit -p 16384
+			    ulimit -n 65536
+			  else
+			    ulimit -u 16384 -n 65536
+			  fi
+			fi
+
+		#>  :wq
+		
+
+
+(八)开始安装
+	#>  cd /soft
+	#>  unzip 10201_database_linux32.zip 
+	#>  cd database
+	#>  unset LANG; unset LANGUAGE
+	#>  ./runInstaller 
+	
+	执行以上命令后，会进入图形安装界面，继续安装程序。
+
+	成功安装完成后再接着配置:
+     	编辑/etc/oratab文件，设置下面一行的标志为"Y":
+             orcl:/oracle/app/oracle/product/10.2.1/db_1:Y
+
+	最后把/etc/redhat-release文件的内容改为原来的
+             Fedora release 15 (Lovelock)
+
+
+(九)启动数据库服务
+	(1)启动数据库为：
+		#>  sqlplus /nolog
+		sql>  conn /as sysdba
+		sql>  startup
+	(2)启动企业管理服务：
+		#>  emctl start dbconsole
+	   启动监听服务
+		#>  lsnrctl start
+	   启动sqlplus
+		#>  isqlplusctl start 
+
+(十)服务器端口设置 
+	设置服务器开放端口：
+	#>  cd /etc/sysconfig
+	#>  vi iptables
+		在其中加入：
+		-A INPUT -m state --state NEW -m tcp -p tcp --dport 1521 -j ACCEPT
+		-A INPUT -m state --state NEW -m tcp -p tcp --dport 5560 -j ACCEPT
+		-A INPUT -m state --state NEW -m tcp -p tcp --dport 1158 -j ACCEPT
+ 	
+	#>  service iptables restart 
+
+(十一)卸载ORACLE
+
+	停止所有数据库服务,在sqlplus中关闭数据库实例：
+		#>  sqlplus /nolog
+		sql>  conn /as sysdba
+    		sql>  shutdown immediate
+    	停止listener：
+     		#>  lsnrctl stop
+     	停止em:
+     		#>  emctl dbconsole stop
+	删除数据库安装目录
+     		#>  rm –rf  <安装目录>
+	删除其他目录数据库文件
+     		#>  rm –f /etc/oraInst.loc /etc/oratab
+     		#>  rm –f /usr/local/bin/coraenv /usr/local/bin/dbhome /usr/local/bin/oraenv
+	删除用户和组
+		#>  userdel username
+      		#>  groupdel groupname
+
+
+
+(十二)FAQ
+	(1)Fedora15开始，openmotif的官网不提提供免费的openmotif包，所以通yum install openmotif将搜索不到安装包，而oracle10g的安装依赖openmotif需要手动去下载安装：
+	可以从http://pkgs.org/中下载Fedora 15所匹配的openmotif包。
+	下载地址为：http://pkgs.org/fedora-15/rpmfusion-nonfree-i386/openmotif-2.3.3-1.fc14.i686.rpm/download/
+	手动安装：#>  rpm -ivh openmotif-2.3.3-1.fc14.i686.rpm
+	(2)安装过程出现：Error in invoking target 'all_no_orcl ihsodbc'
+		oracle 10g，依赖于libstdc++.so.5，而Fedora 15默认安装的版本库是libstdc++.so.6，所以会有以下异常(来自安装日志)：
+		INFO: gcc: 
+	    	INFO: /usr/lib/libstdc++.so.5: No such file or directory
+	    	INFO: 
+	    	INFO: /oracle/app/oracle/product/10.2.1/db_1/bin/genorasdksh: Failed to link liborasdkbase.so.10.2
+	    	INFO: make: *** [liborasdkbase] Error 1
+	    	INFO: End output from spawned process.
+	    	INFO: Exception thrown from action: make
+	    	Exception Name: MakefileException
+	    	Exception String: Error in invoking target 'all_no_orcl ihsodbc' of makefile '/oracle/app/oracle/product/10.2.1/db_1/rdbms/lib/ins_rdbms.mk'. 
+			See '/oracle/app/oracle/oraInventory/logs/installActions2011-11-24_01-29-30PM.log' for details.
+	    	Exception Severity: 1
+
+	   	解决办法：
+			ln -s /usr/lib/libstdc++.so.6.0.3 /usr/lib/libstdc++.so.5 
+	   	还不行的话的下载rpm包安装
+	   	地址:
+	   	http://mirror.centos.org/centos/4/os/i386/CentOS/RPMS/compat-libstdc++-33-3.2.3-47.3.i386.rpm
+	   	rpm -ivh compat-libstdc++-33-3.2.3-47.3.i386.rpm
+
+	(3)安装过程出现："Unrecognized option (gcc) -no_cpprt"
+		解决办法：
+		#>  yum install compat-gcc-34
+		#>  mv gcc gcc46
+		#>  ln -s gcc34 gcc
+		这只是将gcc 4.6版本暂时替换成gcc34版本，现在再进行安装，oracle 10g即安装成功了。接下来即是和原来的使用一样了。待安装完成之后，再将gcc原来为gcc46即可。
+
+
+(十三)参考资料：
+	(1)http://hi.baidu.com/dandangjava/blog/item/c5d47c37e73a1d91a71e12ac.html
+	(2)http://www.oracle-base.com/articles/linux/ArticlesLinux.php
+	
+	
+
+
+
+
+
+
+
+
+				
+ 
+
+
+
+
+		
+
+
+
+
+	

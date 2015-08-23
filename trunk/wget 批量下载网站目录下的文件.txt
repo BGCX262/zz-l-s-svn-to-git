@@ -1,0 +1,15 @@
+wget 批量下载网站目录下的文件
+
+
+今天整了一下ddnas，但是几次更新都出问题，于是准备在diavps上搞过镜像，自己搭建一个openwrt源。执行如下命令就会自动下载http://downloads.openwrt.org/snapshots/trunk/kirkwood/packages/下面的所有文件：
+
+wget -nd -r -l1 --no-parent http://downloads.openwrt.org/snapshots/trunk/kirkwood/packages/
+
+注：-nd 不创建目录；-r 递归下载；-l1只下载当前目录下的文件；–no-parent 不下载父目录中的文件。
+
+如果想指定下载制定后缀的文件，如只下载http://downloads.openwrt.org/snapshots/trunk/kirkwood/packages/下.ipk文件和.gz文件：
+
+wget -nd -r -l1 --no-parent -A.ipk -A.gz http://downloads.openwrt.org/snapshots/trunk/kirkwood/packages/
+
+搞好后，更换源，再opkg update恢复正常
+

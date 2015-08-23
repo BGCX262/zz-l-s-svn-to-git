@@ -1,0 +1,132 @@
+◆vi /etc/ssh/sshd_config文件
+	Port 5555
+	ListenAddress 192.168.0.1    
+	Protocol 2
+	LogLevel DEBUG
+	PermitRootLogin no
+	PermitEmptyPasswords no
+	HostbasedAuthentication no
+	IgnoreRhosts yes
+	X11Forwarding no		# ???是否影响xserver
+	ClientAliveInterval 600		# (Set to 600 seconds = 10 minutes)
+	ClientAliveCountMax 0
+	MaxStartups 3
+	AllowUsers zzasd
+	AllowGroups zzasd
+
+◆ chmod 644 /etc/ssh/sshd_config
+
+◆ TCP Wrappers			???有困难
+	/etc/hosts.allow /etc/hosts.deny
+
+◆
+
+
+不要支持闲置会话，并配置 Idle Log Out Timeout 间隔： # vi /etc/ssh/sshd_config
+ClientAliveInterval 600		# (Set to 600 seconds = 10 minutes)
+ClientAliveCountMax 0
+
+禁用基于主机的身份验证： # vi /etc/ssh/sshd_config
+HostbasedAuthentication no
+
+禁用用户的 .rhosts 文件： # vi /etc/ssh/sshd_config
+IgnoreRhosts yes 
+
+使用一个日志分析器，比如 logcheck、loggrep、splunk 或 logwatch 来更好地理解日志并创建日志报告。另外，在 SSH 应用程序自身内增加日志记录的详细度： Installation of the logwatch package on Redhat Linux 
+# yum install logwatch 
+
+通过配置增加 SSH 日志记录的详细度： # vi /etc/ssh/sshd_config
+LogLevel DEBUG
+
+在补丁上总是将 SSH 程序包和需要的库保持为最新： 
+# yum update openssh-server openssh openssh-clients -y 
+
+隐藏 OpenSSH 版本，要求 SSH 源代码并进行重新编译。然后进行以下更新： # vi /etc/ssh/sshd_config
+VerifyReverseMapping yes	# Turn on  reverse name checking
+UsePrivilegeSeparation yes	# Turn on privilege separation
+StrictModes yes			# Prevent the use of insecure home directory    
+				# and key file permissions
+AllowTcpForwarding no		# Turn off , if at all possible 
+X11Forwarding no		# Turn off , if at all possible
+PasswordAuthentication no	# Specifies whether password authentication is 
+				# allowed.  The default is yes. Users must have 
+				# another authentication method available .
+
+为私有密钥使用一个强大的口令和密码保护来创建公私密钥对（绝不要生成一个无密码的密钥对或一个无密码口令无密钥的登录）： (Use a higher bit rate for the encryption for more security)
+ssh-keygen -t rsa -b 4096
+
+ 
+
+ 
+
+ 
+
+　在我们使用Linux或Unix组建服务器时，为了方便远程维护和管理，基本上都会开放sshd服务。虽然ssh将联机的封包通过加密的技术来进行资料的传递，能够有效地抵御黑客使用网络侦听来获取口令和秘密信息，但是仍然不乏大量网络入侵者进行密码尝试或其他手段来攻击ssh服务器以图获得服务器控制权。
+
+　　如何才能使自己的服务器更安全可靠呢？只要我们对ssh服务器的配置略加调整，就可以极大地提高系统安全性，降低网络入侵的风险。具体操作如下：
+
+　　1.修改sshd服务器的配置文件/etc/ssh/sshd_config，将部分参数参照如下修改，增强系统安全性。
+
+　　Port 5555
+
+　　系统缺省使用22号端口，将监听端口更改为其他数值(最好是1024以上的高端口，以免和其他常规服务端口冲突)，这样可以增加网络入侵者探测系统是否运行了sshd守护进程的难度。
+
+　　ListenAddress 192.168.0.1
+
+　　对于在服务器上安装了多个网卡或配置多个IP地址的情况，设定sshd只在其中一个指定的接口地址监听，这样可以减少sshd的入口，降低网络入侵的可能性。
+
+　　PermitRootLogin no
+
+　　如果允许用户使用root用户登录，那么黑客们可以针对root用户尝试暴力破解密码，给系统安全带来风险。
+
+　　PermitEmptyPasswords no
+
+　　允许使用空密码系统就像不设防的堡垒，任何安全措施都是一句空话。
+
+　　AllowUsers sshuser1 sshuser2
+
+　　只允许指定的某些用户通过ssh访问服务器，将ssh使用权限限定在最小的范围内。
+
+　　AllowGroups sshgroup
+
+　　同上面的AllowUsers类似，限定指定的用户组通过ssh访问服务器，二者对于限定访问服务器有相同的效果。
+
+　　Protocol 2
+
+　　禁止使用版本1协议，因为其存在设计缺陷，很容易使密码被黑掉。
+
+　　禁止所有不需要的(或不安全的)授权认证方式。
+
+　　X11Forwarding no
+
+　　关闭X11Forwarding，防止会话被劫持。
+
+　　MaxStartups 5
+
+　　sshd服务运行时每一个连接都要使用一大块可观的内存，这也是ssh存在拒绝服务攻击的原因。一台服务器除非存在许多管理员同时管理服务器，否则上面这个连接数设置是够用了。
+
+　　注意：以上参数设置仅仅是一个示例，用户具体使用时应根据各自的环境做相应的更改。
+
+　　2.修改sshd服务器的配置文件/etc/ssh/sshd_config的读写权限，对所有非root用户设置只读权限，防止非授权用户修改sshd服务的安全设置。
+
+　　chmod 644 /etc/ssh/sshd_config
+
+　　3.设置TCP Wrappers。
+
+　　服务器默认接受所有的请求连接，这是非常危险的。使用TCP Wrappers可以阻止或允许应用服务仅对某些主机开放，给系统在增加一道安全屏障。这部分设置共涉计到两个文件：hosts.allow和hosts.deny。
+
+　　将那些明确允许的请求添加到/etc/hosts.allow中。如系统仅允许IP地址为192.168.0.15和10.0.0.11的主机使用sshd服务，则添加如下内容：
+
+　　sshd:192.168.0.15 10.0.0.11
+
+　　将需要禁止使用的信息添加到/etc/hosts.deny中。如对除了在hosts.allow列表中明确允许使用sshd的用户外，所有其他用户都禁止使用sshd服务，则添加如下内容到hosts.deny文件中：
+
+　　sshd:All
+
+　　注意：系统对上述两个文件的判断顺序是先检查hosts.allow文件再查看hosts.deny文件，因此一个用户在hosts.allow允许使用网络资源，而同时在hosts.deny中禁止使用该网络资源，在这种情况下系统优先选择使用hosts.allow配置，允许用户使用该网络资源。
+
+　　4.尽量关闭一些系统不需要的启动服务。
+
+　　系统默认情况下启动了许多与网络相关的服务，因此相对应的开放了许多端口进行LISTENING(监听)。我们知道，开放的端口越多，系统从外部被入侵的可能也就越大，所以我们要尽量关闭一些不需要的启动服务，从而尽可能的关闭端口，提供系统安全性。
+
+　　sshd服务设置上可能出现的漏洞通过以上步骤基本上应该可以堵上了，不需要投资，只要我们稍微花点时间调整一下配置，就可极大提高系统安全环境，何乐而不为呢？

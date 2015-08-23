@@ -1,0 +1,197 @@
+20111027共享ir2420
+◆◆◆◆linux 服务端◆◆◆◆◆
+
+◆安装驱动（解压，安装rpm）
+
+◆system-config-printer管理或http://localhost:631登陆
+  添加ir2420
+  设置远程管理
+
+◆文本方式安装
+ cp /mnt/fat/CNCUPSIR2420ZK.ppd  /usr/share/cups/modle/   #若安装RPM，则省略此步骤
+
+ lpadmin -p ir2420 -v usb:/dev/usb/lp0 -m CNCUPSIR2420ZK.ppd -E
+ lpadmin -d ir2420       	  			  #设置默认打印机
+
+◆修改cups.conf
+<Location />
+ 。。。
+Allow From 192.167.1.0/24
+Allow From 210.28.70.0/24
+。。。
+<Location /admin>
+Allow From 192.167.1.0/24
+。。。
+最后加：Listen 0.0.0.0:6301
+
+◆修改/etc/cups/mime.convs（windows支持）
+# appliction/octet-stream  appliction/vnd.cups-raw  0 -
+取消注释
+
+◆修改/etc/cups/mime.types（windows支持）
+# appliction/octet-stream
+取消注释（可能已经取消）
+
+◆◆◆◆windows 客户端◆◆◆
+
+◆
+
+如何连接 Linux 共享打印机
+作者:liheng
+Email: liheng_2006@hotmail. com
+随着 Linux 在集团内的普及,用 Linux 充当打印服务器,共享给局域网内的其他用
+户打 印是在所 难免的工 作。最近 我就将一 位用户电 脑的操作系 统从 Windows 改成了
+Linux ,由于之前这位用户的电脑是在本地安装了 HP1010 打印机,并且是充当了局域
+网内的打印服务器,共享打印机给局域网内的其他用户使用。现在改成 Linux 后,依然是
+要给局域网内的其他用户提供共享打印。其实在 Linux 中安装 HP1010 打印机并不难,
+红旗 Linux6. 0 都自带有 HP1010 的打印驱动,按着提示直接安装就行了,安装方法与
+Windows 中相差不大。安装完后,测试在本地打印没有什么问题。如果需要共享给局域网
+里的其他用户打印的话,还需要修改 CUPS 的配置文件和 samba 的配置文件才行。刚
+开始我只是按照资料上介绍修改了 cups 和 samba 的配置文件。但是在测试将客户端连
+接到这台 Linux 打印机时, 问题出现了, 发现不能打印, 尤其客户端是安装的 Windows 操
+作系统,虽然连上了,但打印机的状态显示是“拒绝访问,无法打印” 。反复测试了好久,都
+是不能打印。最后在同事 linda 的帮助和自己的努力下终于将问题解决了,现将我的解决方
+法贴出来:
+环境介绍:
+打印服务器:红旗 Linux 6.0
+客 户 端:Windows XP 、Windows 2000 、红旗 Linux 6. 0
+在 Linux 系统中,打印的工作一般都是通过 CUPS 来实现的。今天,我就在这里介
+绍一下如何使用红旗 Linux6. 0 来充当打印服务器, 共享给局域网内其它的用户来提供打印
+服务。首先我介绍一下在打印服务器上的配置:
+1、 修改 cups 的配置文件 /etc/cups/cupsd.conf
+注:下面红色部分为需要修改的部分,以下皆同
+[root @test root] # vi /etc/cups/cupsd. conf
+LogLevel info
+SystemGroup sys root
+#将
+#Listen localhost: 631
+#修改成
+Listen 0.0. 0. 0: 631
+# 默认 CUPS 只监听本机 631 端口, 631 为 cups 的默认监听端口。这里改成 0. 0. 0. 0
+表示监听局域网内所有的 631 端口请求
+Browsing On
+BrowseOrder allow,deny
+BrowseAllow @LOCAL
+DefaultAuthType Basic
+#将
+#
+# Order allow, deny
+# Allow localhost
+#
+2008 年 3 月 18 日 总页数:6
+1
+Windows 中文站 bbs.winos.cn
+#修改成
+
+Order deny,allow
+Allow From 192. 168. 103.*
+
+# 这个设置很关键,在这里只允许 192.168. 103. 0/24 网段内的用户使用共享打印机,默
+认是只允许本机使用打印机,这里规则设定与 Apache 的配置文件里设置相似。
+
+Encryption Required
+Order allow, deny
+Allow localhost
+
+
+AuthType Basic
+Require user @SYSTEM
+Order allow, deny
+Allow localhost
+
+
+Set-Job-Attributes Create-Job-Subscription Renew-Subscription
+Cancel-Subscription Get-Notifications Reprocess-Job Cancel-Current-Job
+Suspend-Current-Job Resume-Job CUPS-Move-Job>
+Require user @OWNER @SYSTEM
+Order deny,allow
+
+Disable-Printer Pause-Printer-After-Current-Job Hold-New-Jobs
+Release-Held-New-Jobs Deactivate-Printer Activate-Printer Restart-Printer
+Shutdown-Printer Startup-Printer Promote-Job Schedule-Job-After
+CUPS-Add-Printer CUPS-Delete-Printer CUPS-Add-Class CUPS-Delete-Class
+CUPS-Accept-Jobs CUPS-Reject-Jobs CUPS-Set-Default>
+AuthType Basic
+Require user @SYSTEM
+Order deny,allow
+
+
+Require user @OWNER @SYSTEM
+Order deny,allow
+
+
+Order deny,allow
+
+2008 年 3 月 18 日 总页数:6
+2
+Windows 中文站 bbs.winos.cn
+
+2、修改 samba 的配置文件
+[root@test root] # vi /etc/samba/smb. conf
+[global]
+workgroup = print
+server string = Samba Server Version %v
+log file = /var/log/samba/log. %m
+max log size = 50
+security = share
+passdb backend = tdbsam
+load printers = yes
+cups options = raw
+printcap name = /etc/printcap
+[homes]
+comment = Home Directories
+browseable = no
+writable = yes
+; valid users = %S
+; valid users = MYDOMAIN\%S
+[printers]
+comment = All Printers
+path = /var/spool/cups/tmp
+browseable = no
+guest ok = yes
+writable = no
+printable = yes
+3、添 加需 要共 享打 印的 用户 ,此 用户 必须 要在 客户 端的 电脑 上存 在, 尤其 是对 使用
+Windows 系统的用户
+[ root @ test root] # useradd nw
+# 密码的设置必须与客户端上的电脑用户密码相同
+[root @test root] # passwd nw
+# 在 samba 中添加用户,密码最好设置与系统用户相同
+[root @test root] # smbpasswd -a nw
+4、修改 smbusers 文件,这一步很关键,尤其是对于客户端是使用 Windows 系统的
+用户,在这里添加需要共享打印的用户名,用户名之间记得用空格隔开
+[root @test root] # vi /etc/samba/smbusers
+#将
+root = administrator admin
+# 修改成
+root = administrator admin nw
+5、重启 smb 和 cups 服务
+[root @test root] # /etc/init. d/smb restart
+[root @test root] # /etc/init. d/cups restart
+2008 年 3 月 18 日 总页数:6
+3
+Windows 中文站 bbs.winos.cn
+好了,这样就打印共享设置就完成了。下面就是客户端连接共享打印机啦。客户端连接共享
+打印机:
+Windows:
+在 Windows 中连接 Linux 共享打印了机比较简单,与连接 Windows 共享打印
+机相同,在运行框中输入打印服务器的 IP 地址即可.例: \\192. 168. 103. 115 。然后双
+击欲连接的共享打印机即连接好了共享的打印机,打印测试一下吧(注:此时连接的共享打
+印机状态依然是“拒绝访问,不能打印” ,但打印测试却是通过的。)
+Linux:
+在 Linux 中连接共享打印机稍微要麻烦一点, 基本上是与连接 Windows 的打印机相
+同,只不过此时在“后端选择”这一步时,不要选择“SMB 共享打印机(Windows) ,而是要
+”
+选择“远程 CUPS 服务器” ,如图所示:
+在这里我选择普通用户, 然后输入可以连接共享打印机的用户名与密码 (匿名用户还未试过)
+2008 年 3 月 18 日 总页数:6
+4
+Windows 中文站 bbs.winos.cn
+在主机空白处输入打印服务器的 IP 地址,端口号保持默认:631
+后面只要想要连接打印服务器的共享打印、 打印机的厂商与型号, 再后面都基本上是属于“ 下
+2008 年 3 月 18 日 总页数:6
+5
+Windows 中文站 bbs.winos.cn
+一步” “下一步”就行了,就不赘述了。连接好后,测试打印 OK。
+、
+2008 年 3 月 18 日 总页数:6

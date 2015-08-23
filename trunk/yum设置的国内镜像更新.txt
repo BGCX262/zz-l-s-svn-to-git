@@ -1,0 +1,39 @@
+在 FC6 上 yum设置的国内镜像更新
+
+刚装了FC6，由于在教育网，无法使用yum默认的国外更新源，因此需要将其设置为国内镜像站点。在网上找了一圈，发现清华的 ftp://ftp3.tsinghua.edu.cn 这个更新源不错。参考网上的一些方法，设置yum更新源步骤如下：
+
+20120908 设置失败！！！！
+
+1. 将/etc/yum.repos.d/下的已有更新源(repo文件)的enable改为0。为了方便起见，可以直接 mv /etc/yum.repos.d /etc/yum.repos.d.bak重命名，这样就让系统找不到原有的repo文件了。
+
+2. 修改/etc/yum.conf文件，添加如下内容：
+# PUT YOUR REPOS HERE OR IN separate files named file.repo
+# in /etc/yum.repos.d
+
+[extras]
+name=Fedora Extras $releasever - $basearch
+baseurl=http://mirror.neu.edu.cn/centos/6/extras/i386
+enabled=1
+
+[updates]
+name=Fedora Core $releasever - $basearch - Updates
+baseurl=http://mirror.neu.edu.cn/centos/6/updates/i386
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+
+#additional packages that extend functionality of existing packages
+[centosplus]
+name=CentOS-$releasever - Plus
+baseurl=http://mirror.neu.edu.cn/centos/6/centosplus/i386/
+gpgcheck=1
+enabled=0
+gpgkey=http://mirror.neu.edu.cn/centos/RPM-GPG-KEY-CentOS-6
+
+3. 经过上述步骤后，就可以使用速度较快的国内镜像站点作为yum更新源了。
+
+后记：在使用yum进行install时，经常会出现下面的错误
+warning: rpmts_HdrFromFdno: Header V3 DSA signature: NOKEY, key ID 1ac70ce6
+导致安装不能进行。解决方法如下：
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY*
+

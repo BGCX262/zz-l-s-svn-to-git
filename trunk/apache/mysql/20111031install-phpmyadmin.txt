@@ -1,0 +1,20 @@
+◆安装phpMyAdmin 3.4.7
+
+◆访问提示"PHP 5.2+ is required"
+
+升级php
+
+◆提示："缺少mysqli扩展""缺少mcrypt扩展"
+
+# yum  install php-mysqli
+
+# yum  install php-mycrypt
+
+
+◆ 设置mysql库登陆密码
+# mysqladmin -u root password 'xxxxxx'
+
+sql> SET PASSWORD FOR 'root'@'linux193' = PASSWORD( '******' ) 
+
+◆ 没有找到 PHP 扩展 mbstring，而您现在好像在使用多字节字符集。
+# yum install php-mbstring

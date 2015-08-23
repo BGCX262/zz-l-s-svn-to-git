@@ -1,0 +1,124 @@
+◆ phpmyadmin 提示 PHP 5.2+ is required 的解决办法  2011-06-18 02:38:00|  分类： phpmyadmin |  标签： |字号大中小 订阅 .
+◆ 提示："缺少mysqli扩展""缺少mcrypt扩展" 解决方式：
+
+安装phpMyAdmin 3.4.1，设置完毕后访问提示
+
+
+PHP 5.2+ is required
+
+
+#php -v
+
+
+查出CentOS 5.6自带的php是5.1.6
+
+
+两种解决方法：
+1 使用低版本的phpmyadmin，下载phpMyAdmin-2.11.10-all-languages.tar.gz后再安装OK
+
+
+2 升级php
+
+
+升级方法一：
+安装相应的GPG key
+# rpm --import http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
+    新建一个repo
+# /etc/yum.repos.d/utterramblings.repo
+    把以下内容添加进去，保存退出就OK了
+[utterramblings]
+name=Jason's Utter Ramblings Repo
+baseurl=http://www.jasonlitka.com/media/EL$releasever/$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://www.jasonlitka.com/media/RPM-GPG-KEY-jlitka
+
+
+#yum install php
+安装出来的就是 php5.2.16
+
+
+升级方法二：
+
+
+#wget http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+#wget http://rpms.famillecollet.com/enterprise/remi-release-5.rpm
+#rpm -Uvh remi-release-5*.rpm epel-release-5*.rpm
+
+
+#vi /etc/yum.repos.d/remi.repo
+#vi /etc/yum.repos.d/epel.repo
+#vi /etc/yum.repos.d/epel-testing.repo
+分别在这三个文件的最后，增加如下一行：
+priority=1
+
+
+#yum --enablerepo=remi update php
+
+
+# php -v
+
+
+PHP 5.3.6 (cli) (built: May 16 2011 19:18:00)
+Copyright (c) 1997-2011 The PHP Group
+Zend Engine v2.3.0, Copyright (c) 1998-2011 Zend Technologies
+
+
+PS:
+当前安装时CentOS已经更新到5.3，所以实际下载的包可能有所不同：
+wget http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+wget http://rpms.famillecollet.com/el5.i386/remi-release-5-7.el5.remi.noarch.rpm 
+rpm -Uvh remi-release-5-7.el5.remi.noarch.rpm epel-release-5-4.noarch.rpm
+如果单独升级php将提示失败，只有联通mysql一起升级才可以，
+所以我们必须执行以下命令才能升级php到5.2.9版本：
+yum –-enablerepo=remi update php* mysql*
+
+
+◆ 提示："缺少mysqli扩展""缺少mcrypt扩展" 解决方式：
+
+
+[root@www libraries]# yum --enablerepo=remi update php-mysqli
+Loaded plugins: fastestmirror
+......
+No Packages marked for Update
+
+
+[root@www libraries]# yum --enablerepo=remi install php-mysqli
+Loaded plugins: fastestmirror
+.....
+Running Transaction
+  Installing     : php-pdo                                                                                 1/2
+  Installing     : php-mysql                                                                               2/2
+
+
+Installed:
+  php-mysql.i386 0:5.3.6-4.el5.remi
+
+
+Dependency Installed:
+  php-pdo.i386 0:5.3.6-4.el5.remi
+
+
+Complete!
+
+
+[root@www libraries]# yum --enablerepo=remi install php-mcrypt
+Loaded plugins: fastestmirror
+....
+Running Transaction
+  Installing     : libmcrypt                                                                               1/2
+  Installing     : php-mcrypt                                                                              2/2
+
+
+Installed:
+  php-mcrypt.i386 0:5.3.6-4.el5.remi
+
+
+Dependency Installed:
+  libmcrypt.i386 0:2.5.8-4.el5.centos
+
+
+Complete!
+[root@www libraries]# service httpd restart
+正在停止 httpd:                                            [  確定  ]
+正在啟動 httpd:                                            [  確定  ]

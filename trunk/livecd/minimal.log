@@ -1,0 +1,569 @@
+[root@x232 livecd]# LANG=C livecd-creator --config=mk.ks --fslabel=CentOS-5.4-mi                                                                                                                     nimal
+mke2fs 1.39 (29-May-2006)
+Filesystem label=CentOS-5.4-minim
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+524288 inodes, 1048576 blocks
+10485 blocks (1.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=1073741824
+32 block groups
+32768 blocks per group, 32768 fragments per group
+16384 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736
+
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 21 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+tune2fs 1.39 (29-May-2006)
+Setting maximal mount count to -1
+Setting interval between checks to 0 seconds
+YumRepo Error: All mirror URLs are not using ftp, http[s] or file.
+ Eg. file///mnt/c5-iso/
+Error creating Live CD : Unable to download from repo : Cannot retrieve reposito                                                                                                                     ry metadata (repomd.xml) for repository: a-base. Please verify its path and try                                                                                                                      again
+Exception exceptions.AttributeError: "'NoneType' object has no attribute 'syscon                                                                                                                     f'" in <bound method LiveCDYum.__del__ of <imgcreate.yuminst.LiveCDYum object at                                                                                                                      0xa0ba26c>> ignored
+[root@x232 livecd]# vi mk.ks
+[root@x232 livecd]# LANG=C livecd-creator --config=mk.ks --fslabel=CentOS-5.4-mi                                                                                                                     nimal
+mke2fs 1.39 (29-May-2006)
+Filesystem label=CentOS-5.4-minim
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+524288 inodes, 1048576 blocks
+10485 blocks (1.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=1073741824
+32 block groups
+32768 blocks per group, 32768 fragments per group
+16384 inodes per group
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736
+
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 30 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+tune2fs 1.39 (29-May-2006)
+Setting maximal mount count to -1
+Setting interval between checks to 0 seconds
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/repodata/repomd.xml ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/repodata/primary.xml.gz ..                                                                                                                     .OK
+Retrieving http://www.nanotechnologies.qc.ca/propos/linux/centos-live/i386/live/                                                                                                                     repodata/repomd.xml ...OK
+Retrieving http://www.nanotechnologies.qc.ca/propos/linux/centos-live/i386/live/                                                                                                                     repodata/primary.xml.gz ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/repodata/repomd.xml .                                                                                                                     ..OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/repodata/primary.sqli                                                                                                                     te.bz2 ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/basesystem-8.0-5.1.                                                                                                                     1.el5.centos.noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/rootfiles-8.1-1.1.1                                                                                                                     .noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/crontabs-1.10-8.noa                                                                                                                     rch.rpm ...OK
+Retrieving http://www.nanotechnologies.qc.ca/propos/linux/centos-live/i386/live/                                                                                                                     RPMS/perl-Crypt-PasswdMD5-1.3-1.2.1.noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/sgpio-1.2.0_10-2.el                                                                                                                     5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libattr-2.4.32-1.1.                                                                                                                     i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/mktemp-1.5-23.2.2.i                                                                                                                     386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libtermcap-2.0.8-46                                                                                                                     .1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/mcstrans-0.2.11-3.e                                                                                                                     l5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/keyutils-libs-1.2-1                                                                                                                     .el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/mingetty-1.07-5.2.2                                                                                                                     .i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libacl-2.2.39-6.el5                                                                                                                     .i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/passwd-0.73-2.i386.                                                                                                                     rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/centos-release-5-7.                                                                                                                     el5.centos.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/hmaccalc-0.9.6-3.el                                                                                                                     5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libutempter-1.1.4-4                                                                                                                     .el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/device-mapper-event                                                                                                                     -1.02.63-4.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libcap-1.10-26.i386                                                                                                                     .rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/dmraid-events-1.0.0                                                                                                                     .rc13-65.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/gdbm-1.8.0-26.2.1.e                                                                                                                     l5_6.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/bzip2-libs-1.0.3-6.                                                                                                                     el5_5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/centos-release-note                                                                                                                     s-5.7-0.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/logrotate-3.7.4-12.                                                                                                                     i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/comps-extras-11.1-1                                                                                                                     .1.el5.centos.noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libsysfs-2.1.0-1.el                                                                                                                     5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/perl-Digest-SHA1-2.                                                                                                                     11-1.2.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/zlib-1.2.3-4.el5.i3                                                                                                                     86.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libselinux-utils-1.                                                                                                                     33.4-5.7.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/python-2.4.3-44.                                                                                                                     el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/cracklib-2.8.9-3.3.                                                                                                                     i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/elfutils-libelf-0.1                                                                                                                     37-3.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/psmisc-22.2-7.el5_6                                                                                                                     .2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/ethtool-6-4.el5.i38                                                                                                                     6.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libselinux-python-1                                                                                                                     .33.4-5.7.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/popt-1.10.2.3-22                                                                                                                     .el5_7.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libselinux-1.33.4-5                                                                                                                     .7.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/expat-1.95.8-8.3.el                                                                                                                     5_5.3.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/audit-libs-1.7.18-2                                                                                                                     .el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/audit-libs-python-1                                                                                                                     .7.18-2.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libgcc-4.1.2-51.el5                                                                                                                     .i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/gzip-1.3.5-13.el5.c                                                                                                                     entos.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/less-436-7.el5.i386                                                                                                                     .rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/newt-0.52.2-15.el5.                                                                                                                     i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/SysVinit-2.86-17.el                                                                                                                     5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/pcre-6.6-6.el5_6.1.                                                                                                                     i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/e2fsprogs-libs-1.39                                                                                                                     -33.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/nspr-4.8.8-1.el5                                                                                                                     _7.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/cpio-2.6-23.el5_4.1                                                                                                                     .i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/setup-2.5.58-7.el5.                                                                                                                     noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/iputils-20020927-46                                                                                                                     .el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/cyrus-sasl-lib-2.1.                                                                                                                     22-5.el5_4.3.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libsepol-1.15.2-3.e                                                                                                                     l5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/MAKEDEV-3.23-1.2.i3                                                                                                                     86.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libsemanage-1.9.1-4                                                                                                                     .4.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/usermode-1.88-3.el5                                                                                                                     .2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/chkconfig-1.3.30.2-                                                                                                                     2.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/info-4.8-14.el5.i38                                                                                                                     6.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/grep-2.5.1-55.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/sed-4.1.5-8.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/mtools-3.9.10-2.fc6.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/diffutils-2.8.1-15.2.3.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/procps-3.2.7-17.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/sqlite-3.3.6-5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/readline-5.1-3.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/termcap-5.5-1.20060701.1.noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/findutils-4.2.27-6.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/openldap-2.3.43-12.el5_7.10.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/xkeyboard-config-0.8-9.el5_7.1.noarch.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/slang-2.0.6-4.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/net-tools-1.60-81.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libstdc++-4.1.2-51.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/rsyslog-3.22.1-3.el5_6.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/kpartx-0.4.7-46.el5_7.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/module-init-tools-3.3-0.pre3.1.60.el5_5.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/libuser-0.54.7-2.1.el5_5.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/authconfig-5.3.21-7.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/tcsh-6.14-17.el5_5.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/mkinitrd-5.1.19.6-71.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/policycoreutils-1.33.12-14.8.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/krb5-libs-1.6.1-62.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/glib2-2.12.3-4.el5_3.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/dmraid-1.0.0.rc13-65.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/tar-1.15.1-30.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/tzdata-2011l-4.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/device-mapper-1.02.63-4.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/iproute-2.6.18-11.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/e2fsprogs-1.39-33.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/db4-4.3.29-10.el5_5.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/rpm-libs-4.4.2.3-22.el5_7.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/iscsi-initiator-utils-6.2.0.872-10.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/pam-0.99.6.2-6.el5_5.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/filesystem-2.4.0-3.el5.centos.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/shadow-utils-4.0.17-18.el5_6.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/nss-3.12.10-7.el5_7.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/nash-5.1.19.6-71.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/ncurses-5.5-24.20060715.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/rpm-4.4.2.3-22.el5_7.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/openssl-0.9.8e-20.el5.i686.rpm ...OK
+Retrieving http://www.nanotechnologies.qc.ca/propos/linux/centos-live/i386/live/RPMS/syslinux-3.86-3.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/initscripts-8.45.38-2.el5.centos.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/gawk-3.1.5-14.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/bash-3.2-32.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/util-linux-2.13-0.56.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/udev-095-14.27.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/device-mapper-multipath-0.4.7-46.el5_7.2.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/lvm2-2.02.84-6.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/binutils-2.17.50.0.6-14.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/binutils-2.17.50.0.6-14.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/cracklib-dicts-2.8.9-3.3.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/coreutils-5.97-34.el5.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/glibc-2.5-65.el5_7.1.i686.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/python-libs-2.4.3-44.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/python-libs-2.4.3-44.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/python-libs-2.4.3-44.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/python-libs-2.4.3-44.el5_7.1.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/os/i386/CentOS/perl-5.8.8-32.el5_6.3.i386.rpm ...OK
+Retrieving http://centos.ustc.edu.cn/centos/5/updates/i386/RPMS/glibc-common-2.5-65.el5_7.1.i386.rpm ...OK
+warning: setup-2.5.58-7.el5: Header V3 DSA signature: NOKEY, key ID e8562897
+  Installing: setup                        ##################### [  1/114]
+  Installing: filesystem                   ##################### [  2/114]
+  Installing: basesystem                   ##################### [  3/114]
+  Installing: termcap                      ##################### [  4/114]
+  Installing: centos-release-notes         ##################### [  5/114]
+  Installing: cracklib-dicts               ##################### [  6/114]
+  Installing: nash                         ##################### [  7/114]
+  Installing: tzdata                       ##################### [  8/114]
+  Installing: glibc-common                 ################      [  9/114]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  Installing: setup                        ##################### [  1/114]
+  Installing: filesystem                   ##################### [  2/114]
+  Installing: basesystem                   ##################### [  3/114]
+  Installing: termcap                      ##################### [  4/114]
+  Installing: centos-release-notes         ##################### [  5/114]
+  Installing: cracklib-dicts               ##################### [  6/114]
+  Installing: nash                         ##################### [  7/114]
+  Installing: tzdata                       ##################### [  8/114]
+  Installing: glibc-common                 ##################### [  9/114] Y
+
+  Installing: mktemp                       ##################### [ 15/114]
+  Installing: chkconfig                    ##################### [ 16/114]
+  Installing: zlib                         ##################### [ 17/114]
+  Installing: popt                         ##################### [ 18/114]
+  Installing: audit-libs                   ##################### [ 19/114]
+  Installing: glib2                        ##################### [ 20/114]
+  Installing: libtermcap                   ##################### [ 21/114]
+  Installing: bash                         ##################### [ 22/114]
+  Installing: libsepol                     ##################### [ 23/114]
+  Installing: ncurses                      ##################### [ 24/114]
+  Installing: info                         ##################### [ 25/114]
+  Installing: readline                     ##################### [ 26/114]
+  Installing: sed                          ##################### [ 27/114]
+  Installing: nspr                         ##################### [ 28/114]
+  Installing: nss                          ##################### [ 29/114]
+  Installing: libattr                      ##################### [ 30/114]
+  Installing: libacl                       ##################### [ 31/114]
+  Installing: bzip2-libs                   ##################### [ 32/114]
+  Installing: sqlite                       ##################### [ 33/114]
+  Installing: gawk                         ##################### [ 34/114]
+  Installing: elfutils-libelf              ##################### [ 35/114]
+  Installing: libstdc++                    ##################### [ 36/114]
+  Installing: db4                          ##################### [ 37/114]
+  Installing: gdbm                         ##################### [ 38/114]
+  Installing: perl                         ##################### [ 39/114]
+  Installing: perl-Digest-SHA1             ##################### [ 40/114]
+  Installing: iproute                      ##################### [ 41/114]
+  Installing: pcre                         ##################### [ 42/114]
+  Installing: grep                         ##################### [ 43/114]
+  Installing: hmaccalc                     ##################### [ 44/114]
+  Installing: diffutils                    ##################### [ 45/114]
+  Installing: binutils                     ##################### [ 46/114]
+  Installing: cpio                         ##################### [ 47/114]
+  Installing: procps                       ##################### [ 48/114]
+  Installing: less                         ##################### [ 49/114]
+  Installing: gzip                         ##################### [ 50/114]
+  Installing: iputils                      ##################### [ 51/114]
+  Installing: keyutils-libs                ##################### [ 52/114]
+  Installing: ethtool                      ##################### [ 53/114]
+  Installing: slang                        ##################### [ 54/114]
+  Installing: expat                        ##################### [ 55/114]
+  Installing: mingetty                     ##################### [ 56/114]
+  Installing: libcap                       ##################### [ 57/114]
+  Installing: sgpio                        ##################### [ 58/114]
+  Installing: libsysfs                     ##################### [ 59/114]
+  Installing: cyrus-sasl-lib               ##################### [ 60/114]
+warning: perl-Crypt-PasswdMD5-1.3-1.2.1: Header V3 DSA signature: NOKEY, key ID 132d72c4
+  Installing: perl-Crypt-PasswdMD5         ##################### [ 61/114]
+  Installing: centos-release               ##################### [ 62/114]
+  Installing: crontabs                     ##################### [ 63/114]
+  Installing: libselinux                   ##################### [ 64/114]
+  Installing: device-mapper                ##################### [ 65/114]
+  Installing: shadow-utils                 ##################### [ 66/114]
+  Installing: e2fsprogs-libs               ##################### [ 67/114]
+  Installing: openssl                      ##################### [ 68/114]
+  Installing: kpartx                       ##################### [ 69/114]
+  Installing: e2fsprogs                    ##################### [ 70/114]
+  Installing: logrotate                    ##################### [ 71/114]
+  Installing: findutils                    ##################### [ 72/114]
+  Installing: device-mapper-multipath      ##################### [ 73/114]
+  Installing: openldap                     ##################### [ 74/114]
+  Installing: MAKEDEV                      ##################### [ 75/114]
+  Installing: libutempter                  ##################### [ 76/114]
+  Installing: device-mapper-event          ##################### [ 77/114]
+  Installing: lvm2                         ##################### [ 78/114]
+  Installing: tar                          ##################### [ 79/114]
+  Installing: net-tools                    ##################### [ 80/114]
+  Installing: psmisc                       ##################### [ 81/114]
+  Installing: libselinux-utils             ##################### [ 82/114]
+  Installing: cracklib                     ##################### [ 83/114]
+
+  Installing: libcap                       ##################### [ 57/114]
+  Installing: sgpio                        ##################### [ 58/114]
+  Installing: libsysfs                     ##################### [ 59/114]
+  Installing: cyrus-sasl-lib               ##################### [ 60/114]
+warning: perl-Crypt-PasswdMD5-1.3-1.2.1: Header V3 DSA signature: NOKEY, key ID 132d72c4
+  Installing: perl-Crypt-PasswdMD5         ##################### [ 61/114]
+  Installing: centos-release               ##################### [ 62/114]
+  Installing: crontabs                     ##################### [ 63/114]
+  Installing: libselinux                   ##################### [ 64/114]
+  Installing: device-mapper                ##################### [ 65/114]
+  Installing: shadow-utils                 ##################### [ 66/114]
+  Installing: e2fsprogs-libs               ##################### [ 67/114]
+  Installing: openssl                      ##################### [ 68/114]
+  Installing: kpartx                       ##################### [ 69/114]
+  Installing: e2fsprogs                    ##################### [ 70/114]
+  Installing: logrotate                    ##################### [ 71/114]
+  Installing: findutils                    ##################### [ 72/114]
+  Installing: device-mapper-multipath      ##################### [ 73/114]
+  Installing: openldap                     ##################### [ 74/114]
+  Installing: MAKEDEV                      ##################### [ 75/114]
+  Installing: libutempter                  ##################### [ 76/114]
+  Installing: device-mapper-event          ##################### [ 77/114]
+  Installing: lvm2                         ##################### [ 78/114]
+  Installing: tar                          ##################### [ 79/114]
+  Installing: net-tools                    ##################### [ 80/114]
+  Installing: psmisc                       ##################### [ 81/114]
+  Installing: libselinux-utils             ##################### [ 82/114]
+  Installing: cracklib                     ##################### [ 83/114]
+  Installing: coreutils                    ##################### [ 84/114]
+  Installing: python                       ##################### [ 85/114]
+  Installing: pam                          ##################### [ 86/114]
+  Installing: udev                         ##################### [ 87/114]
+  Installing: util-linux                   ##################### [ 88/114]
+  Installing: libuser                      ##################### [ 89/114]
+  Installing: python-libs                  ##################### [ 90/114]
+  Installing: rpm                          ##################### [ 91/114]
+  Installing: dmraid                       ##################### [ 92/114]
+  Installing: libsemanage                  ##################### [ 93/114]
+  Installing: passwd                       ##################### [ 94/114]
+  Installing: usermode                     ##################### [ 95/114]
+  Installing: SysVinit                     ##################### [ 96/114]
+  Installing: audit-libs-python            ##################### [ 97/114]
+  Installing: iscsi-initiator-utils        ##################### [ 98/114]
+  Installing: newt                         ##################### [ 99/114]
+  Installing: libselinux-python            ##################### [100/114]
+  Installing: tcsh                         ##################### [101/114]
+  Installing: mtools                       ##################### [102/114]
+  Installing: rsyslog                      ##################### [103/114]
+  Installing: initscripts                  ##################### [104/114]
+  Installing: mcstrans                     ##################### [105/114]
+  Installing: krb5-libs                    ##################### [106/114]
+  Installing: dmraid-events                ##################### [107/114]
+  Installing: rpm-libs                     ##################### [108/114]
+  Installing: policycoreutils              ##################### [109/114]
+  Installing: syslinux                     ##################### [110/114]
+  Installing: authconfig                   ##################### [111/114]
+  Installing: mkinitrd                     ##################### [112/114]
+  Installing: module-init-tools            ##################### [113/114]
+  Installing: kernel                       ##################### [114/114]
+ls: /etc/modprobe.d/*.conf: 没有那个文件或目录
+
+ls: /etc/modprobe.d/*.conf: 没有那个文件或目录
+^YRemoving password for user root.
+passwd: Success
+Building an initramfs at /boot/livecd-initramfs-2.6.18-274.12.1.el5.img for kernel 2.6.18-274.12.1.el5
+cp: 无法 stat “/lib/terminfo/*”: 没有那个文件或目录
+
+  正在安装      : lldpad                       ##################### [323/369]
+  正在安装      : cyrus-sasl                   ##################### [324/369]
+  正在安装      : rsyslog                      ##################### [325/369]
+  正在安装      : cronie-anacron               ##################### [326/369]
+  正在安装      : cronie                       ##################### [327/369]
+  正在安装      : crontabs                     ##################### [328/369]
+  正在安装      : iscsi-initiator-utils        ##################### [329/369]
+  正在安装      : mdadm                        ##################### [330/369]
+  正在安装      : ConsoleKit-libs              ##################### [331/369]
+  正在安装      : ConsoleKit                   ##################### [332/369]
+  正在安装      : polkit                       ##################### [333/369]
+  正在安装      : GConf2                       ##################### [334/369]
+  正在安装      : ppp                          ##################### [335/369]
+  正在安装      : dnsmasq                      ##################### [336/369]
+  正在安装      : wpa_supplicant               ##################### [337/369]
+  正在安装      : lockdev                      ##################### [338/369]
+  正在安装      : libgphoto2                   ##################### [339/369]
+  正在安装      : sane-backends-libs           ##################### [340/369]
+  正在安装      : sane-backends-drivers-scanne ##################### [341/369]
+  正在安装      : sane-backends                ##################### [342/369]
+  正在安装      : colord                       ##################### [343/369]
+  正在安装      : gtk3                         ##################### [344/369]
+  正在安装      : libcanberra-gtk3             ##################### [345/369]
+  正在安装      : notification-daemon          ##################### [346/369]
+  正在安装      : libnotify                    ##################### [347/369]
+  正在安装      : zenity                       ##################### [348/369]
+  正在安装      : cryptsetup-python            ##################### [349/369]
+  正在安装      : cryptsetup                   ##################### [350/369]
+  正在安装      : libhbalinux                  ##################### [351/369]
+  正在安装      : fcoe-utils                   ##################### [352/369]
+  正在安装      : libgnomecanvas               ##################### [353/369]
+  正在安装      : usermode-gtk                 ##################### [354/369]
+  正在安装      : libreport-gtk                ##################### [355/369]
+  正在安装      : dhclient                     ##################### [356/369]
+  正在安装      : python-meh                   ##################### [357/369]
+  正在安装      : selinux-policy               ##################### [358/369]
+  正在安装      : system-config-firewall-base  ##################### [359/369]
+  正在安装      : gnome-python2                ##################### [360/369]
+  正在安装      : gnome-python2-canvas         ##################### [361/369]
+  正在安装      : NetworkManager               ##################### [362/369]
+  正在安装      : sendmail                     ##################### [363/369]
+  正在安装      : biosdevname                  ##################### [364/369]
+  正在安装      : audit                        ##################### [365/369]
+  正在安装      : openssh-server               ##################### [366/369]
+  正在安装      : system-config-date           ##################### [367/369]
+  正在安装      : selinux-policy-targeted      ##################### [368/369]
+SELinux:  Could not downgrade policy file /etc/selinux/targeted/policy/policy.26, searching for an older version.
+SELinux:  Could not open policy file <= /etc/selinux/targeted/policy/policy.26:  没有那个文件或目录
+load_policy:  无法加载策略： 没有那个文件或目录
+  正在安装      : anaconda                     ##################### [369/369]
+
+清除用户的密码 root。
+passwd: 操作成功
+/usr/sbin/setenforce: SELinux is disabled
+e2fsck 1.41.12 (17-May-2010)
+第一步: 检查inode,块,和大小
+第二步: 检查目录结构
+第3步: 检查目录连接性
+Pass 4: Checking reference counts
+第5步: 检查簇概要信息
+_Fedora-LiveCD: 25772/65536 files (0.5% non-contiguous), 200580/262144 blocks
+e2image 1.41.12 (17-May-2010)
+resize2fs 1.41.12 (17-May-2010)
+Resizing the filesystem on /var/tmp/imgcreate-83ezKF/tmp-_wW9S1/ext3fs.img to 200001 (4k) blocks.
+The filesystem on /var/tmp/imgcreate-83ezKF/tmp-_wW9S1/ext3fs.img is now 200001 blocks long.
+
+e2fsck 1.41.12 (17-May-2010)
+第一步: 检查inode,块,和大小
+第二步: 检查目录结构
+第3步: 检查目录连接性
+Pass 4: Checking reference counts
+第5步: 检查簇概要信息
+_Fedora-LiveCD: 25772/57344 files (0.5% non-contiguous), 200001/200001 blocks
+e2fsck 1.41.12 (17-May-2010)
+第一步: 检查inode,块,和大小
+第二步: 检查目录结构
+第3步: 检查目录连接性
+Pass 4: Checking reference counts
+第5步: 检查簇概要信息
+_Fedora-LiveCD: 25772/57344 files (0.5% non-contiguous), 200001/200001 blocks
+e2image 1.41.12 (17-May-2010)
+resize2fs 1.41.12 (17-May-2010)
+Resizing the filesystem on /var/tmp/imgcreate-83ezKF/tmp-_wW9S1/ext3fs.img to 262144 (4k) blocks.
+The filesystem on /var/tmp/imgcreate-83ezKF/tmp-_wW9S1/ext3fs.img is now 262144 blocks long.
+
+e2fsck 1.41.12 (17-May-2010)
+第一步: 检查inode,块,和大小
+第二步: 检查目录结构
+第3步: 检查目录连接性
+Pass 4: Checking reference counts
+第5步: 检查簇概要信息
+_Fedora-LiveCD: 25772/65536 files (0.5% non-contiguous), 200580/262144 blocks
+e2fsck 1.41.12 (17-May-2010)
+第一步: 检查inode,块,和大小
+第二步: 检查目录结构
+第3步: 检查目录连接性
+Pass 4: Checking reference counts
+第5步: 检查簇概要信息
+_Fedora-LiveCD: 25772/65536 files (0.5% non-contiguous), 200580/262144 blocks
+e2image 1.41.12 (17-May-2010)
+resize2fs 1.41.12 (17-May-2010)
+Resizing the filesystem on /dev/mapper/imgcreate-1569-51378 to 200001 (4k) blocks.
+The filesystem on /dev/mapper/imgcreate-1569-51378 is now 200001 blocks long.
+
+e2fsck 1.41.12 (17-May-2010)
+第一步: 检查inode,块,和大小
+第二步: 检查目录结构
+第3步: 检查目录连接性
+Pass 4: Checking reference counts
+第5步: 检查簇概要信息
+_Fedora-LiveCD: 25772/57344 files (0.5% non-contiguous), 200001/200001 blocks
+Parallel mksquashfs: Using 2 processors
+Creating 4.0 filesystem on /var/tmp/imgcreate-83ezKF/iso-x35W_H/LiveOS/osmin.img, block size 131072.
+[===================================================================|] 3/3 100%
+Exportable Squashfs 4.0 filesystem, gzip compressed, data block size 131072
+        compressed data, compressed metadata, compressed fragments, compressed xattrs
+        duplicates are removed
+Filesystem size 2.72 Kbytes (0.00 Mbytes)
+        0.76% of uncompressed filesystem size (360.35 Kbytes)
+Inode table size 65 bytes (0.06 Kbytes)
+        63.73% of uncompressed inode table size (102 bytes)
+Directory table size 23 bytes (0.02 Kbytes)
+        85.19% of uncompressed directory table size (27 bytes)
+Xattr table size 55 bytes (0.05 Kbytes)
+        100.00% of uncompressed xattr table size (55 bytes)
+Number of duplicate files found 0
+Number of inodes 2
+Number of files 1
+Number of fragments 0
+Number of symbolic links  0
+Number of device nodes 0
+Number of fifo nodes 0
+Number of socket nodes 0
+Number of directories 1
+Number of ids (unique uids + gids) 1
+Number of uids 1
+        root (0)
+Number of gids 1
+        root (0)
+Parallel mksquashfs: Using 2 processors
+Creating 4.0 filesystem on /var/tmp/imgcreate-83ezKF/iso-x35W_H/LiveOS/squashfs.img, block size 131072.
+[=============================================================\] 8192/8192 100%
+Exportable Squashfs 4.0 filesystem, gzip compressed, data block size 131072
+        compressed data, compressed metadata, compressed fragments, compressed xattrs
+        duplicates are removed
+Filesystem size 252978.64 Kbytes (247.05 Mbytes)
+        24.13% of uncompressed filesystem size (1048608.43 Kbytes)
+Inode table size 16813 bytes (16.42 Kbytes)
+        51.08% of uncompressed inode table size (32914 bytes)
+Directory table size 50 bytes (0.05 Kbytes)
+        86.21% of uncompressed directory table size (58 bytes)
+Xattr table size 55 bytes (0.05 Kbytes)
+        100.00% of uncompressed xattr table size (55 bytes)
+Number of duplicate files found 0
+Number of inodes 3
+Number of files 1
+Number of fragments 0
+Number of symbolic links  0
+Number of device nodes 0
+Number of fifo nodes 0
+Number of socket nodes 0
+Number of directories 2
+Number of ids (unique uids + gids) 1
+Number of uids 1
+        root (0)
+Number of gids 1
+        root (0)
+I: -input-charset not specified, using utf-8 (detected in locale settings)
+Size of boot image is 4 sectors -> No emulation
+  3.74% done, estimate finish Wed Dec  7 06:16:51 2011
+  7.47% done, estimate finish Wed Dec  7 06:16:38 2011
+ 11.21% done, estimate finish Wed Dec  7 06:16:42 2011
+ 14.94% done, estimate finish Wed Dec  7 06:16:38 2011
+ 18.68% done, estimate finish Wed Dec  7 06:16:41 2011
+ 22.41% done, estimate finish Wed Dec  7 06:16:38 2011
+ 26.15% done, estimate finish Wed Dec  7 06:16:40 2011
+ 29.88% done, estimate finish Wed Dec  7 06:16:38 2011
+ 33.62% done, estimate finish Wed Dec  7 06:16:39 2011
+ 37.35% done, estimate finish Wed Dec  7 06:16:41 2011
+ 41.09% done, estimate finish Wed Dec  7 06:16:42 2011
+ 44.82% done, estimate finish Wed Dec  7 06:16:40 2011
+ 48.56% done, estimate finish Wed Dec  7 06:16:39 2011
+ 52.29% done, estimate finish Wed Dec  7 06:16:40 2011
+ 56.03% done, estimate finish Wed Dec  7 06:16:41 2011
+ 59.76% done, estimate finish Wed Dec  7 06:16:40 2011
+ 63.50% done, estimate finish Wed Dec  7 06:16:40 2011
+ 67.23% done, estimate finish Wed Dec  7 06:16:41 2011
+ 70.97% done, estimate finish Wed Dec  7 06:16:41 2011
+ 74.70% done, estimate finish Wed Dec  7 06:16:41 2011
+ 78.44% done, estimate finish Wed Dec  7 06:16:41 2011
+ 82.17% done, estimate finish Wed Dec  7 06:16:42 2011
+ 85.91% done, estimate finish Wed Dec  7 06:16:41 2011
+ 89.64% done, estimate finish Wed Dec  7 06:16:41 2011
+ 93.38% done, estimate finish Wed Dec  7 06:16:41 2011
+ 97.12% done, estimate finish Wed Dec  7 06:16:41 2011
+Total translation table size: 2048
+Total rockridge attributes bytes: 1255
+Total directory bytes: 4574
+Path table size(bytes): 40
+Max brk space used 19000
+133873 extents written (261 MB)
+Inserting md5sum into iso image...
+md5 = 297dbcecfb67343e2bc346dd762da29b
+Inserting fragment md5sums into iso image...
+fragmd5 = f9bbf25441eaee3c59f22238915d89f782e72cf3fb37c4ca9264a5f3ca32
+frags = 20
+Setting supported flag to 0

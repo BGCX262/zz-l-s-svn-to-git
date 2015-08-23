@@ -1,0 +1,256 @@
+**  Oracle设置自动启动关闭实例
+**8.1	以root用户登录
+**8.2	cp /tmp/oracle /etc/rc.d/init.d/oracle		#拷贝/tmp/oracle到/etc/rc.d/init.d目录下
+**8.3	chmod 751 /etc/rc.d/init.d/oracle
+**8.4	chkconfig --add oracle 
+********************** file 'oracle' ****************************
+#!/bin/bash
+#chkconfig: 2345 86 05
+#description: LISTENER daemons
+#
+
+ORA_HOME=/opt/oracle/920
+ORA_OWNER=oracle
+
+case "$1" in
+'start')
+su - $ORA_OWNER -c $ORA_HOME/bin/dbstart
+su - $ORA_OWNER -c "$ORA_HOME/bin/lsnrctl start"
+;;
+
+'stop')
+su - $ORA_OWNER -c $ORA_HOME/bin/dbshut
+su - $ORA_OWNER -c "$ORA_HOME/bin/lsnrctl stop"
+;;
+
+'restart')
+$0 stop
+$0 start
+;;
+
+*****************************************************************
+
+[root@linux193 rc3.d]# chkconfig --list httpd
+httpd           0:关闭  1:关闭  2:关闭  3:关闭  4:关闭  5:关闭  6:关闭
+[root@linux193 rc3.d]# chkconfig --level 3 httpd on
+[root@linux193 rc3.d]# chkconfig --list httpd
+httpd           0:关闭  1:关闭  2:关闭  3:启用  4:关闭  5:关闭  6:关闭
+[root@linux193 rc3.d]# chkconfig --level 5 httpd on
+[root@linux193 rc3.d]# ll *httpd*
+lrwxrwxrwx 1 root root 15 10-27 23:30 S85httpd -> ../init.d/httpd
+
+linux手动添加开机启动的服务 
+
+如果你只是想知道如何添加一个开机启动的服务时候，那建议你直接看本文第2部分，如果你想读的更流畅，那建议从头看起，如果你耐心不错，希望继续读的时候，就请读完本文。
+
+
+
+第一部分，这里介绍一种最"原始的"(请原谅我这么称呼)的办法，当然它不一定是最好的，但肯定是有用的，而且对任何发行版，任何你想要加载的服务都是统一的。（不同的发行版可能有自己添加开机启动服务的办法，不同的软件也有自己添加到开机启动的办法）。这种办法缺点就是相对比较麻烦。
+
+
+
+我们以自己的脚本为例。
+
+步骤：
+
+
+
+1.如果你看本文的目的是开机启动tomcat那么第一步你可以不用看了，当然希望你看下，肯定是有好处的。第一步是编写脚本，其实很多时候我们不用编写脚本，比如我们只是想开机启动tomcat（当然我们现在的办法对开机启动TOMCAT也是可行的），他的脚本已经写好了就是 catalina.sh（可能会拼错了）。但任何脚本都必须遵守一种约定才能利用这种办法进行开机启动，约定就是：1.他必须是以  脚本名 start 这种带start方式启动， 2.他必须是以 脚本名 stop 这种方式终止。很幸运catalina.sh遵循这种约定。（其实，第2条不必要遵守，因为我们开机启动的服务可能不需要停止，那你就不用遵守了，如果你开机启动的服务不需要启动，连第一条也不用遵守，当然这就没有意义了。当你需要从启服务时候，希望你遵守使用restart参数）。下面我编写了个简单的脚本，它遵守第一条:
+
+[root@liumengli init.d]# cat tidus
+#!/bin/sh
+
+case "$1" in
+start)
+/userful_shell/echo_data.sh &
+;;
+stop)
+echo >/userful_shell/data.txt
+;;
+esac
+
+exit 0
+如果要启动的脚本并不遵守这种标准，那么在在看过上面脚本后，这个问题应该不难解决。这个脚本是如果参数是start就后台启动 /userful_shell/echo_data.sh，如果是stop就清空/userful_shell/data.txt文件。下面给出 /userful_shell/echo_data.sh的内容
+
+[root@liumengli init.d]# cat /userful_shell/echo_data.sh
+#!/bin/sh
+
+COUNT=1
+while [ ${COUNT} -ge 0 ]
+do
+echo "I love yuna" >> /userful_shell/data.txt
+sleep 10
+done
+exit 0
+[root@liumengli init.d]#
+不难理解，不多做解释了。
+
+
+
+第2步：在编写完遵循规则的脚本后，最好把它放在/etc/init.d/目录下，当然这不是必需的，只是一种习惯。执行cat /etc/inittab,可以看到语句 id:5:initdefault: 中间的数字5可能不是一样，可能是3也可能是5，当然也有其它的可能。如果是5的话就进入/etc/rc5.d/目录下，如果是3就进入/etc /rc3.d目录，依次类推。
+
+
+
+第3步，在进入到/etc/rcN.d目录后（N为非负整数），将你上面编号的脚本链接到这个目录，最好按照下面的格式
+
+ln -s 你编写好的脚本的绝对路径 ./SNN后面的字符就随便 ，ln命令本身不难，但链接后到该目录下的名字有一定的约束，你执行ls -l观察该目录下其它的内容，你会发现他们都是链接，此外，他们都是以K或者S开头，然后紧接的是2位或者3位的整数最后再接的是一个名字。S开头表示在启动你的脚本时候将会以start为参数，如果是以K为开头则表示会以stop为参数（既KILL的意思），后面的数字则表示他会在什么时候运行，01会最先运行，紧接着是02，03，04以此类推，在正确的做完链接以后，从新启动你的系统就可以看到你要的服务已经被运行了，当然你的保证你以上的三个步骤都是正确的。
+
+
+
+
+
+第2部分，更简单的办法：
+
+
+
+至此你已经掌握了linux开机启动最复杂的办法了（不知道是不是之一，有点麻烦而且带点蠢的感觉，但他肯定是可以用的），还有更好的办法，你不妨执行下cat /etc/rc.local看看这个文件，不需要任何帮助手册和文档，看完这个文件后你就有更好的办法来添加一个开机启动的服务。
+
+
+
+第3部分，更多的关于linux开机的内容
+
+
+
+当你有更多耐心来读我这篇算是冗长的文章的下半段时候，你会掌握linux开机的更多内容。（当然我相信这些东西是有用的）。
+
+
+
+执行cat /etc/inittab，你可以发现这么几句
+
+id:5:initdefault:
+
+# System initialization.
+si::sysinit:/etc/rc.d/rc.sysinit
+
+l0:0:wait:/etc/rc.d/rc 0
+l1:1:wait:/etc/rc.d/rc 1
+l2:2:wait:/etc/rc.d/rc 2
+l3:3:wait:/etc/rc.d/rc 3
+l4:4:wait:/etc/rc.d/rc 4
+l5:5:wait:/etc/rc.d/rc 5
+l6:6:wait:/etc/rc.d/rc 6
+
+
+
+第一行就表示该系统启动后会在运行级别5下运行，而5模式下运行会对应l5:5:wait:/etc/rc.d/rc 5，既会启动所有rc5.d目录中的脚本，linux运行级别一共分为7种：
+
+
+
+0启动停止整个系统
+
+1单用户或管理模式
+
+2多用户模式，部分网络服务启动。
+
+3正常操作运行模式，启动所有的网络服务
+
+4用户自定义模式，可以用该级别来定制所需要的运行服务
+
+5某些unix操作系统变体将其作为缺省的x-windows模式，也有些把它作为系统维护模式
+
+6重启动
+
+
+
+笔者的默认模式是5（fedora系统），不同模式下区别就是各自启动的服务不同。启动服务最少的就是1，单用户模式（有点像windows下的修复模式），它仅仅包含了作为一个操作系统所必需启动的进程，这种启动模式作用就是在你的linux某些服务出问题而导致你无法启动的时候，例如你修改了x-windows某些文件出错了，你可以进单用户模式下修改这些文件，然后再进入相应的模式。如何进入单用户模式是个很简单的内容，大家可以查询相关的资料。
+
+
+
+========
+
+Linux系统主要通过以下步骤启动：
+
+1、读取MBR的信息，启动Boot Manager
+
+Windows使用NTLDR作为Boot Manager，如果您的系统中安装多个版本的Windows，您就需要在NTLDR中选择您要进入的系统。
+
+Linux通常使用功能强大，配置灵活的GRUB作为Boot Manager，我们将在启动管理章节中向您介绍它的使用方式。
+
+2、加载系统内核，启动init进程
+
+init进程是Linux的根进程，所有的系统进程都是它的子进程。
+
+3、init进程读取“/etc/inittab”文件中的信息，并进入预设的运行级别，按顺序运行该运行级别对应文件夹下的脚本。脚本通常以“start”参数启动，并指向一个系统中的程序。
+
+通常情况下，“/etc/rcS.d/”目录下的启动脚本首先被执行，然后是“/etc/rcN.d/”目录。例如您设定的运行级别为3,那么它对应的启动目录为“/etc/rc3.d/”。
+
+4、根据“/etc/rcS.d/”文件夹中对应的脚本启动Xwindow服务器“xorg”
+
+Xwindow为Linux下的图形用户界面系统。
+
+5、启动登录管理器，等待用户登录
+
+Ubuntu系统默认使用GDM作为登录管理器，您在登录管理器界面中输入用户名和密码后，便可以登录系统。（您可以在“/etc/rc3.d/”文件夹中找到一个名为“S13gdm”的链接）
+更改运行级别
+
+————
+
+在“/etc/inittab”文件中找到如下内容：
+
+# The default runlevel.
+
+id:2:initdefault:
+
+这一行中的数字2,为系统的运行级别，默认的运行级别涵义如下：
+
+0 关机
+
+1 单用户维护模式
+
+2~5 多用户模式
+
+6 重启
+服务管理
+
+========
+
+更改启动服务
+
+————
+
+在运行级别对应的文件夹中，您可以看到许多文件名以“S##”和“K##”起始的启动脚本链接。
+
+例如：
+
+/etc/rcS.d/S35mountall.sh 挂载文件系统
+
+/etc/rcS.d/S40networking 启用网络支持
+
+/etc/rc2.d/S13gdm 启动登录管理器
+
+/etc/rc2.d/S20makedev 创建设备文件
+
+/etc/rc2.d/S23xinetd 启动超级进程
+
+init 进程将以“start”为参数，按文件名顺序执行所有以“S##”起始的脚本。脚本名称中的数字越小，它将被越早执行。例如在 “/etc/rc2.d/”文件夹中，“S13gdm”文件名中的数字小于“S23xinetd”,“S13gdm”将比“S23xinetd”先执行。
+
+如果一个脚本链接，以“K##”起始，表示它将以“stop”参数被执行。如果相应服务没有启动，则不执行该脚本。
+
+例如：
+
+/etc/rc2.d/K20powernowd 针对某种硬件的电源管理支持
+
+如果您想禁止某一服务在启动时自动运行，您可以将相应运行级别中的脚本由“S##xxx”重命名为“K##xxx”。
+
+手动控制服务
+
+————
+您也可以手动运行带有以下参数的启动脚本，来控制系统服务。
+
+start 启动
+
+stop 停止
+
+restart 重启
+
+例如：
+
+/etc/rc2.d/K20powernowd start
+
+有时您并不清楚当前运行级别，该运行级别下未必有相应脚本；而且此类脚本的前三位字符并不固定，不便于记忆。这时，您可以直接使用 “/etc/init.d/”文件夹中的启动脚本（“/etc/rcX.d/”中的启动脚本链接到“/etc/init.d/”文件夹下相应脚本），这也是我们向您推荐的方式。
+
+例如：
+
+/etc/init.d/powernowd start
+Tips：以上命令的位置并没有包含在环境变量的搜索路径中，所以要输入完整路径。
+

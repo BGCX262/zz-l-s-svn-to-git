@@ -1,0 +1,52 @@
+首先，明白一点，并不是mysql禁止远程连接，而是MYSQL的账号禁止远程连接。
+可能觉得我有点咬文嚼字了，不过我感觉分清这点还是很重要的。
+默认情况下，所有账号都是禁止远程连接的。
+（在安装MYSQL的时候，在设置ROOT密码那里有一个CHECKBOX，选中的话就开启了ROOT的远程登陆功能，默认是没被选中的）
+
+利用
+
+view source 
+print?
+1 select * from mysql.user
+
+查出所有的MYSQL用户，可以发现默认情况下，这些记录的host字段的值全都是localhost
+这个host字段就是表示哪些机器可以利用此账号连接到本机的MYSQL。
+localhost当然就代表本机了。。所以默认情况下别的机器无法连接。
+
+所以要想开启一个账号的远程连接，只要将这个账号所对应的host字段改成那个IP就行。
+比如：
+
+view source 
+print?
+1 update user set host = '192.168.230.2' where user='ninty';
+
+执行完此命令以后还要执行：
+
+view source 
+print?
+1 flush privileges;
+
+来刷新所有数据库用户的权限配置信息，让设置及时生效。
+或者重启MYSQL。
+
+将ninty这个账号的host改成192.168.230.2，这样192.168.230.2这台机器就允许通过ninty这个账号来连接到本机的MYSQL
+不过用别的账号仍然是不行的。
+将ninty的host改成192.168.230.2，就只有192.168.230.2这台机器可以通过ninty这个账号来连接到本机的MYSQL
+其它的机器（包括本机）都无法进行连接。
+
+如果想将一个账号设置成任何IP都可以登陆，将host改成 % 就行。
+如果只能192.168.230这个网段的IP可以登陆，那就将host改成：
+192.168.230.%
+
+下面是一些常见的错误信息：
+ 
+
+ERROR 1130 (00000): Host 'AAAAA-8HK8AISO' is not allowed to connect to this MySQL server
+AAAAA-8HK8AISO应该是本机的机器名，当MYSQL服务器禁止本机使用相应的账号连接的时候，就会暴这个错误。
+这时换一个允许本机去连的账号就可以啦。
+
+ERROR 1045 (28000): Access denied for user 'joejoe1991'@'TQSOFT-8HK8AISO' (using password: YES)
+这个错误一般就是用户名或者密码错误，这时应该是允许本机连接的， 否则报的应该是上面那个错。
+
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.230.2' (10061)
+这个应该是网络方面的原因连不到MYSQL，可能是IP或者端口不对，或者服务器没有开启MYSQL或者防火墙挡住了连接 。

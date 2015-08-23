@@ -1,0 +1,93 @@
+基于dump restore AND tar 的系统备与恢复（redhat 5.4）
+
+
+20111126 测试此法：
+fdisk -l > bak/vmfdiskinfo.txt
+Disk /dev/sda: 8589 MB, 8589934592 bytes
+255 heads, 63 sectors/track, 1044 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000c53
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *           2          12       88357+  83  Linux
+/dev/sda2              13         120      867510   82  Linux swap / Solaris
+/dev/sda3             121         122       16065   83  Linux
+/dev/sda4             123        1044     7405965   83  Linux
+
+以下备份工作在ssh下完成
+dd if=/dev/sda  of=bak/vmmbr.dd bs=512 count=1
+dump -0 -u -z4 -f bak/vmroot-z4.dump /
+dump -0 -u -z4 -f bak/vmboot-z4.dump /boot
+
+-rw-r--r-- 1 root root    5110137 11-26 19:47 vmboot-z4.dump
+-rw-r--r-- 1 root root        594 2011-11-27 vmfdiskinfo.txt
+-rw-r--r-- 1 root root        512 2011-11-27 vmmbr.dd
+-rw-r--r-- 1 root root  388298256 11-26 19:45 vmroot-z4.dump
+
+
+开始还原，进f13 livecd
+结果失败
+
+第二次测试
+将系统只分为root和swap二个区
+dd if=/dev/sda  of=bak/vmmbr.dd bs=512 count=1
+dd if=/dev/sda1  of=bak/vmmbr.dd	#用dd备份root分区
+
+还原：
+用一全新磁盘，启动livecd
+dd  if=mbr.back of=/dev/sda bs=512 count=1   #先按原分区复原
+# partprobe /dev/sda
+mkfs和mkswap二分区
+dd if=bak/vmmbr.dd  of=/dev/sda1
+还需要grub安装
+#grub
+grub> find  /boot/grub/stage1	#有可能无效命令
+(hd0,6) 
+grub> root (hd0,0)
+grub> setup (hd0)   #把GRUB写到MBR上；
+启动成功
+
+用g4l还原单一root分区，用新磁盘试验
+先还原mbr，
+再mkswap分区，
+在restore分区
+重启成功（不需安装grub）
+
+20111126实践总结，
+目前只能成功还原dd备份，
+需要还原mbr（相当于必须还原整个磁盘）
+还原成功的系统是单个root分区
+
+export BP=/home/since/sysbackup
+mkdir -p /home/since/sysbackup
+1 备份fdisk -l信息
+ fdisk -l > $BP/fdiskinfo.txt
+2 备份mbr(目的是为了还原分区表，不是为了还原bootloader,bootloader可以通过setup (hd0)还原)
+dd if=/dev/sda  of=$BP/mbr.backup bs=512 count=1
+3 备份文件系统
+   查看完全备份需要的空间
+dump -0 -S /
+dump -0 -u -z4 -f $BP/home.dump /home
+注：dump 是基于文件系统的备份，如果 /home /usr 等等是在同一个分区，则dump 不能加参数u 
+。对于/在于一个分区上的情况（/usr home var等在一个分区），可以用 dump -0 -u -z4 -f $BP/home.dump / 进行备份，不用一个一个目录进行备份。
+4 恢复
+查看备份集中的文件
+restore -tf $BP/home.dump
+恢复,如果/home不是独立的分区，则 cd / 然后 restore -rf $BP/home.dump
+如果/home是独立的分区，象/boot, 则，cd /home ,然后
+
+如果从一个大的备份集中选取某个文件夹，可以用restore -xf XXX.dump /etc
+
+如果/usr /etc 等等目录不是独立的文件系统，我觉得还是用restore -xf 比较好，应为-r 是重建文件系统,问题是使用-xf的时候的的第二个问题选项不知到是选择Y 还是N ，实验中还是使用了-rf.
+因该按照一定的顺序重建，/etc/user/var/，应为/etc/中含有大量的用户信息，为了防止权限紊乱，还是先重建/etc/比较稳妥。
+/proc /sys 是绝对不需要备份和恢复
+/dev/只有完全是空白系统的时候才需要备份和恢复，恢复的时候使用liveCD比较方便，如果是已经重新安装了系统或者系统没有崩溃，则/dev/目录不要备份和还原，或者说是可以备份，但是不要还原。/lib 就要视需要而定了，如果没有用户数据，则可以备份但不还原。
+
+实验中用ssh 在线 -rf/usr的时候，死机，恢复失败，看来不是所有目录都可以在线恢复，还是用liveCD比较好些。
+
+尝试用fedora 13的liveCD进行修复
+首先把虚拟机上添加一块新硬盘，目的是把备份数据dump文件拷贝到这个硬盘上，作为restore的源盘，实际中可以选择移动硬盘，远程恢复还没有尝试。用sftp把备份的dump文件考到此sdb硬盘上，用fdisk 命令删除sda上的所用分区。
+首先用dd if=mbr.back of=/dev/sda bs=1 count=66 skip=446 恢复分区表。结果发现用fdisk -l /dev/sda查看时没有分区表，后用
+dd  if=mbr.back of=/dev/sda bs=512 count=1 后得到分区表

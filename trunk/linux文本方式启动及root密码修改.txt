@@ -1,0 +1,53 @@
+linux文本方式启动 .
+2009-04-12 20:22 507人阅读 评论(0) 收藏 举报 
+
+
+什么是运行级呢？简单的说，运行级就是操作系统当前正在运行的功能级别。这个级别从1到6，具有不同的功能。这些级别在/etc/inittab文件里指定。这个文件是init程序寻找的主要文件，最先运行的服务是那些放在/etc/rc.d 目录下的文件。
+
+不同的运行级定义如下：(可以参考Red Hat Linux 里面的/etc/inittab） 
+# 缺省的运行级，RHS 用到的级别如下： 
+# 0 - 停机（千万不要把initdefault 设置为0 ） 
+# 1 - 单用户模式 
+# 2 - 多用户，但是没有 NFS 
+# 3 - 完全多用户模式 
+# 4 - 没有用到 
+# 5 - X11 
+# 6 - 重新启动 （千万不要把initdefault 设置为6 ） 
+
+对各个运行级的详细解释： 
+0 为停机，机器关闭。与Shutdown -h now相似 
+1 为单用户模式，就像Win9x 下的安全模式类似。 
+2 为多用户模式，但是没有NFS 支持。 
+3 为完整的多用户模式，是标准的运行级。 
+4 一般不用，在一些特殊情况下可以用它来做一些事情。例如在笔记本电脑的电池用尽时，可以切换到这个模式来做一些设置。 
+5 就是X11，进到Xwindow系统了。 
+6 为重启，运行init 6机器就会重启。与Reboot差不多 
+不同的运行级有不同的用处，也应该根据自己的不同情形来设置。例如，如果丢失了root 口令，那么可以让机器启动进入单用户状态来设置。在启动后的 lilo 提示符下输入： 
+init=/bin/sh rw 
+就可以使机器进入运行级1 ，并把root文件系统挂为读写。他会跳过所有系统认证，让你使用passwd 程序来改变root口令，然后启动到一个新的运行级。
+
+Fedora 16不再使用inittab方式来配置启动环境，而是使用systemd的方式
+
+开机进入多用户模式：
+
+终端下键入：
+
+ln -si /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+
+提示是否覆盖default.target，键入 y
+
+重启即可进入多用户模式
+
+开机进入桌面环境：
+
+终端下键入：
+
+ln -si /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+
+提示是否覆盖default.target，键入 y
+
+重启即可进入桌面环境
+
+
+
+编辑其中的id:3:initdefautl，当为“3”时进入console界面，为“5”进入xwindow界面

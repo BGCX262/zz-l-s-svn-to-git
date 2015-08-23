@@ -1,0 +1,266 @@
+Linux + Xampp(定制包) + tomcat + Postgresql 安装笔记2010-08-05 1726由于采用了定制 Xampp 包，所以 apache+php+mysql 安装配置无法详细表述：）
+
+
+1.       Linux的安装
+Linux 正常安装，默认语言选择英语，否则字符界面下出现乱码，安装软件包时选择只选择开发工具，并进入细节选择gcc相关工具。
+
+2.       Xampp 特制包的安装
+安装完成 Linux 重启之后，自动进入命令提示符下，利用 get 下载 Xampp 特制包
+# wget http192.168.0.66opt.tar.gz
+# groupadd -g 500 vchkpw
+# useradd -u 500 -g vchkpw vpopmail
+# tar –zxvf opt.tar.gz –C 
+安装完成后运行 optlampplampp start
+访问 http192.168.0.1 即可看到 apache 提示页面
+数据库管理地址为 http192.168.0.1phpMyAdmin ,用户名密码为：roothttpserver
+添加一个虚拟主机：
+a 打开 optconfvhost.map 文件
+b 添加一行： www.ccgs.gov.cn optvhostccgs
+c 建立 ccgs 文件夹： mkdir optvhostccgs
+                    mkdir optvhostccgsROOT
+d 改变文件夹所属用户组：chown 500.500 optvhostccgs –R
+e 重启 lampp ：optlampplampp restart 访问 httpwww.ccgs.gov.cn
+添加一个 FTP 用户：修改数据库中 proftp库里的user表
+新建一个用户及相关数据库：在数据库管理的权限中添加用户，如图(注意英文选项，用意是添加用户的同时添加同名的数据库，并赋予权限)
+
+
+1.       安装 Tomcat
+a) 安装 JDK
+# wget http192.168.0.66jdk.bin
+# chmod a+x jdk.bin
+# .jdk.bin
+# ……
+
+#vi /etc/profile
+
+在最后面加入 
+
+JAVA_HOME=/usr/java/jdk-1_5_0_02
+CLASSPATH=.:$JAVA_HOME/lib.tools.jar
+PATH=$JAVA_HOME/bin:$PATH
+export JAVA_HOME CLASSPATH PATH
+
+保存退出。
+要使JDK在所有的用户中使用，可以这样：
+
+vi /etc/profile.d/java.sh
+
+在新的java.sh中输入以下内容： 
+
+JAVA_HOME=/usr/java/jdk1.6.0_22
+JRE_HOME=/usr/java/jdk1.6.0_22/jre
+CLASSPATH=.:$JAVA_HOME/lib/tools.jar
+PATH=$JAVA_HOME/bin:$PATH
+export JAVA_HOME CLASSPATH PATH
+
+保存退出，然后给java.sh分配权限：chmod 755 /etc/profile.d/java.sh
+
+在终端使用echo命令检查环境变量设置情况。
+
+#echo $JAVA_HOME
+
+#echo $CLASSPATH
+
+#echo $PATH
+
+4.检查JDK是否安装成功。
+
+#java -version
+
+如果看到JVM版本及相关信息，即安装成功！
+
+
+重新登录后，执行 java –version 查看 jdk 信息是否正确
+
+
+b) 安装 Tomcat
+# wget http192.168.0.66tomcat.tar.gz
+# tar –zxvf tomcat.tar.gz –C opt
+# opt/apache-tomcat-6.0.10/bin/startup.sh
+# service iptables stop
+打开 tomcat 并关闭了防火墙，这样就能访问 http://192.168.0.1:8080 
+
+***********************************
+让Linux下的tomcat自启动
+
+#cd /usr/local/src
+#chmod +x j2sdk-1_4_2_08-linux-i586.bin
+#./j2sdk-1_4_2_08-linux-i586.bin
+生成目录j2sdk1.4.2_08
+#tar -zxvf jakarta-tomcat-4.1.31.tar.gz
+生成目录jakarta-tomcat-4.1.31
+#mv j2sdk1.4.2_08 /usr/local
+#mv jakarta-tomcat-4.1.31 /usr/local
+#cd /usr/local
+建立符号链接
+#ln -s jakarta-tomcat-4.1.31/ tomcat
+#ln -s j2sdk1.4.2_08/ java
+#cd tomct/bin
+#more catalina.sh
+
+编辑TOMCAT的启动脚本：
+#vi +2 catalina.sh
+在第二行加入以下内容：
+# chkconfig: 2345 63 37
+# description: tomcat server init script
+JAVA_HOME=/usr/java/jdk1.6.0_22
+CATALINA_HOME=/opt/tomcat-6
+然后保存退出。
+#cp catalina.sh /etc/rc.d/init.d/tomcat
+#chkconfig --add tomcat
+#chkconfig --list tomcat
+tomcat 0:off 1:off 2:on 3:on 4:on 5:on 6:off
+启动tomcat
+#service tomcat start
+Using CATALINA_BASE: /usr/local/tomcat
+Using CATALINA_HOME: /usr/local/tomcat
+Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+Using JAVA_HOME: /usr/local/java
+测试tomcat是否启动
+#netstat -an|grep 8080
+tcp 0 0 0.0.0.0:8080 0.0.0.0:* LISTEN
+停止tomcat
+#service tomcat stop
+
+注：
+Tomcat 5.5也适用 
+***************************************************
+
+2.       整合 apache 和 tomcat
+编辑 httpd.conf 文件，添加：
+Include etcextrahttpd-vhosts.conf
+编辑 httpd-vhosts.conf 文件，例如：
+VirtualHost 80
+    ServerAdmin qsonglai@gmail.com
+    ProxyPass  ajplocalhost8009
+    ProxyPassReverse  ajplocalhost8009
+    ServerName www.ccgs.gov.cn
+    ServerAlias www.ccgs.gov.cn
+VirtualHost
+重启 Apache
+
+3.       安装 PostgreSQL
+# useradd postgre
+# wget http192.168.0.66postgresql-8.2.4.tar.gz
+# tar –zxvf postgresql-8.2.4.tar.gz
+# cd postgresql-8.2.4
+# .configure –prefix=optpostgresql
+# make
+# make install
+# chown -R postgre.postgre  optpostgresql
+# vi ~postgre.bash_profile
+添加：
+       PGLIB=optpostgresqllib
+        PGDATA=$HOMEdata
+        PATH=$PATHoptpostgresqlbin
+        MANPATH=$MANPATHoptpostgresqlman
+       export PGLIB PGDATA PATH MANPATH
+# su – postgre
+$ mkdir data
+$ initdb
+数据库安装完毕，下面进行一下远程访问的设置：
+$ vi ~datapostgresql.conf
+       去掉 #listen_addresses = 'localhost' 前面的 “#”，并且把“localhost”改
+      成“”,这是允许所有主机访问数据库
+$ vi ~datapg_hba.conf
+      添加新行：host   all   all 192.168.0.6632   trust
+修改防火想设置，打开 postgresql 5432 端口
+# vi etcsysconfigiptables
+在类似行下面添加如下打开都端口的语句(一般为倒数第二行)
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p --dprot 5432 -j ACCEPT
+
+
+
+注：linux 安装的时候选择防火墙，并选择最小安装
+
+raid 的使用是 分别为所要挂接的点创建 raid 分区，然后做raid1挂接
+
+只需要创建 swap 和 etx3  即可
+
+
+php.ini 中限制文件上传大小的三个参数
+
+memory_limit = 1024M
+
+post_max_size = 1024M
+
+upload_max_filesize = 1024M
+
+
+服务器防火墙默认不开 mysql　的端口
+
+防火墙打开方法
+
+service iptables start
+
+关闭
+
+service iptables stop
+
+防火墙配置文件位置
+
+etcsysconfigiptables
+
+打开端口的语句（vi 中当前行 yy 复制当前行）
+
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p --dprot 3306 -j ACCEPT
+
+
+可修改 optlampplampp 文件，添加 tomcat 的启动和关闭，例如：
+
+“starttomcat”)
+
+              optapache-tomcat-6.0.10binstartup.sh
+
+       ;;
+
+
+“stoptomcat”)
+
+              optapache-tomcat-6.0.10binshutdown.sh
+
+       ;;
+
+
+启动 PostgreSQL：使用 postgre 用户登录后，执行 postmaster –i –D ~data &
+
+停止服务：pg_ctl –m immediate –D ~data stop
+
+
+编辑 linux 设置：# setup
+
+可进行防火墙、网络、自启动项目等设置
+
+
+Linux 重启网络：etcinit.dnetwork restart
+
+
+Linux VI 操作：
+
+dd 剪切当前行
+
+yy 复制当前行
+
+p 在前粘贴
+
+P 在后粘帖
+
+ynw 复制n个单词
+
+yy 复制一行
+
+ynl 复制n个字符
+
+y$ 复制当前光标至行尾处
+
+nyy 拷贝n行完了用p粘贴
+
+
+安装jdk-1_5_0_09。
+
+1) chmod a+x jdk-1_5_0_09-linux-i586-rpm.bin
+
+2) .jdk-1_5_0_09-linux-i586-rpm.bin
+
+3)rpm -ivh jdk-1_5_0_09-linux-i586.rpm
+ 

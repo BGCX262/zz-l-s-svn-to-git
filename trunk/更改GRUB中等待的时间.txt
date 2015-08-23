@@ -1,0 +1,4 @@
+如何更改GRUB中等待的时间？？？
+/boot/grub/grub.conf
+
+Time=xx. 

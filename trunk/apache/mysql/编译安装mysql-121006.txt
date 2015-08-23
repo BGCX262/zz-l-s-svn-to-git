@@ -1,0 +1,63 @@
+CFLAGS="-O6 -mpentiumpro -fomit-frame-pointer" CXX=gcc \
+CXXFLAGS="-O6 -mpentiumpro -fomit-frame-pointer \-felide-constructors -fno-exceptions -fno-rtti"
+
+5.5.3-m3失败，估计是gcc兼容问题
+./configure 
+--prefix=/opt/data/mysql\
+--localstatedir=/opt/data/mysql/log/\
+--enable-thread-safe-client \
+--enable-assembler \
+--with-server-suffix=-enterprise-gpl \
+--with-extra-charsets=latin1,gb2312,big5,utf8,GBK \
+--with-extra-charsets=all \
+--with-charset=utf8 \
+--with-pthread --enable-static \
+--with-client-ldflags=-all-static \
+--with-mysqld-ldflags=-all-static \
+--without-debug --with-big-tables \
+--without-ndb-debug \
+--without-isam --with-federated-storage-engine \
+--with-unix-socket-path=/opt/data/mysql/mysql.sock
+
+mysql5.5后使用cmake,5.5.28成功
+cmake -DCMAKE_INSTALL_PREFIX=/opt/data/mysql \
+-DMYSQL_UNIX_ADDR=/opt/data/mysql/data/mysql.sock \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_EXTRA_CHARSETS=utf8,gbk,big5 \
+-DWITH_MYISAM_STORAGE_ENGINE=1 \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_MEMORY_STORAGE_ENGINE=1 \
+-DWITH_READLINE=1 \
+-DENABLED_LOCAL_INFILE=1 \
+-DMYSQL_DATADIR=/opt/data/mysql/data/ \
+-DMYSQL_USER=mysql \
+-DMYSQL_TCP_PORT=3306
+
+make && make install
+
+出现do_abi_check错误
+打开Makefile,删掉1146行至1163行，即do_abi_check:目标后的所有语句(要保留“do_abi_check:”)。
+再执行make && make install 就OK了。
+
+[root@linux193 data]# /opt/data/mysql/scripts/mysql_install_db --basedir=/opt/data/mysql \
+--datadir=/opt/data/mysql/data --user=mysql --defaults-file=/opt/data/mysql/my.cnf
+
+
+chown -R mysql:mysql /opt/data/mysql 
+
+./bin/mysqld_safe --defaults-file=/opt/data/mysql/my.cnf --user=mysql & 
+当然如果你删除/etc/my.cnf,可以不要后面的--defaults-file=/opt/data/mysql/my.cnf
+
+./bin/mysql -u root 
+
+mv share/mysql/mysql.server /etc/init.d/mysql
+出现service mysqld stop 无法关闭情况，说无法找到pid文件（pid在data目录中）
+vi /etc/init.d/mysqld
+...
+basedir=/opt/data/mysql
+datadir=/opt/data/mysql/data
+...
+
+
+#old################[root@linux237 mysql-5.5.3-m3]# ./configure --prefix=/opt/data/mysql/ --enable-assembler --with-extra-charsets=utf8,gbk --without-debug --with-unix-socket-path=/opt/data/mysql/mysql.sock --enable -thread -safe -client --with -big -tables --with -readline --with -ssl --with -embedded -server --enable -local -infile --with -plugins=partition,innobase,myisammrg &&make &&make install

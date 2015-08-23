@@ -1,0 +1,74 @@
+4.1 文件操作
+
+    1）ls命令
+
+    在命令后加个 －Z 或者加 –context
+
+    [root@python azureus]# ls -Z
+
+    -rwxr-xr-x fu fu user_u:object_r:user_home_t azureus
+
+    -rw-r--r-- fu fu user_u:object_r:user_home_t Azureus2.jar
+
+    -rw-r--r-- fu fu user_u:object_r:user_home_t Azureus.png
+
+    2）chcon
+
+    更改文件的标签
+
+    [root@python tmp]# ls --context test.txt
+
+    -rw-r--r-- root root root:object_r:staff_tmp_t test.txt
+
+    [root@python tmp]# chcon -t etc_t test.txt
+
+    [root@python tmp]# ls -lZ test.txt
+
+    -rw-r--r-- root root root:object_r:etc_t test.txt
+
+    3)restorecon
+
+    当这个文件在策略里有定义是，可以恢复原来的 文件标签。
+
+    4）setfiles
+
+    跟chcon一样可以更改一部分文件的标签，不需要对整个文件系统重新设定标签。
+
+    5）fixfiles
+
+    一般是对整个文件系统的， 后面一般跟 relabel,对整个系统 relabel后，一般我们都重新启动。如果，在根目录下有.autorelabel空文件的话，每次重新启动时都调用 fixfiles relabel
+
+    6）star
+
+    就是tar在SELinux下的互换命令，能把文件的标签也一起备份起来。
+
+    7）cp
+
+    可以跟 -Z, --context=CONTEXT 在拷贝的时候指定目的地文件的security context
+
+    8）find
+
+    可以跟 –context 查特定的type的文件。
+
+    例子：
+
+    find /home/fu/ --context fu:fu_r:amule_t -exec ls -Z {} \:
+
+    9）run_init
+
+    在sysadm_t里手动启动一些如Apache之类的程序，也可以让它正常进行，domain迁移。
+
+    4.2进程domain的确认
+
+    程序现在在那个domain里运行，我们可以在ps 命令后加 －Z
+
+    [root@python /]# ps -eZ
+
+    LABEL PID TTY TIME CMD
+
+    system_u:system_r:init_t 1 ? 00:00:00 init
+
+    system_u:system_r:kernel_t 2 ? 00:00:00 ksoftirqd/0
+
+    system_u:system_r:kernel_t 3 ? 00:00:00 watchdog/0
+

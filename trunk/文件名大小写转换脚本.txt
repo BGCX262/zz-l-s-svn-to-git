@@ -1,0 +1,315 @@
+#!/bin/sh
+
+dir="./";
+#files='find $dir -type f';
+for f in `ls ????????.J??`	#用于学生照片文件名转换
+do
+echo $f
+#dir_name='dirname $i';
+#ori_filename='basename $i';
+new_filename=`echo $f|tr '[A-Z]' '[a-z]' `;
+#echo  $new_filename
+mv $f $new_filename
+done
+
+
+
+这是个比较经典的shell问题，正是shell发挥作用的时候
+
+　　先提供两个方法：
+
+　　1、
+
+　　for uppercase in `ls`
+
+　　do
+
+　　for lowercase in `ls $uppercase|tr [A-Z] [a-z]`
+
+　　do
+
+　　mv $uppercase $lowercase 2>/dev/null
+
+　　done
+
+　　done
+
+　　2、
+
+　　typeset -u Lcase
+
+　　for Ucase in `ls`
+
+　　do
+
+　　Lcase=$Ucase
+
+　　mv $Ucase $Lcase
+
+　　done
+
+　　请大家完善并补充
+
+　　for file in `ls`
+
+　　do
+
+　　mv $file `echo $file|tr "[A-Z]" "[a-z]"`
+
+　　done
+
+　　用awk也行 ：）
+
+　　#!/bin/sh
+
+　　for I in `ls` ;
+
+　　do
+
+　　C=$(echo $I|awk '{print toupper($I)}')
+
+　　mv $I $C
+
+　　done
+
+　　for i in *
+
+　　do
+
+　　a=`echo $i |tr '[a-z]' '[A-Z]'`
+
+　　cp $i $a
+
+　　echo $a
+
+　　rm -i $a
+
+　　done
+
+　　我的当前目录及其n级深度的子目录都是大写，我想改成小写。我用find . -exec file.sh {} ; 怎么每次都只能改一级的深度？非得用for 和cd/cd..才可以完成吗？
+
+　　find . -exec ...这样的命令肯定是递归搜索了（即深入n层目录）了，大半是你的file.sh有问题，无法处理带有目录的文件名，如：./a/file.txt文件在你的的脚本处理下，被处理成：mv ./a/file.txt ./A/FILE.TXT, ./A目录不存在当然mv不成功了。
+
+　　应该是在file.sh上出的问题，我是这么简单的做的：
+
+　　#!/bin/sh
+
+　　new=`echo $1|tr "[a-z]" "[A-Z]"`
+
+　　mv $1 $new
+
+　　这样的shell是基于find对深层目录处理时候是先从最深层处理的，现在看来find是从当前开始处理再至最深层的。
+
+　　那这样大小写转换的shell又该怎样写呢？
+
+　　拆分后再转换
+
+　　#!/bin/sh
+
+　　dn=`dirname $1`
+
+　　fn=`basename $1`
+
+　　newfn=`echo $fn|tr "[a-z]" "[A-Z]"`
+
+　　mv $1 $dn/$newfn
+
+　　测试没通过。
+
+　　n=`dirname $1`
+
+　　newdn=`echo $dn|tr "[a-z]" "[A-Z]"`
+
+　　fn=`basename $1`
+
+　　newfn=`echo $fn|tr "[a-z]" "[A-Z]"`
+
+　　f1=$newdn/$fn
+
+　　f2=$newdn/$newfn
+
+　　if [ $f1 != $f2 ]
+
+　　then
+
+　　echo "$f1 $f2"
+
+　　mv $f1 $f2
+
+　　fi
+
+　　这个可以了。不过执行的时候这sh不能在被转化的目录中。
+
+　　应该这样：find . -exec ../mysh.sh {} ;
+
+　　下面引用由samhoo在 2002/10/24 03:33pm 发表的内容：
+
+　　dn=`dirname $1`
+
+　　newdn=`echo $dn|tr "" ""`
+
+　　fn=`basename $1`
+
+　　newfn=`echo $fn|tr "" ""`
+
+　　...
+
+　　呵呵，这个肯定也不行，不知道有没有人测试过？！
+
+　　原因是：你改过了目录的名字，所以$f1的目录$newdn是不存在的；还有如果有空目录出现，程序也是处理不了的。
+
+　　只有每次处理都重新读一次目录才可以，信乎？！
+
+　　俺测了，干活啊
+
+　　就是要把脚本放在所检验目录子外
+
+　　下面引用由smileniu在 2002/12/17 02:51pm 发表的内容：
+
+　　呵呵，这个肯定也不行，不知道有没有人测试过？！
+
+　　原因是：你改过了目录的名字，所以$f1的目录$newdn是不存在的；还有如果有空目录出现，程序也是处理不了的。
+
+　　只有每次处理都重新读一次目录才可以，信乎？！
+
+　　分析的很对！一旦发生路径名改动，后面的都用不成了~~~
+
+　　可以改成这样就行了，
+
+　　代码：
+
+　　FILES=`find $1 | sort -r`
+
+　　for i in $FILES; do
+
+　　DIR=`dirname $i`
+
+　　BAS=`basename $i | tr '[a-z]' '[A-Z]'`
+
+　　bas=`echo $BAS | tr '[A-Z]' '[a-z]'`
+
+　　mv $DIR/$BAS $DIR/$bas
+
+　　done
+
+　　（不知为什么，后半部分居然没贴上，超出本页最大长度啦？）
+
+　　如果适当扩展一下，改成可以带参数，大写变小写，或者小写变大写，完整的如下
+
+　　代码：
+
+　　#!/bin/sh
+
+　　############################################################
+
+　　# this script will change file name recursively with option
+
+　　# -u: locase to upcase
+
+　　# -l: upcase to locase
+
+　　############################################################
+
+　　hint () {
+
+　　echo " Usage: $0 [-l|-u] DIR1 [DIR2 DIR3...]
+
+　　-l to lowcase
+
+　　-u to upcase"
+
+　　exit 1
+
+　　}
+
+　　if test $# -lt 2; then
+
+　　echo "Too few arguments."
+
+　　hint
+
+　　fi
+
+　　while [ "$1" ]; do
+
+　　case $1 in
+
+　　-l) ACTION="lo"
+
+　　shift 1
+
+　　;;
+
+　　-u) ACTION="up"
+
+　　shift 1
+
+　　;;
+
+　　*) if test -d $1; then
+
+　　DIR="$DIR $1"
+
+　　else
+
+　　echo "no such directory --- $1"
+
+　　hint
+
+　　fi
+
+　　shift
+
+　　;;
+
+　　esac
+
+　　done
+
+　　# echo $ACTION
+
+　　# echo $DIR
+
+　　FOUND=`find $DIR | sort -r`
+
+　　for i in $FOUND; do
+
+　　DN=`dirname $i`
+
+　　BS=`basename $i`
+
+　　loBS=`echo $BS | tr '[A-Z]' '[a-z]'`
+
+　　upBS=`echo $BS | tr '[a-z]' '[A-Z]'`
+
+　　NAME1=$DN/$BS
+
+　　if [ "$ACTION" = "lo" ]; then
+
+　　NAME2=$DN/$loBS
+
+　　elif [ "$ACTION" = "up" ]; then
+
+　　NAME2=$DN/$upBS
+
+　　fi
+
+　　if [ "$NAME1" = "$NAME2" ]; then
+
+　　echo "****: $NAME1 ---x--- $NAME2 identical!"
+
+　　else
+
+　　echo "- renaming $NAME1 --> $NAME2"
+
+　　mv $NAME1 $NAME2
+
+　　fi
+
+　　done
+
+　　是啊~
+
+　　其实仔细看了一下楼上的帖子，发现问题的所在就是 find 得到结果并不能直接拿来处理，因为它是自上而下的，而目录一旦改名，子目录就全抓瞎了。而经过排序后（先处理最深的目录，由里向外）就能用了。
+
+　　然后稍作修改，并加上一些参数，使之有一定的实用性。

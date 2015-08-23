@@ -1,0 +1,44 @@
+#	$OpenBSD: sshd_config,v 1.73 2005/12/06 22:38:28 reyk Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/local/bin:/bin:/usr/bin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options change a
+# default value.
+
+Port 7011 
+Protocol 2
+
+SyslogFacility AUTHPRIV
+
+PermitRootLogin no 
+
+HostbasedAuthentication no
+IgnoreRhosts yes
+
+PermitEmptyPasswords no
+PasswordAuthentication yes
+
+ChallengeResponseAuthentication no
+
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials yes
+
+UsePAM yes
+
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES 
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT 
+AcceptEnv LC_IDENTIFICATION LC_ALL
+X11Forwarding yes
+ClientAliveInterval 600
+ClientAliveCountMax 0
+MaxStartups 3
+
+#Subsystem	sftp	/usr/libexec/openssh/sftp-server
+
+AllowUsers zzasd
+AllowGroups zzasd

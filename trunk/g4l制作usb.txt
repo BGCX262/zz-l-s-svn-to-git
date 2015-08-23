@@ -1,0 +1,29 @@
+g4l usb 
+2011-08-31 20:49
+- download G4L ISO from http://sourceforge.net/projects/g4l
+- download latest syslinux-X.XX.zip from http://www.kernel.org/pub/linux/utils/boot/syslinux/
+
+- insert your usb stick
+- make a directory "boot" on the usb stick
+
+- extract all the files from downloaded G4L ISO and place them into the "boot" directory on the usb stick:
+--- windows user can d/l and use http://www.magiciso.com/ to do this
+--- linux users simply mount the iso using mount -o loop g4l-v0.27.iso iso and cp the files over
+- in the "boot" directory delete syslinux.cfg
+- in the "boot" directory rename isolinux.cfg to syslinux.cfg
+- from the "boot" directory copy syslinux.cfg to the root of the usb stick (F: or /)
+- edit syslinux.cfg in the root directory, you now need to add "boot/" before each line that points to a file:
+--- DEFAULT vesamenu.c32 to DEFAULT boot/vesamenu.c32
+--- MENU BACKGROUND test.png to MENU BACKGROUND boot/test.png
+--- KERNEL bzImage6 to KERNEL boot/bzImage6
+--- APPEND initrd=ramdisk.gz.... to APPEND initrd=boot/ramdisk.gz....
+------- do this for all KERNEL lines and all APPEND lines just add boot/ dont change what is there already, till you reach the last line
+--- ONTIMEOUT bz26.5 and change that to ONTIMEOUT boot/bz26.5
+
+- extract the syslinux-X.XX.zip you downloaded
+- windows users go into  the win32 directory of the extracted file
+--- do syslinux.exe -m -a -d /boot F:
+- linux users go into the linux directory of the extraced file
+
+--- do ./syslinux /dev/sdd1
+

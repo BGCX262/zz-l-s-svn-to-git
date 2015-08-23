@@ -1,0 +1,138 @@
+************20101112成功设置ftp防火墙***************
+2.服务器端设置(以CentOS为例)
+修改vsftpd.conf配置文件让它支持Passive（被动）模式
+
+#vim /etc/vsftpd/vsftpd.conf 在最后一行添加如下内容：
+
+pasv_min_port=3001 （设置被动模式的端口范围）
+
+pasv_max_port=3005 （设置被动模式的端口范围）
+
+在防火墙配置文件iptables中添加端口
+
+/////#vim /etc/sysconfig/iptables
+
+/////-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 3000:3010 -j ACCEPT重启/////服务使其生效
+
+#service vsftpd rstart
+
+#service iptables restart
+******************************************
+
+首先安装Linux 企业版第一张光盘中的vsftpd-2.0.1-5.i386.rpm
+#rpm –ivh /media/cdrom/RedHat/RPMS/vsftpd-3.0.1-5.i386.rpm
+启动vsftpd服务 
+#service vsftpd start
+刷新防火墙 
+#iptables -F
+这样一个简单linux下的FTP就已经搭建好了！ 
+下面就来慢慢优化我们的FTP服务器：
+
+实验一：如果我不允许FTP匿名登陆，我们可以修改vsftpd的主配置文件来实现
+#vi /etc/vsftpd/vsftpd.conf 把anonymous_enable=YES 改为anonymous_enable=NO
+重启vsftpd即可！
+
+实验二：windows中FTP服务器可以设置欢迎词，最大连接数，那我们在Linux的FTP服务器中设置呢？我要回答的是：同样可以，我们同样可以vsftpd的主配置文件来实现
+# vi /etc/vsftpd/vsftpd.conf 
+在最后添加 ftpd_banner=welcome to here! 这就是欢迎词
+Max_clients=100 这就表示最多可以有100个用户同时访问
+重启vsftpd即可！
+
+实验三：如果我想把借我钱不还的同事（lilei），不想让他登陆到我们的FTP站点，那我可以把用户lilei添加到vi /etc/vsftpd.ftpusers 重启vsftpd服务即可。
+
+实验四：上午总经理说要提拔公司的一小部分人，听到这个消息，赶紧行动，我只允许总经理一个人可以登陆FTP服务器，其他人休想，拍经理马匹，限制其他人。我可以这样做：
+# vi /etc/vsftpd/vsftpd.conf 到最后添加2条，
+userlist_deny=NO /这个列表里的人不拒绝，其他人拒绝（包括匿名）
+userlist_file=/etc/mp /指明列表的路径
+然后：#vi /etc/mp 把经理的名字添加上去
+重启vsftpd 服务即可！
+但是下午经理把提拔的人的名字给公布了，愤怒的是既然没有我。为了表现一下我的愤怒，我决定让经理不能登陆FTP服务器，其他人都可以。我可以这样做：
+# vi /etc/vsftpd/vsftpd.conf 把上午添加的userlist_deny=NO 
+改为userlist_deny=YES /这个列表中的人拒绝，其他人通过。
+重启vsftpd 服务即可！
+
+实验五：注册的用户我们可以给他很高的下载速度（200k），匿名用户的话，给他们20K的速度，可以这样做：
+# vi /etc/vsftpd/vsftpd.conf 在最后添加
+Local_max_rate=200000
+Anon_max_rate=20000
+重启vsftpd 服务即可！
+
+实验六：前天同事一（zhangsan）发了一根烟给我，昨天同事二（lisi）给了我一包烟，今天同事三（wangwu）给了我一条烟，我想根据他们给我的烟，来给他们设置不同的FTP下载速度，我可以这样做：
+# vi /etc/vsftpd/vsftpd.conf 到最后添加
+User_config_dir=/etc/vsftpd /定义用户的配置文件
+#vi /etc/vsftpd/zhangsan 添加以下
+Local_max_rate = 3000 /与一根烟等价
+#vi /etc/vsftpd/lisi 添加以下
+Local_max_rate = 30000 /与一包烟等价
+#vi /etc/vsftpd/wangwu 添加以下
+Local_max_rate = 300000 /与一条烟等价
+重启vsftpd 服务即可！
+
+实验七：如何建立简单的虚拟用户呢？我只想让他们可以登陆FTP，但不能登陆我的linux系统，这样可以保证FTP服务器的安全。可以这样做：
+Adduser -g ftp -s /sbin/nologin user01 /直接添加user01用户到ftp组，
+Passwd user01 /给user01设置密码
+
+实验八：上面所说的虽然简单，但还是不安全，那还有没有其他的方法来创建更安全的虚拟用户呢？有！我们可以这样做：
+1， 建立虚拟用户的口令库文件
+#vi logins.txt 添加以下
+Zhangsan /用户名
+123 /密码
+Lisi
+234
+Wangwu
+345
+2， 生产vsftpd的认证数据库
+#db_load –T –t hash –f logins.txt /etc/vsftpd/vsftpd_logins.db
+改数据库权限
+#chmod 600 /etc/vsftpd/vsftpd_logins.db
+3,建立虚拟用户所需的PAM配置文件
+#vi /etc/pam.d/vsftpd.vu 添加以下：
+auth required /lib/security/pam_userdb.so db=/etc/vsftpd/vsftpd_logins
+Account required /lib/security/pam_userdb.so db=/etc/vsftpd/vsftpd_logins
+4,建立虚拟用户及所要访问的目录并设置相应的权限
+#useradd -d /home/ftpsite virtual /建立vsftpd虚拟用户所需的系统帐号
+#chmod 700 /home/ftpsite/ 设置宿主目录的权限为700
+5，设置vsftpd.conf配置文件
+#vi /etc/vsftpd/vsftpd.conf 添加如下：
+Guest_enable=YES
+Guest_username=virtual
+Pan_service_name=vsftpd.vu
+Anon_world_readable_only=NO
+重启vsftpd服务即可！
+
+实验九：管理虚拟用户，要求如下：
+Wangwu有浏览目录、上传、改名、删除等权限
+Lisi 有浏览目录、上传、下载权限
+Zhangsan 有浏览目录、下载的权限（且只能在/misc/abc目录下，速度为20k）
+我们可以这样做：
+首先编辑vsftpd的主配置文件，
+#vi /etc/vsftpd/vsftpd.conf 添加如下：
+User_config_dir=/etc/vsftpd /指定虚拟用户配置文件的存放处
+然后满足wangwu的需求：
+Vi /etc/vsftpd/wangwu 添加如下：
+Anon_world_readable_only=NO //开放读的权限（如果没有添加此项，用户看到的目录是隐藏的）
+Anon_upload_enable=YES
+Anon_mkdir_write_enable=YES
+Anon_other_write_enable=YES
+
+满足lisi的需求：
+Vi /etc/vsftpd/lisi 添加如下：
+Anon_world_readable_only=NO //开放读的权限（如果没有添加此项，用户看到的目录是隐藏的）
+Anon_upload_enable=YES
+
+满足zhangsan的需求：
+Vi /etc/vsftpd/zhangsan 添加如下：
+Anon_world_readable_only=NO //开放读的权限（如果没有添加此项，用户看到的目录是隐藏的）
+Local_root=/misc/abc //设置目录为本地
+Anon_max_rate=20000
+最后重启vsftpd服务即可！
+
+实验十：如何设置匿名的用户可以上传以及删除的权限
+我们可以这样做：
+#vi /etc/vsftpd/vsftpd.conf 添加如下：
+Anon_upload_enable=YES
+Anon_mkdir_write_enable=YES
+Anon_other_write_enable=YES
+#chmod - R 777 /var/ftp/pub /改变pub目录的权限
+
+重启vsftpd服务即可。

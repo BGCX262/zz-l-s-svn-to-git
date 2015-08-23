@@ -1,0 +1,222 @@
+[linux安全]用denyhosts保障ssh的安全
+分类：系统架构评论：0条作者：admin日期：2009-12-24 
+1，为什么使用denyhosts
+看一下我们的系统日志,如果我们没有做基于IP地址的限制，
+那么我们可从日志中发现大量有人在尝试通过ssh登录的记录，
+
+[root@dev phpprog]# tail -100 /var/log/secure
+
+Jan 30 00:40:14 dev sshd[4286]: Invalid user admin from 69.64.72.247
+Jan 30 00:40:14 dev sshd[4287]: input_userauth_request: invalid user admin
+Jan 30 00:40:14 dev sshd[4286]: pam_unix(sshd:auth): check pass; user unknown
+Jan 30 00:40:22 dev sshd[4290]: pam_succeed_if(sshd:auth): error retrieving information about user admin
+Jan 30 00:40:24 dev sshd[4290]: Failed password for invalid user admin from 69.64.72.247 port 54929 ssh2
+Jan 30 00:40:25 dev sshd[4291]: Received disconnect from 69.64.72.247: 11: Bye Bye
+Jan 30 00:40:26 dev sshd[4292]: Invalid user admin from 69.64.72.247
+Jan 30 00:40:26 dev sshd[4293]: input_userauth_request: invalid user admin
+Jan 30 00:40:26 dev sshd[4292]: pam_unix(sshd:auth): check pass; user unknown
+Jan
+30 00:40:26 dev sshd[4292]: pam_unix(sshd:auth): authentication
+failure; logname= uid=0 euid=0 tty=ssh ruser=
+rhost=69-64-72-247.dedicated.abac.net
+Jan 30 00:40:26 dev sshd[4292]: pam_succeed_if(sshd:auth): error retrieving information about user admin
+Jan 30 00:40:28 dev sshd[4292]: Failed password for invalid user admin from 69.64.72.247 port 55144 ssh2
+Jan 30 00:40:28 dev sshd[4293]: Received disconnect from 69.64.72.247: 11: Bye Bye
+
+从频繁的记录中可以看出是有人在用程序尝试登录到我们的 server
+
+这些不仅仅是对安全的威胁，同时也给服务器带来无谓的负担
+
+2，安装denyhosts
+   
+    这个软件的官方站：
+   http://denyhosts.sourceforge.net/
+   上面提供了noarch的rpm
+    我们也可以从http://rpm.pbone.net上面下载编译好的针对特定发行版的软件
+    
+   
+wget
+ftp://ftp.pbone.net/mirror/ftp.freshrpms.net/pub/freshrpms/pub/dag/dries/redhat/el5/en/x86_64/RPMS.dries/denyhosts-2.6-3.el5.rf.noarch.rpm
+
+3,denyhosts的工作原理
+    denyhosts是利用tcp wrapper进行工作，
+    如果它拒绝某个IP访问，那么它会把这人IP加入到 /etc/hosts.deny这个文件中,
+    
+    
+    说明之一：如何知道你的服务是否支持 tcp wrappers?
+    比如：当前我们要用 tcp wrappers来保护 sshd的登录，但是我们机器上的sshd是否支持tcp wrappers呢？
+         如果不支持那denyhosts的工作岂不白做了？
+          
+          很简单，用ldd进行测试即可：
+          
+          [root@dev phpprog]# ldd /usr/sbin/sshd
+        linux-gate.so.1 =>  (0×00357000)
+        libwrap.so.0 => /usr/lib/libwrap.so.0 (0x003d5000)
+        libpam.so.0 => /lib/libpam.so.0 (0x0040b000)
+        libdl.so.2 => /lib/libdl.so.2 (0x0038d000)
+        libselinux.so.1 => /lib/libselinux.so.1 (0x004e3000)
+        libaudit.so.0 => /lib/libaudit.so.0 (0x004ad000)
+        libresolv.so.2 => /lib/libresolv.so.2 (0×00110000)
+        libcrypto.so.6 => /lib/libcrypto.so.6 (0x00b1e000)
+        libutil.so.1 => /lib/libutil.so.1 (0×00123000)
+        libz.so.1 => /usr/lib/libz.so.1 (0×00127000)
+        libnsl.so.1 => /lib/libnsl.so.1 (0x0013a000)
+        libcrypt.so.1 => /lib/libcrypt.so.1 (0×00681000)
+        libgssapi_krb5.so.2 => /usr/lib/libgssapi_krb5.so.2 (0×00151000)
+        libkrb5.so.3 => /usr/lib/libkrb5.so.3 (0x00d9b000)
+        libk5crypto.so.3 => /usr/lib/libk5crypto.so.3 (0x005f1000)
+        libcom_err.so.2 => /lib/libcom_err.so.2 (0x0037b000)
+        libnss3.so => /usr/lib/libnss3.so (0x00c7b000)
+        libc.so.6 => /lib/libc.so.6 (0x006af000)
+        /lib/ld-linux.so.2 (0x0052b000)
+        libsepol.so.1 => /lib/libsepol.so.1 (0×00831000)
+        libkrb5support.so.0 => /usr/lib/libkrb5support.so.0 (0x003e7000)
+        libkeyutils.so.1 => /lib/libkeyutils.so.1 (0x0017f000)
+        libplc4.so => /usr/lib/libplc4.so (0x0039f000)
+        libplds4.so => /usr/lib/libplds4.so (0×00182000)
+        libnspr4.so => /usr/lib/libnspr4.so (0×00185000)
+        libpthread.so.0 => /lib/libpthread.so.0 (0x001bd000)
+
+          我们可以从中找到：libwrap.so.0 => /usr/lib/libwrap.so.0 (0x003d5000)
+          这一行，这说明我们的sshd是支持 tcp wrappers的
+          
+         备注： ldd命令有什么作用？
+               ldd 命令会把所指定的可执行模块的依赖(shared library dependencies)模块列表打印出来
+        备注之二：
+               /usr/lib/libwrap.so.0这个库文件是tcp wrapper的库
+                 以下命令可以看到
+              [root@dev phpprog]# rpm -qf /usr/lib/libwrap.so.0
+            tcp_wrappers-7.6-40.4.el5   
+    
+    说明之二： tcp wrappers的工作流程:
+    
+            如果数据包有匹配的规则在/etc/hosts.allow,则此数据包可以通过，
+            如果没有匹配的规则在 /etc/hosts.allow中，则会继续检查hosts.deny,
+            如果有匹配的规则在 /etc/hosts.deny中，则会被拒绝。
+            
+            最后，如果在 /etc/hosts.allow和/etc/hosts.deny中都没有被描述，则可以通过，能够被使用
+    
+         注意：在/etc/hosts.allow和 /etc/hosts.deny中添加规则后，无需重启服务，规则可以即刻生效
+    
+    
+4,设定denyhosts
+     配置文件的说明：
+     配置文件：/etc/denyhosts/denyhosts.cfg
+     
+     其内容包括：
+     
+     //ssh登录日志的路径，用来供denyhosts做分析和判断
+     
+     SECURE_LOG = /var/log/secure 
+     
+     //hosts.deny文件的地址，注意此处要符合 tcp wrappers的要求，
+     //不然的话，sshd不知道从你所定义的文件中去读取
+     HOSTS_DENY = /etc/hosts.deny 
+     
+     //如果 /etc/hosts.deny中记录项的时间已超过5天，则会被自动清除
+     此时间可根据自己机器的实际情况自行定义，
+     取值的单位如下：
+#            ‘m’ = minutes        分钟
+#            ‘h’ = hours          小时
+#            ‘d’ = days           天
+#            ‘w’ = weeks          周
+#            ‘y’ = years          年
+
+     PURGE_DENY = 12h             （此处无默认值，需进行设置）
+     
+     //我们需要检查并进行阻挡的服务是 sshd
+     
+    BLOCK_SERVICE  = sshd
+ 
+   //允许非法用户，普通用户，管理员登录失败的次数 （对此3个值进行设置）
+    
+   DENY_THRESHOLD_INVALID = 1          
+   DENY_THRESHOLD_VALID = 5
+   DENY_THRESHOLD_ROOT = 5
+
+   备注：非法用户： 用户名根本不存在的用户
+         普通用户： 用户名存在，非管理员(root)
+
+   //被deny的数据保存至此文件夹中，注意设定此文件夹的权限，尽量做到除root之外，其他用户无法读取
+    
+   WORK_DIR = /usr/share/denyhosts/data     
+    
+
+    //反向解析IP地址为域名，即时的查询费资源，没有必要，设置为NO （需进行设置）
+    HOSTNAME_LOOKUP=NO
+    
+    //denyhosts自己的日志，无需设置
+   DAEMON_LOG = /var/log/denyhosts 
+
+   关于发邮件给管理员的设置项：（如不需要发mail则无需设置）
+    
+    //接收邮件的管理员邮箱
+    ADMIN_EMAIL = liuhongdi@gmail.com
+    
+   //发送邮件即 smtp所需使用的mail server所在的地址和端口
+   SMTP_HOST = localhost
+   SMTP_PORT = 25
+    
+   //邮件header中的from信息可以在这里指定
+   SMTP_FROM = DenyHosts <nobody@localhost>
+    
+   //邮件的标题
+   SMTP_SUBJECT = DenyHosts Report
+
+5,运行denyhosts及测试
+启动:
+
+[root@dev phpprog]# /etc/rc.d/init.d/denyhosts start
+starting DenyHosts:    /usr/bin/env python /usr/bin/denyhosts.py –daemon –config=/etc/denyhosts/denyhosts.cfg
+
+测试：
+  1,如果以前的日志有登录失败的记录，则此时 /etc/hosts.deny中应该已经有数据写入了
+    备注：这也是denyhosts第一次启动时会有点慢的原因
+  cat /etc/hosts.deny
+    #                                       
+# hosts.deny    This file describes the names of the hosts which are
+#               *not* allowed to use the local INET services, as decided
+#               by the ‘/usr/sbin/tcpd’ server.                         
+#                                                                       
+# The portmap line is redundant, but it is left to remind you that      
+# the new secure portmap uses hosts.deny and hosts.allow.  In particular
+# you should know that NFS uses portmap!                                
+
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 209.178.234.196
+sshd: 209.178.234.196                                        
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 211.144.133.74 
+sshd: 211.144.133.74                                         
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 121.172.142.78 
+sshd: 121.172.142.78                                         
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 88.173.248.34  
+sshd: 88.173.248.34                                          
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 210.21.30.72   
+sshd: 210.21.30.72          
+
+  2,实际测试
+   我们从一台IP为 192.168.1.106的机器上进行测试:
+    [root@search root]# ssh hellotest@ip.of.denyhosts.machine
+hellotest@ip.of.denyhosts.machine’s password:
+   此处的hellotest是一个不存在的帐号，密码随便填写，当然其结果是不能登录。
+    
+    没关系，我们再试一次：
+    
+    [root@search root]# ssh hellotest@ip.of.denyhosts.machine
+ssh_exchange_identification: Connection closed by remote host
+
+   系统提示结果:被远程机器关闭了连接
+    
+    此时我们在安装denyhosts的机器上进行查看
+    
+    tail /etc/denyhosts:
+    
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 220.165.15.236
+sshd: 220.165.15.236
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 202.96.102.239
+sshd: 202.96.102.239
+# DenyHosts: Fri Jan 30 19:38:02 2009 | sshd: 60.199.249.20
+sshd: 60.199.249.20
+# DenyHosts: Fri Jan 30 19:46:32 2009 | sshd: 192.168.1.106
+sshd: 192.168.1.106     //这个是我们测试的IP
+# DenyHosts: Fri Jan 30 19:50:02 2009 | sshd: 202.198.129.148
+sshd: 202.198.129.148

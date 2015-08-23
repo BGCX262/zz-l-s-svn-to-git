@@ -1,0 +1,12 @@
+CentOS6上安装xfce桌面环境 .
+分类： Linux 2011-12-28 08:16 485人阅读 评论(0) 收藏 举报 
+本文地址：http://blog.csdn.net/kongxx/article/details/7107649
+
+在新的CentOS6上默认没有包含xfce的桌面环境，使用yum也找不到这些包，但是自己又喜欢这种简单的桌面环境，此时可以使用下面的方法来安装
+
+[plain] view plaincopyprint?
+01.$ wget http://mirror.neu.edu.cn/fedora/epel/6/i386/epel-release-6-7.noarch.rpm  #根据不同版本变化  
+02.$ sudo rpm -ivh epel-release-6-7.noarch.rpm  
+03.$ sudo yum search xfce  
+04.$ sudo yum groupinfo xfce  
+05.$ sudo yum groupinstall xfce  

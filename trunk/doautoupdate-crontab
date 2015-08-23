@@ -1,0 +1,2 @@
+*/100 * * * * /usr/bin/lynx -mime_header  -accept_all_cookies "http://localhost/myfunds/php/doautoupdate.php" > /root/doautoupdate-localhost.log
+*/100 * * * * /usr/bin/lynx -mime_header  -accept_all_cookies "http://daedalus.aliapp.com/php/doautoupdate.php" > /root/doautoupdate-aliyun.log

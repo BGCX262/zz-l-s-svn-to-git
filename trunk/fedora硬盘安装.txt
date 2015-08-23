@@ -1,0 +1,34 @@
+假设你的硬盘分区为：
+
+/dev/sda1   /boot    500M
+/dev/sda2  /             40G
+/dev/sda3  /home   250G     # grub 中的 （hd0, 2),  grub是从0 开始计数的。
+
+复制Fedora-16-i386-DVD.iso   到/home目录下
+再复制Fedora-16-i386-DVD.iso中的isolinux，images，isolinux/vmlinuz，isolinux/initrd.img 到/home下。
+
+sudo mount -t iso9660 -o loop Fedora-16-i386-DVD.iso  /mnt
+sudo cp /mnt/isolinux  /mnt/images   /mnt/isolinux/vmlinuz    /mnt/isolinux/initrd.img   /home
+
+（注意：/home目录下不能有其它iso映像，  比如Fedora-15-i386-DVD.iso， 否则安装的是fedora 15, 而不是fedora 16）
+
+重启电脑。
+进入grub后， 按c  进入grub 命令行：
+输入如下命令：
+
+root (hd0, 2)    # 我们刚刚把vmlinuz, initrd.img存放到该分区了（/dev/sda3,  /home), 所以root要指定为  hd0,2
+
+kernel /vmlinuz   linux askmethod          #  注意， 从fedora 15开始， 一定要加上  linux askmethod ， 否则你不能选择从硬盘安装， 默认从网络安装， 这样的话， 速度非常慢！！！
+ 
+
+initrd  /initrd.img
+boot
+
+安装开始后， 选择从Hard drive 安装， 映像文件路径为/dev/sda3
+现在就可以像光盘安装的步骤一样安装fedora 16了。
+ 
+安装完成后， 会自动升级grub 1 为grub 2.
+ 
+
+注意： 安装过程中， 格式化分区的时候， 不要把/dev/sda3 ， 即/home给格式化了， 否则后果非常严重， 安装过程将不能继续下去， 因为映像源已经没有了！
+

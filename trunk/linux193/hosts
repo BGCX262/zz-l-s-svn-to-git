@@ -1,0 +1,23 @@
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+127.0.0.1		linux193 localhost.localdomain localhost
+210.28.70.1		gatewaysd
+210.28.70.237		linux237
+210.28.70.238		zzsd
+210.28.70.239		svr
+210.28.70.240		jxpsd
+210.28.70.241		lu
+210.28.70.230		pr1
+210.28.70.231		pr2
+210.28.70.232		pr3
+210.28.70.233		nul
+210.28.70.234		linux193
+210.28.70.235		rmsd
+210.28.70.236		route1
+210.28.70.242		xwsd
+210.28.70.235		rmsd
+192.167.1.1		gatewaydx
+192.167.1.199		zzdx
+192.167.1.193		linux193
+192.167.1.109		zz-vm
+::1		localhost6.localdomain6 localhost6

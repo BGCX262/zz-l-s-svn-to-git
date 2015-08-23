@@ -1,0 +1,45 @@
+YUM的本地“添加／删除软件”的方法
+1.挂载DVD镜像或者光盘 
+1.	sudo mount -t iso9660 -o loop /source /mnt/ISO
+2.	
+3.	sudo mount -t iso9660 -o loop /dev/cdrom /mnt/cdrom
+
+2.移走/etc/yum.repos.d下的所有文件到你的备份目录，这里为$HOME/backup,自己可以更改 
+1.	sudo mv /etc/yum.repos.d/* $HOME/backup
+3.编辑/etc/yum.conf 
+1.	sudo gedit /etc/yum.conf
+2.	在末尾添加
+3.	[ISO]
+4.	name=iso
+5.	baseurl=file:///mnt/ISO ＃或者baseurl=file:///mnt/cdrom
+4.清除缓存文件，并更新本地源，否则会出现“Error: Cannot retrieve repository metadata (repomd.xml) for repository: ISO. Please verify its path and try again”错误 
+1.	#yum clean all
+2.	Cleaning up Everything
+3.	#yum update 
+4.	ISO                       100% |=========================| 2.4 kB    00:00     
+5.	primary.sqlite.bz2        100% |=========================| 1.4 MB    00:00     
+6.	Setting up Update Process
+7.	No Packages marked for Update
+5.测试
+打开“添加／删除软件”，你会发现很快就打开了，不像以前那样要等很久。 
+[linuxpcman@localhost ~]$ yum list kernel*
+Loading "axelget" plugin
+Installed Packages
+kernel.i686                              2.6.23.1-42.fc8        installed       
+kernel-devel.i686                        2.6.23.1-42.fc8        installed       
+kernel-headers.i386                      2.6.23.1-42.fc8        installed       
+kernel-xen.i686                          2.6.21-2950.fc8        installed       
+Available Packages
+kernel.i586                              2.6.23.1-42.fc8        ISO             
+kernel-PAE.i686                          2.6.23.1-42.fc8        ISO             
+kernel-PAE-debug.i686                    2.6.23.1-42.fc8        ISO             
+kernel-PAE-debug-devel.i686              2.6.23.1-42.fc8        ISO             
+kernel-PAE-devel.i686                    2.6.23.1-42.fc8        ISO             
+kernel-debug.i686                        2.6.23.1-42.fc8        ISO             
+kernel-debug-devel.i686                  2.6.23.1-42.fc8        ISO             
+kernel-devel.i586                        2.6.23.1-42.fc8        ISO             
+kernel-doc.noarch                        2.6.23.1-42.fc8        ISO             
+kernel-xen-2.6-doc.noarch                2.6.21-2950.fc8        ISO             
+kernel-xen-devel.i686                    2.6.21-2950.fc8        ISO  
+6.附图
+

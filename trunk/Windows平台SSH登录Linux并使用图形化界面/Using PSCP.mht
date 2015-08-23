@@ -1,0 +1,508 @@
+From: <ÓÉ Windows Internet Explorer 7 ±£´æ>
+Subject: Using PSCP to transfer files securely
+Date: Mon, 24 Oct 2011 11:03:14 +0800
+MIME-Version: 1.0
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.3790.4862
+
+=EF=BB=BF<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" =
+"http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<HTML><HEAD><TITLE>Using PSCP to transfer files securely</TITLE>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dutf-8"><LINK=20
+href=3D"Chapter4.html" rel=3Dprevious><LINK href=3D"index.html" =
+rel=3DToC><LINK=20
+href=3D"index.html" rel=3Dup><LINK href=3D"IndexPage.html" =
+rel=3Dindex><LINK=20
+href=3D"Chapter6.html" rel=3Dnext>
+<META content=3D"MSHTML 6.00.6000.17104" name=3DGENERATOR></HEAD>
+<BODY>
+<P><A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html">P=
+revious</A>=20
+| <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/index.html">Cont=
+ents</A>=20
+| <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/IndexPage.html">=
+Index</A>=20
+| <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html">N=
+ext</A></P>
+<UL>
+  <LI><A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp">Chapter=20
+  5: Using PSCP to transfer files securely</A>=20
+  <UL>
+    <LI><A=20
+    =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-starting">5.1=20
+    Starting PSCP</A>=20
+    <LI><A=20
+    =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage">5.2=20
+    PSCP Usage</A>=20
+    <UL>
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage-basics">5.2.1=20
+      The basics</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage-options">5.2.2=20
+      Options</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-retval">5.2.3=20
+      Return value</A>=20
+      <LI><A=20
+      =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-pubkey">5.2.4=20
+      Using public key authentication with PSCP</A> =
+</LI></UL></LI></UL></LI></UL>
+<H1><A name=3Dpscp></A><A name=3DC5></A>Chapter 5: Using <A =
+name=3Di0></A>PSCP to=20
+transfer files securely</H1>
+<P><A name=3Di1></A>PSCP, the PuTTY Secure Copy client, is a tool for <A =
+
+name=3Di2></A>transferring files securely between computers using an SSH =
+
+connection. </P>
+<P>If you have an SSH-2 server, you might prefer PSFTP (see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp">chapter=20
+6</A>) for interactive use. PSFTP does not in general work with SSH-1 =
+servers,=20
+however. </P>
+<H2><A name=3Dpscp-starting></A><A name=3DS5.1></A>5.1 Starting =
+PSCP</H2>
+<P>PSCP is a command line application. This means that you cannot just=20
+double-click on its icon to run it and instead you have to bring up a <A =
+
+name=3Di3></A>console window. With Windows 95, 98, and ME, this is =
+called an=20
+=E2=80=98MS-DOS Prompt=E2=80=99 and with Windows NT, 2000, and XP, it is =
+called a =E2=80=98Command=20
+Prompt=E2=80=99. It should be available from the Programs section of =
+your <A=20
+name=3Di4></A>Start Menu. </P>
+<P>To start PSCP it will need either to be on your <A=20
+name=3Di5></A><CODE>PATH</CODE> or in your current directory. To add the =
+directory=20
+containing PSCP to your <CODE>PATH</CODE> environment variable, type =
+into the=20
+console window: </P><PRE><CODE>set =
+PATH=3DC:\path\to\putty\directory;%PATH%
+</CODE></PRE>
+<P>This will only work for the lifetime of that particular console =
+window. To=20
+set your <CODE>PATH</CODE> more permanently on Windows NT, 2000, and XP, =
+use the=20
+Environment tab of the System Control Panel. On Windows 95, 98, and ME, =
+you will=20
+need to edit your <A name=3Di6></A><CODE>AUTOEXEC.BAT</CODE> to include =
+a=20
+<CODE>set</CODE> command like the one above. </P>
+<H2><A name=3Dpscp-usage></A><A name=3DS5.2></A>5.2 PSCP Usage</H2>
+<P>Once you've got a console window to type into, you can just type=20
+<CODE>pscp</CODE> on its own to bring up a usage message. This tells you =
+the=20
+version of PSCP you're using, and gives you a brief summary of how to =
+use PSCP:=20
+</P><PRE><CODE>Z:\owendadmin&gt;pscp
+PuTTY Secure Copy client
+Release 0.61
+Usage: pscp [options] [user@]host:source target
+       pscp [options] source [source...] [user@]host:target
+       pscp [options] -ls [user@]host:filespec
+Options:
+  -V        print version information and exit
+  -pgpfp    print PGP key fingerprints and exit
+  -p        preserve file attributes
+  -q        quiet, don't show statistics
+  -r        copy directories recursively
+  -v        show verbose messages
+  -load sessname  Load settings from saved session
+  -P port   connect to specified port
+  -l user   connect with specified username
+  -pw passw login with specified password
+  -1 -2     force use of particular SSH protocol version
+  -4 -6     force use of IPv4 or IPv6
+  -C        enable compression
+  -i key    private key file for authentication
+  -noagent  disable use of Pageant
+  -agent    enable use of Pageant
+  -batch    disable all interactive prompts
+  -unsafe   allow server-side wildcards (DANGEROUS)
+  -sftp     force use of SFTP protocol
+  -scp      force use of SCP protocol
+</CODE></PRE>
+<P>(PSCP's interface is much like the Unix <CODE>scp</CODE> command, if =
+you're=20
+familiar with that.) </P>
+<H3><A name=3Dpscp-usage-basics></A><A name=3DS5.2.1></A>5.2.1 The =
+basics</H3>
+<P>To <A name=3Di7></A>receive (a) file(s) from a remote server: =
+</P><PRE><CODE>pscp [options] [user@]host:source target
+</CODE></PRE>
+<P>So to copy the file <CODE>/etc/hosts</CODE> from the server=20
+<CODE>example.com</CODE> as user <CODE>fred</CODE> to the file=20
+<CODE>c:\temp\example-hosts.txt</CODE>, you would type: =
+</P><PRE><CODE>pscp fred@example.com:/etc/hosts =
+c:\temp\example-hosts.txt
+</CODE></PRE>
+<P>To <A name=3Di8></A>send (a) file(s) to a remote server: =
+</P><PRE><CODE>pscp [options] source [source...] [user@]host:target
+</CODE></PRE>
+<P>So to copy the local file <CODE>c:\documents\foo.txt</CODE> to the =
+server=20
+<CODE>example.com</CODE> as user <CODE>fred</CODE> to the file=20
+<CODE>/tmp/foo</CODE> you would type: </P><PRE><CODE>pscp =
+c:\documents\foo.txt fred@example.com:/tmp/foo
+</CODE></PRE>
+<P>You can use <A name=3Di9></A>wildcards to transfer multiple files in =
+either=20
+direction, like this: </P><PRE><CODE>pscp c:\documents\*.doc =
+fred@example.com:docfiles
+pscp fred@example.com:source/*.c c:\source
+</CODE></PRE>
+<P>However, in the second case (using a wildcard for multiple remote =
+files) you=20
+may see a warning saying something like =E2=80=98warning: remote host =
+tried to write to=20
+a file called =E2=80=98<CODE>terminal.c</CODE>=E2=80=99 when we =
+requested a file called=20
+=E2=80=98<CODE>*.c</CODE>=E2=80=99. If this is a wildcard, consider =
+upgrading to SSH-2 or using=20
+the =E2=80=98<CODE>-unsafe</CODE>=E2=80=99 option. Renaming of this file =
+has been disallowed=E2=80=99.=20
+</P>
+<P>This is due to a <A name=3Di10></A>fundamental insecurity in the =
+old-style <A=20
+name=3Di11></A>SCP protocol: the client sends the wildcard string=20
+(<CODE>*.c</CODE>) to the server, and the server sends back a sequence =
+of file=20
+names that match the wildcard pattern. However, there is nothing to stop =
+the=20
+server sending back a <EM>different</EM> pattern and writing over one of =
+your=20
+other files: if you request <CODE>*.c</CODE>, the server might send back =
+the=20
+file name <CODE>AUTOEXEC.BAT</CODE> and install a virus for you. Since =
+the=20
+wildcard matching rules are decided by the server, the client cannot =
+reliably=20
+verify that the filenames sent back match the pattern. </P>
+<P>PSCP will attempt to use the newer <A name=3Di12></A>SFTP protocol =
+(part of=20
+SSH-2) where possible, which does not suffer from this security flaw. If =
+you are=20
+talking to an SSH-2 server which supports SFTP, you will never see this =
+warning.=20
+(You can force use of the SFTP protocol, if available, with =
+<CODE>-sftp</CODE> -=20
+see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage-options-backend">section=20
+5.2.2.6</A>.) </P>
+<P>If you really need to use a server-side wildcard with an SSH-1 =
+server, you=20
+can use the <A name=3Di13></A><CODE>-unsafe</CODE> command line option =
+with PSCP:=20
+</P><PRE><CODE>pscp -unsafe fred@example.com:source/*.c c:\source
+</CODE></PRE>
+<P>This will suppress the warning message and the file transfer will =
+happen.=20
+However, you should be aware that by using this option you are giving =
+the server=20
+the ability to write to <EM>any</EM> file in the target directory, so =
+you should=20
+only use this option if you trust the server administrator not to be =
+malicious=20
+(and not to let the server machine be cracked by malicious people).=20
+Alternatively, do any such download in a newly created empty directory. =
+(Even in=20
+=E2=80=98unsafe=E2=80=99 mode, PSCP will still protect you against the =
+server trying to get out=20
+of that directory using pathnames including =
+=E2=80=98<CODE>..</CODE>=E2=80=99.) </P>
+<H4><A name=3Dpscp-usage-basics-user></A><A name=3DS5.2.1.1></A>5.2.1.1=20
+<CODE>user</CODE></H4>
+<P>The <A name=3Di14></A>login name on the remote server. If this is =
+omitted, and=20
+<CODE>host</CODE> is a PuTTY saved session, PSCP will use any username =
+specified=20
+by that saved session. Otherwise, PSCP will attempt to use the local =
+Windows=20
+username. </P>
+<H4><A name=3Dpscp-usage-basics-host></A><A name=3DS5.2.1.2></A>5.2.1.2 =
+<A=20
+name=3Di15></A><CODE>host</CODE></H4>
+<P>The name of the remote server, or the name of an existing PuTTY saved =
+
+session. In the latter case, the session's settings for hostname, port =
+number,=20
+cipher type and username will be used. </P>
+<H4><A name=3Dpscp-usage-basics-source></A><A =
+name=3DS5.2.1.3></A>5.2.1.3=20
+<CODE>source</CODE></H4>
+<P>One or more source files. <A name=3Di16></A>Wildcards are allowed. =
+The syntax=20
+of wildcards depends on the system to which they apply, so if you are =
+copying=20
+<EM>from</EM> a Windows system <EM>to</EM> a UNIX system, you should use =
+Windows=20
+wildcard syntax (e.g. <CODE>*.*</CODE>), but if you are copying =
+<EM>from</EM> a=20
+UNIX system <EM>to</EM> a Windows system, you would use the wildcard =
+syntax=20
+allowed by your UNIX shell (e.g. <CODE>*</CODE>). </P>
+<P>If the source is a remote server and you do not specify a full =
+pathname (in=20
+UNIX, a pathname beginning with a <CODE>/</CODE> (slash) character), =
+what you=20
+specify as a source will be interpreted relative to your <A =
+name=3Di17></A>home=20
+directory on the remote server. </P>
+<H4><A name=3Dpscp-usage-basics-target></A><A =
+name=3DS5.2.1.4></A>5.2.1.4=20
+<CODE>target</CODE></H4>
+<P>The filename or directory to put the file(s). When copying from a =
+remote=20
+server to a local host, you may wish simply to place the file(s) in the =
+current=20
+directory. To do this, you should specify a target of <CODE>.</CODE>. =
+For=20
+example: </P><PRE><CODE>pscp fred@example.com:/home/tom/.emacs .
+</CODE></PRE>
+<P>...would copy <CODE>/home/tom/.emacs</CODE> on the remote server to =
+the=20
+current directory. </P>
+<P>As with the <CODE>source</CODE> parameter, if the target is on a =
+remote=20
+server and is not a full path name, it is interpreted relative to your =
+home=20
+directory on the remote server. </P>
+<H3><A name=3Dpscp-usage-options></A><A name=3DS5.2.2></A>5.2.2 =
+Options</H3>
+<P>PSCP accepts all the general command line options supported by the =
+PuTTY=20
+tools, except the ones which make no sense in a file transfer utility. =
+See <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter3.html#us=
+ing-general-opts">section=20
+3.8.3</A> for a description of these options. (The ones not supported by =
+PSCP=20
+are clearly marked.) </P>
+<P>PSCP also supports some of its own options. The following sections =
+describe=20
+PSCP's specific command-line options. </P>
+<H4><A name=3Dpscp-usage-options-ls></A><A name=3DS5.2.2.1></A>5.2.2.1 =
+<A=20
+name=3Di18></A><CODE>-ls</CODE> <A name=3Di19></A>list remote files</H4>
+<P>If the <CODE>-ls</CODE> option is given, no files are transferred; =
+instead,=20
+remote files are listed. Only a hostname specification and optional =
+remote file=20
+specification need be given. For example: </P><PRE><CODE>pscp -ls =
+fred@example.com:dir1
+</CODE></PRE>
+<P>The SCP protocol does not contain within itself a means of listing =
+files. If=20
+SCP is in use, this option therefore assumes that the server responds=20
+appropriately to the command <CODE>ls&nbsp;-la</CODE>; this may not work =
+with=20
+all servers. </P>
+<P>If SFTP is in use, this option should work with all servers. </P>
+<H4><A name=3Dpscp-usage-options-p></A><A name=3DS5.2.2.2></A>5.2.2.2 <A =
+
+name=3Di20></A><CODE>-p</CODE> <A name=3Di21></A>preserve file =
+attributes</H4>
+<P>By default, files copied with PSCP are <A name=3Di22></A>timestamped =
+with the=20
+date and time they were copied. The <CODE>-p</CODE> option preserves the =
+
+original timestamp on copied files. </P>
+<H4><A name=3Dpscp-usage-options-q></A><A name=3DS5.2.2.3></A>5.2.2.3 <A =
+
+name=3Di23></A><CODE>-q</CODE> quiet, don't show <A =
+name=3Di24></A>statistics</H4>
+<P>By default, PSCP displays a meter displaying the progress of the =
+current=20
+transfer: </P><PRE><CODE>mibs.tar          |   168 kB |  84.0 kB/s | =
+ETA: 00:00:13 |  13%
+</CODE></PRE>
+<P>The fields in this display are (from left to right), filename, size =
+(in=20
+kilobytes) of file transferred so far, estimate of how fast the file is =
+being=20
+transferred (in kilobytes per second), estimated time that the transfer =
+will be=20
+complete, and percentage of the file so far transferred. The =
+<CODE>-q</CODE>=20
+option to PSCP suppresses the printing of these statistics. </P>
+<H4><A name=3Dpscp-usage-options-r></A><A name=3DS5.2.2.4></A>5.2.2.4 <A =
+
+name=3Di25></A><CODE>-r</CODE> copies directories <A =
+name=3Di26></A>recursively</H4>
+<P>By default, PSCP will only copy files. Any directories you specify to =
+copy=20
+will be skipped, as will their contents. The <CODE>-r</CODE> option =
+tells PSCP=20
+to descend into any directories you specify, and to copy them and their=20
+contents. This allows you to use PSCP to transfer whole directory =
+structures=20
+between machines. </P>
+<H4><A name=3Dpscp-usage-options-batch></A><A =
+name=3DS5.2.2.5></A>5.2.2.5 <A=20
+name=3Di27></A><CODE>-batch</CODE> avoid interactive prompts</H4>
+<P>If you use the <CODE>-batch</CODE> option, PSCP will never give an=20
+interactive prompt while establishing the connection. If the server's =
+host key=20
+is invalid, for example (see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter2.html#gs=
+-hostkey">section=20
+2.2</A>), then the connection will simply be abandoned instead of asking =
+you=20
+what to do next. </P>
+<P>This may help PSCP's behaviour when it is used in automated scripts: =
+using=20
+<CODE>-batch</CODE>, if something goes wrong at connection time, the =
+batch job=20
+will fail rather than hang. </P>
+<H4><A name=3Dpscp-usage-options-backend></A><A =
+name=3DS5.2.2.6></A>5.2.2.6 <A=20
+name=3Di28></A><CODE>-sftp</CODE>, <A name=3Di29></A><CODE>-scp</CODE> =
+force use of=20
+particular protocol</H4>
+<P>As mentioned in <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage-basics">section=20
+5.2.1</A>, there are two different file transfer protocols in use with =
+SSH.=20
+Despite its name, PSCP (like many other ostensible <CODE>scp</CODE> =
+clients) can=20
+use either of these protocols. </P>
+<P>The older <A name=3Di30></A>SCP protocol does not have a written =
+specification=20
+and leaves a lot of detail to the server platform. <A =
+name=3Di31></A>Wildcards are=20
+expanded on the server. The simple design means that any wildcard =
+specification=20
+supported by the server platform (such as brace expansion) can be used, =
+but also=20
+leads to interoperability issues such as with filename quoting (for =
+instance,=20
+where filenames contain spaces), and also the security issue described =
+in <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage-basics">section=20
+5.2.1</A>. </P>
+<P>The newer <A name=3Di32></A>SFTP protocol, which is usually =
+associated with=20
+SSH-2 servers, is specified in a more platform independent way, and =
+leaves=20
+issues such as wildcard syntax up to the client. (PuTTY's SFTP wildcard =
+syntax=20
+is described in <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter6.html#ps=
+ftp-wildcards">section=20
+6.2.2</A>.) This makes it more consistent across platforms, more =
+suitable for=20
+scripting and automation, and avoids security issues with wildcard =
+matching.=20
+</P>
+<P>Normally PSCP will attempt to use the SFTP protocol, and only fall =
+back to=20
+the SCP protocol if SFTP is not available on the server. </P>
+<P>The <CODE>-scp</CODE> option forces PSCP to use the SCP protocol or =
+quit.=20
+</P>
+<P>The <CODE>-sftp</CODE> option forces PSCP to use the SFTP protocol or =
+quit.=20
+When this option is specified, PSCP looks harder for an SFTP server, =
+which may=20
+allow use of SFTP with SSH-1 depending on server setup. </P>
+<H3><A name=3Dpscp-retval></A><A name=3DS5.2.3></A>5.2.3 <A =
+name=3Di33></A>Return=20
+value</H3>
+<P>PSCP returns an <A name=3Di34></A><CODE>ERRORLEVEL</CODE> of zero =
+(success)=20
+only if the files were correctly transferred. You can test for this in a =
+<A=20
+name=3Di35></A>batch file, using code such as this: </P><PRE><CODE>pscp =
+file*.* user@hostname:
+if errorlevel 1 echo There was an error
+</CODE></PRE>
+<H3><A name=3Dpscp-pubkey></A><A name=3DS5.2.4></A>5.2.4 Using <A=20
+name=3Di36></A>public key authentication with PSCP</H3>
+<P>Like PuTTY, PSCP can authenticate using a public key instead of a =
+password.=20
+There are three ways you can do this. </P>
+<P>Firstly, PSCP can use PuTTY saved sessions in place of hostnames (see =
+<A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter5.html#ps=
+cp-usage-basics-host">section=20
+5.2.1.2</A>). So you would do this: </P>
+<UL>
+  <LI>Run PuTTY, and create a PuTTY saved session (see <A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html#co=
+nfig-saving">section=20
+  4.1.2</A>) which specifies your private key file (see <A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html#co=
+nfig-ssh-privkey">section=20
+  4.20.8</A>). You will probably also want to specify a username to log =
+in as=20
+  (see <A=20
+  =
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter4.html#co=
+nfig-username">section=20
+  4.14.1</A>).=20
+  <LI>In PSCP, you can now use the name of the session instead of a =
+hostname:=20
+  type <CODE>pscp sessionname:file localfile</CODE>, where=20
+  <CODE>sessionname</CODE> is replaced by the name of your saved =
+session.=20
+</LI></UL>
+<P>Secondly, you can supply the name of a private key file on the =
+command line,=20
+with the <CODE>-i</CODE> option. See <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter3.html#us=
+ing-cmdline-identity">section=20
+3.8.3.18</A> for more information. </P>
+<P>Thirdly, PSCP will attempt to authenticate using Pageant if Pageant =
+is=20
+running (see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter9.html#pa=
+geant">chapter=20
+9</A>). So you would do this: </P>
+<UL>
+  <LI>Ensure Pageant is running, and has your private key stored in it.=20
+  <LI>Specify a user and host name to PSCP as normal. PSCP will =
+automatically=20
+  detect Pageant and try to use the keys within it. </LI></UL>
+<P>For more general information on public-key authentication, see <A=20
+href=3D"http://the.earth.li/~sgtatham/putty/0.61/htmldoc/Chapter8.html#pu=
+bkey">chapter=20
+8</A>. </P>
+<HR>
+
+<P>If you want to provide feedback on this manual or on the PuTTY tools=20
+themselves, see the <A=20
+href=3D"http://www.chiark.greenend.org.uk/~sgtatham/putty/feedback.html">=
+Feedback=20
+page</A>.</P>
+<ADDRESS>[PuTTY release 0.61]</ADDRESS></BODY></HTML>

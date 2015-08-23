@@ -1,0 +1,110 @@
+[精彩] 安装Ora9i_9204要用到的补丁，刚才测试过确实可以下载 
+
+--------------------------------------------------------------------------------
+ 
+http://www.chinaunix.net 作者:wwashington  发表于：2009-04-09 12:00:15 
+【发表评论】【查看原文】【Oracle讨论区】【关闭】  
+
+关于Ora9i_9204的安装文档看了不少，但是一个典型问题就是补丁找不到。 
+本人的网站流量有限，这些补丁都是由其他网站提供的，所以贴这个文章 
+的意思是与大家分享。如果您有自己的 ftp 或者下载网站，希望能够及时 
+备份，并且在ChinaUnix回帖说明一下。BTW: 感谢所有提供下载的网站。 
+
+
+下载位置： 
+
+Part 1. 升级到Ora9204的  
+(备注：由于时间久远，升级补丁可能停止下载了，建议直接找9204安装版) 
+1) http://hylinux.3322.org/software/patch.rar 
+2) http://www.sh.nu/download/oracle/p3095277_9204_LINUX.zip 
+
+Part 2. 解决Agent问题的 
+3) http://conrad2001.narod.ru/terek/p2617419_220_GENERIC.zip 
+4) http://conrad2001.narod.ru/terek/p3238244_9204_LINUX.zip 
+
+Part 3. 我在一台国外的服务器上放了几个补丁，大家下载后放到自己的服务 
+器上，千万不要盗链。否则，一旦网管发现流量太大把文件砍了那大家都没戏。 
+5) http://72.41.62.129/flags/Asia/Opatch_200506.zip 
+里面包括： 
+
+G:. 
+└─Opatch 
+    ├─9204 
+    │      p2617419_210_GENERIC.zip 
+    │      p2617419_220_GENERIC.zip 
+    │      p3095277_9204_LINUX.zip 
+    │      p3119415_9204_LINUX.zip 
+    │      p3238244_9204_LINUX.zip 
+    │ 
+    ├─9206 
+    │      p2617419_10102_GENERIC.zip 
+    │      p4193295_9206_LINUX.zip 
+    │ 
+    └─rhe3 
+            p3006854_9204_LINUX.zip 
+
+参考信息： 
+
+------------------------------------------------------------------------------------ 
+
+http://linux.chinaunix.net/doc/db/2005-01-24/893.shtml 
+在RedHat EL AS 3上安装Oracle9.2.0 
+http://hylinux.3322.org/software/patch.rar 
+
+http://www.sh.nu/download/oracle/ 
+http://www.sh.nu/download/oracle/p3095277_9204_LINUX.zip 
+http://www.sh.nu/download/oracle/oracle 
+
+------------------------------------------------------------------------------------ 
+
+http://www.phpx.com/happy/thr59429.html 
+
+谁有oracle9i2补丁？ 
+p3095277_9204_LINUX.zip 
+p3006854_9204_LINUX.zip 
+p3119415_9204_LINUX.zip 
+p2617419_210_GENERIC.zip 
+
+http://mirrors.cn99.com/oracle/9i/ 
+http://mirrors.cn99.com/oracle/9i/ship_9204_linux_disk1.cpio.gz 
+http://www.sh.nu/download/oracle/ 
+
+http://www.oracle.com/technology/software/tech/windows/ole_db/index.html 
+http://www.oracle.com/technology/software/products/oracle9i/index.html 
+http://www.oracle.com/technology/software/products/oracle9i/htdocs/linuxsoft.html 
+
+------------------------------------------------------------------------------------ 
+
+http://www.itpub.net/showthread.php?s=&threadid=171693&perpage=15&pagenumber=5 
+ITPUB论坛>;Oracle数据库管理>;在RedHat EL AS 3上安装Oracle9.2.0(原创) 
+
+到oracle官方网站下载ORACLE9i 9204版，只需在运行runInstall前打p3006854_9204_LINUX.zip  
+补丁即可，其他补丁不用再打。 
+
+920 版本有許多bug , 特別是jdbc方面的, 在 udump 下產生n 多trc 文件, 雖然很小,但是一分鐘大概8 
+
+個左右 ,比較煩 .  
+最好還是打上 p3501955_9205_linux.zip patch set . 9206 聽說也出來了,還沒裝過,可以試試 .  
+
+6、安装p3238244_9204_LINUX.zip补丁  
+此补丁也是从http://metalink.oracle.com下下载，同时要下载一个opatch软件包： 
+
+p2617419_220_GENERIC.zip，它主要是用来悠agent服务不能启动的错误。 
+
+------------------------------------------------------------------------------------ 
+
+http://www.itpub.net/showthread.php?s=&postid=1583482#post1583482 
+谁知道最新oracle9i(9.2.0.4.0)的安装问题的解决方法？？？agent问题 
+
+附件: p3238244_9204_linux.zip 
+
+谢谢cool_yl，可以了。 
+顺便说一下,oracle9i 9.2.0.4.0的版本，不用打任何的补丁就可以成功安装!!! 
+最后打上，cool_yl的包，agent就可以起来了!!! 
+
+不过，我不知道，为什么，我其它机器上的OEM还是自动发现不了 
+这台机器(可能是agent的设置有问题？) 
+
+------------------------------------------------------------------------------------
+ 
+ 

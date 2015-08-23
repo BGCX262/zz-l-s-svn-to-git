@@ -1,0 +1,72 @@
+1. HTTP
+Open the following URL to update ip address for bar.minidns.net to 1.2.3.4, assume login ID foo and password topsecret 
+
+http://www.minidns.net/areg.php?opcode=ADD&host=bar.minidns.net&username=foo&password=topsecret&ip=1.2.3.4 
+
+Upon successful operation, you will get the following output: 
+
+okay. www.foobar.com mapped to 1.2.3.4. 
+
+
+--------------------------------------------------------------------------------
+3322的更新还有更加简单的办法，连客户端都不用安装，也不用配置文件，不用知道IP，使用lynx(一般的Linux, BSD都自带）, 就可以了！
+
+使用方法：
+lynx -mime_header -auth=用户名:密码 "http://members.3322.net/dyndns/update?system=dyndns&hostname=域名"
+
+
+
+
+
+lynx -mime_header -auth=zezhang1015:whoareyou "http://members.3322.net/dyndns/update?system=dyndns&hostname=zezhang1015.3322.org"
+
+*/5 * * * * /usr/bin/lynx -mime_header -auth=zezhang1015:whoareyou "http://www.3322.org/dyndns/update?system=dyndns&hostname=zezhang1015.3322.org" >/root/3322.org.log
+
+用lynx实现3322动态域名指向
+
+软件需求：
+1、lynx
+2、cron (各种cron都可以，此处以linux vixie-cron 和 freebsd 默认cron为例)
+3、一个用来测试的web服务器，如apache。
+4、系统能访问internet，也能被外网访问（不考虑防火墙）。
+详细步骤：
+1、建立一个文本文件，如3322.org，输入以下东西
+
+代码:
+
+*/5 * * * * /usr/bin/lynx -mime_header -auth=zezhang1015:whoareyou "http://www.3322.org/dyndns/update?system=dyndns&hostname=zezhang1015.3322.org"
+
+
+红色文字表示需要根据你的实际情况设定。描述如下：
+a、5表示每隔5分钟更新一下
+b、/PATH/TO/lynx 指 lynx的位置，FreeBSD下常在 /usr/local/bin/lynx
+c、ACC:PASS 指你在3322.org上注册的用户名和密码。
+d、MYDOMAIN指你在3322.org上设立的域名记录（域名）。
+e、MYMAIL指你在3322.org上设置的mx邮件记录。
+2、运行crontab，载入cron信息：
+
+代码:
+
+$ crontab 3322.org
+$ crontab -l //查看下是否已经载入，若有以下内容，说明成功。
+*/5 * * * * /PATH/TO/lynx -mime_header -auth=ACC:PASS "http://www.3322.org/dyndns/update?system=dyndns&hostname=MYDOMAIN.3322.org&mx=MYMAIL.3322.org"
+
+
+如果要清空cron table ，可以用 crontab -r 命令。
+3、过5分钟后，测试
+
+代码:
+
+$ ping MYDOMAIN.3322.org //若能正确显示ip，则成功
+$ host -t mx MYDOMAIN.3322.org //若有类似如下显示，则成功
+MYDOMAIN.3322.org mail is handled by 10 MYMAIL.3322.org.
+
+
+4、用浏览器测试你的MYDOMAIN.3322.org指向的web服务器页面。<
+解决方法
+
+
+不要没5分钟,除非你的网络老断线.我家里那个用ddclient.
+还有一台机器是5分钟lync 3322的动态域名,5分钟太短了.经常会出错的.调到10分钟就没有问题.
+尽量不要太短,对3322的服务器也是一个压力!
+

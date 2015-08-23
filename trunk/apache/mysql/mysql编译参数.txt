@@ -1,0 +1,139 @@
+mysql编译参数
+2011-07-20 09:19:53     我来说两句       收藏    我要投稿  
+
+安装MySQL 安装前确认以下包已经装好gcc gcc-c++ ncurses-devel
+
+
+
+/usr/sbin/groupadd mysql
+/usr/sbin/useradd -g mysql mysql
+tar zxvf mysql-5.4.0-beta.tar.gz
+cd mysql-5.4.0-beta
+
+CFLAGS="-O6 -mpentiumpro -fomit-frame-pointer" CXX=gcc CXXFLAGS="-O6 -mpentiumpro -fomit-frame-pointer -felide-constructors -fno-exceptions -fno-rtti"
+
+./configure --prefix=/usr/local/mysql --localstatedir=/usr/local/mysql/var/ --with-server-suffix=-enterprise-gpl --without-debug --with-big-tables --with-extra-charsets=latin1,gb2312,big5,utf8,GBK --with-extra-charsets=all --with-pthread --enable-static --enable-thread-safe-client --with-client-ldflags=-all-static --with-mysqld-ldflags=-all-static --enable-assembler --without-innodb --without-ndb-debug --without-isam --with-federated-storage-engine
+
+mysql5.5后使用cmake
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+-DMYSQL_UNIX_ADDR=/data/mysql/mysql.sock \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_EXTRA_CHARSETS=utf8,gbk \
+-DWITH_MYISAM_STORAGE_ENGINE=1 \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_MEMORY_STORAGE_ENGINE=1 \
+-DWITH_READLINE=1 \
+-DENABLED_LOCAL_INFILE=1 \
+-DMYSQL_DATADIR=/data/mysql \
+-DMYSQL_USER=mysql \
+-DMYSQL_TCP_PORT=3306
+
+
+make && make install
+
+cp support-files/my-medium.cnf /usr/local/mysql/my.cnf
+
+/usr/local/mysql/bin/mysql_install_db --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql
+
+my.cnf文件记得注销--skip-federated引擎功能再启动mysql
+
+./mysqld_safe --defaults-file=/usr/local/mysql/my.cnf --user=mysql &
+
+
+设为服务并自启动.
+
+对于设置为服务只要把mysql/share/mysql/mysql.server放到/etc/init.d/下改名为mysql
+
+命令:
+
+mv share/mysql/mysql.server /etc/init.d/mysql
+
+chmod 775 /etc/init.d/mysql
+
+chkconfig --add mysql
+
+总结,这只是安装了一个3306端口的mysql,如果要在装一个msyql,步骤一样,只要改动my.cnf文件的内容.
+
+[client]
+#password = your_password
+port = 3310 
+socket = /tmp/mysql3310.sock 
+
+# The MySQL server
+[mysqld]
+port = 3310
+socket = /tmp/mysql3310.sock
+
+
+mysql编译参数说明：根据 ./configure --help 查看支持配置的参数
+
+-pgcc和-O6编译
+
+CFLAGS="-O6 -mpentiumpro -fomit-frame-pointer" CXX=gcc CXXFLAGS="-O6 -mpentiumpro -fomit-frame-pointer -felide-constructors -fno-exceptions -fno-rtti"
+总体性能可提高10%，当然如果服务器不是用奔腾处理器，就不必用它了，因为它是专为奔腾系统设计的
+
+-static静态编译
+
+--enable-static
+--with-client-ldflags=-all-static
+--with-mysqld-ldflags=-all-static
+以静态方式编译客户端和服务端，能提高13%性能
+
+--enable-thread-safe-client
+以线程方式编译客户端
+
+--without-innodb
+去掉innodb表支持，innodb是一种支持事务处理的表，适合企业级应用
+
+--without-isam
+去掉isam表类型支持，现在很少用了，isam表是一种依赖平台的表
+
+--without-ndb-debug
+取消导航调试
+
+--localstatedir=/usr/local/mysql/var/
+日志文件目录
+
+--with-server-suffix=-enterprise-gpl
+给MySQL加个后缀名，在用mysql登录的时候在版本号的后面可以看到
+
+--without-debug
+去除诊断模式，如果用--with-debug=full编译，大多数查询慢20%
+
+--with-big-tables
+大表支持
+
+--with-extra-charsers=gbk,gb2312,utf8
+设置支持gbk,gb2312,utf8字符集
+
+--with-pthread
+强制使用pthread库(posix线程库)
+
+--enable-assembler
+使用一些字符函数来汇编版本
+
+--with-federated-storage-engine
+
+这个参数已经被废除，代替它的是--with-plugin系列
+
+cp support-files/my-medium.cnf /usr/local/mysql/my.cnf
+
+mysql/support-files里面有配置文件范本，根据实际情况选择或者更改
+
+/usr/local/mysql/bin/mysql_install_db --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql --defaults-file=/usr/local/mysql/my.cnf --pid-file=/usr/local/mysql/mysql.pid
+
+设定默认值：默认空间路径；默认数据文件路径；默认用户；默认配置文件路径；默认PID文件路径。
+
+-------------------------------------------------------
+
+本脚步未加入的编译参数：
+
+--with-charset=utf8
+设置默认字符集
+
+--with-unix-socket-path=/usr/local/mysql/tmp/mysql.sock
+使用unix套接字链接提高7.5%性能，所以在windows下mysql性能肯定不如 unix
+
+--with-tcp-port=3306
+指定MySQL实例将监听TCP 3306端口

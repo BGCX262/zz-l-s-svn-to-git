@@ -1,0 +1,18 @@
+cp: preserving permissions for `/mnt/var/run/cups/certs/0': Operation not supported
+
+REASON：
+ cp和mv命令对于ACL的支持，mv命令保持ACL设置信息，cp命令在
+ 使用-p，-a参数时保留ACL设置信息。但是如果从一个支持ACL的文件系统向
+ 一个不支持ACL的文件系统移动或带ACL属性的拷贝，则会得到类似下面这样的错误提示，
+ cp: preserving permissions for `filename': Operation not supported
+ 设置了ACL的文件在ls -l时可以看到这样的情况，
+ -rw-rw----+ 1 allen chen 0 Jun 2 09:52 filename
+ 有个加号在第一个列的末尾。
+ (pls refer to [url=http://a3linux.blogspot.com/2005/09/linuxacl.html]http://a3linux.blogspot.com/2005/09/linuxacl.html[/url])
+
+ SOLUTION:
+ [root@FC6server ~]# umount /mnt/var
+ [root@FC6server ~]# mount /dev/vg/var /mnt/var -o rw,acl
+ [root@FC6server ~]# cp -a /var/* /mnt/var/
+ [root@FC6server ~]#
+ 终于不会报错了:)

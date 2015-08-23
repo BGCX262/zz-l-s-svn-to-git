@@ -1,0 +1,157 @@
+20111107 企业管理器方法，失败；dbca修改方法，失败；sqlplus方法成功完成
+后用dbca删除数据库，添加noxml建库模板，将xmldb设为false，在创建数据库
+
+20111108 现linux193安装最小系统（去除了包括xmldb在内的多数功能模块），x232使用sqlplus修改端口，都解决了端口冲突问题。
+
+
+Oracle XDB Http/Ftp服务默认端口与Tomcat等默认端口冲突解决方案
+ 
+
+安装Tomcat后，启动tomcat时，会出现：
+
+2005-10-12 13:46:57 org.apache.commons.modeler.Registry loadRegistry
+
+信息: Loading registry information
+
+2005-10-12 13:46:57 org.apache.commons.modeler.Registry getRegistry
+
+信息: Creating new Registry instance
+
+2005-10-12 13:46:57 org.apache.commons.modeler.Registry getServer
+
+信息: Creating MBeanServer
+
+2005-10-12 13:46:58 org.apache.coyote.http11.Http11Protocol init
+
+严重: Error initializing endpoint
+
+java.net.BindException: Address already in use: JVM_Bind:8080
+
+       at org.apache.tomcat.util.net.PoolTcpEndpoint.initEndpoint(PoolTcpEndpoint.java:270)
+
+    ……
+
+冲突提示。
+
+在浏览器中访问http://127.0.0.1:8080时出现XDB登录窗口而不是Tomcat的Welcome页面，如下：
+
+
+
+
+进入命令行，运行 netstat –a命令查看端口，8080已被占用（如下），什么原因呢？
+
+
+
+这是因为这台机器上已经安装了Oracle 9i数据库。从Oracle 9i开始，创建数据库时默认包含了XDB特性。Oracle9i支持XML数据库，8080是Oracle XDB（XML数据库）Http服务的默认端口，Oracle XDB还有一个Ftp服务，默认端口是2100。而Tomcat、Jboss等的默认端口也是8080，所以出现冲突，另外从网上查询得知Oracle XDB的端口设置不在配置文件中，而是在数据库里。
+
+那么怎么解决呢？这里介绍四种解决冲突的方式，都比较简单：
+
+
+二、使用Oracle控制台修改Oracle XDB Http/FTP服务端口
+虽然修改Tomcat端口可以很容易解决问题，但有时不想修改Tomcat端口，可以修改Oracle XDB服务端口来避免冲突。
+
+登录Oracle控制台可以以独立方式登录，但必须以SYSDBA身份登录，否则不能操作XDB配置参数。
+
+登录到Oracle控制台后，展开”XML数据库”项，XML数据库下有配置、资源、XML方案三个子项。选中配置选项，XML数据库 参数会显示在右边区域。如图所示：
+
+
+
+
+修改参数名为http-port的项，值8080改为8088或其他未占用端口值，也可以修改ftp-port的值，然后点右下脚“应用（P）”按钮应用新修改的端口值。
+
+这里需要注意的是，每个Oracle实例都会默认占用8080和2100端口，所以需要修改本机Oracle上的所有实例的XDB配置。
+
+三、命令行方式(用Oracle提供的包)修改Oralce XDB端口
+1、进入命令行，连接sqlplus 
+
+  
+
+C:/ >sqlplus /nolog
+
+SQL*Plus: Release 9.2.0.1.0 - Production on 星期三 10月 12 14:53:56 2005
+
+Copyright (c) 1982, 2002, Oracle Corporation.  All rights reserved.
+
+SQL> 
+
+2、以SYSDBA身份登录 
+
+  
+
+SQL> conn sys/wangzh@test as sysdba
+
+已连接。
+
+3、修改 HTTP port 由 8080 改为 8088 
+
+ 
+
+ 
+
+SQL> call dbms_xdb.cfg_update(updateXML(dbms_xdb.cfg_get(),
+
+  2  '/xdbconfig/sysconfig/protocolconfig/httpconfig/http-port/text()'
+
+  3  ,8081))
+
+  4  /
+
+ 
+
+ 
+
+调用完成。
+
+4、 也可以修改FTP 端口，举例如下，将端口2100改为2111，一般情况下不用改就可以。
+
+SQL> call dbms_xdb.cfg_update(updateXML(dbms_xdb.cfg_get(),
+
+  2  '/xdbconfig/sysconfig/protocolconfig/ftpconfig/ftp-port /text()'
+
+  3  ,2111))
+
+  4  /
+
+
+ 
+ 
+
+ 
+
+调用完成。
+
+5、提交修改 
+
+  
+
+SQL> commit;
+
+ sql> create spfile from pfile;
+
+提交完成。
+
+SQL> exec dbms_xdb.cfg_refresh;
+
+　SQL> -- Verify the change
+　　SQL> set long 100000
+　　SQL> set pagesize 9000
+　　SQL> SELECT dbms_xdb.cfg_get FROM dual;
+
+
+PL/SQL 过程已成功完成。
+
+四、使用Oracle DBCA向导工具，可以启用、禁用和配置XML DB端口号
+1、启动DBCA（DataBase Configuration Assistant）向导
+
+2、选择“在数据库中配置数据库选项”，单击“下一步”按钮
+
+3、选择数据库实例名，输入用户名和口令，用户必须具备DBA权限，单击“下一步”按钮
+
+4、数据库特性页，点击“标准数据库功能”按钮打开标准数据库功能页，然后选择Oracle XML DB 项后的 “自定义”按钮，打开“Oracle XML DB”页，如下：
+
+可以选择启用或禁用XML DB 协议，启用XML DB协议的情况下，可以配置端口号。配置端口号有两个选项，使用默认配置或自定义配置
+
+
+
+
+如上图所示，自定义FTP和HTTP端口值。然后点“确定”按钮完成配置。

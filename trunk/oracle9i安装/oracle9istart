@@ -1,0 +1,25 @@
+#!/bin/bash
+#chkconfig: 2345 86 05
+#description: LISTENER daemons
+#
+
+ORA_HOME=/opt/oracle/920
+ORA_OWNER=oracle
+
+case "$1" in
+'start')
+su - $ORA_OWNER -c $ORA_HOME/bin/dbstart
+su - $ORA_OWNER -c "$ORA_HOME/bin/lsnrctl start"
+;;
+
+'stop')
+su - $ORA_OWNER -c $ORA_HOME/bin/dbshut
+su - $ORA_OWNER -c "$ORA_HOME/bin/lsnrctl stop"
+;;
+
+'restart')
+$0 stop
+$0 start
+;;
+
+esac

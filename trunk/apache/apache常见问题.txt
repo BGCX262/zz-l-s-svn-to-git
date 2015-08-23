@@ -1,0 +1,34 @@
+
+◆ apache的版本 
+# rpm -qa|grep httpd
+httpd-2.2.3-53.el5.centos.3
+httpd-manual-2.2.3-53.el5.centos.3
+
+◆ 启动apache的服务时，出现如下信息： 
+    httpd: Could not reliably determine the server's fully qualified domain name, using 127.0.0.1 for ServerName 
+
+解决办法： 
+    1.进入apache安装目录下,编辑配置文件./conf/httpd.conf 
+     将httpd.conf文件中的一行： 
+           # ServerName www.example.com:80 前的注释#去掉。 
+      或者增加一行： 
+           ServerName localhost:80
+
+◆ phpmyadmin 提示 PHP 5.2+ is required 的解决办法  
+
+见《phpmyadmin 提示 PHP 5.2+ is required 的解决办法》
+
+◆ 提示："缺少mysqli扩展""缺少mcrypt扩展" 解决方式：
+
+
+[root@www libraries]# yum --enablerepo=remi update php-mysqli
+
+见《phpmyadmin 提示 PHP 5.2+ is required 的解决办法》
+
+
+◆ 安装Apache提示缺少 libapr-1.so.0与libaprutil-1完美解决
+
+◆ SELinux设置  20111117 http无法打开phpmyadmin，见《selinux-20111117无法访问phpmyadmin.txt》
+
+◆ 设置mysql密码
+/usr/bin/mysqladmin -u root password 'xxxx'

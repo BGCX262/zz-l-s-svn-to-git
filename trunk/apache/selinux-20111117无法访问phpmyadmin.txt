@@ -1,0 +1,59 @@
+20111117 http无法打开phpmyadmin
+
+[root@linux193 www]# ll -Z
+drwxr-xr-x  root root root:object_r:usr_t              err
+drwxr-xr-x  root root root:object_r:usr_t              myfunds
+drwxr-xr-x  root root system_u:object_r:dosfs_t        phpMyAdmin-3.4.7-all-languages
+
+#问题出在“system_u:object_r:dosfs_t”
+
+drwx-xr--x, mysql mysql system_u:object_r:mysqld_db_t:s0 mysql  #正常mysql数据文件夹role
+
+#正常的安全上下文是：“user_u:object_r:httpd_sys_content_t”
+[root@linux193 www]#  echo "welcome." > /var/www/html/index.htm
+[root@linux193 www]# mkdir /var/www/html/in
+[root@linux193 www]# ll -Z /var/www/html/
+lrwxrwxrwx  root   root   root:object_r:httpd_sys_content_t err -> /usr/local/www/err
+drwxr-xr-x  root   root   user_u:object_r:httpd_sys_content_t in
+-rw-r--r--  root   root   user_u:object_r:httpd_sys_content_t index.htm
+lrwxrwxrwx  root   root   root:object_r:httpd_sys_content_t myfunds -> /usr/local/www/myfunds
+-rwxr-xr-x  root   root   user_u:object_r:httpd_sys_content_t phpinfo.php
+lrwxrwxrwx  root   root   user_u:object_r:httpd_sys_content_t phpmyadmin -> /usr/local/www/phpMyAdmin-3.4.7-all-languages
+
+#改变www目录的安全上下文属性
+[root@linux193 local]# chcon -R --reference=/var/www/html/index.htm www
+[root@linux193 local]# ll -Z
+drwxr-xr-x  root root root:object_r:usr_t              apache-tomcat-6.0.33
+drwxr-xr-x  root root system_u:object_r:bin_t          bin
+drwxr-xr-x  root root system_u:object_r:etc_t          etc
+drwxr-xr-x  root root system_u:object_r:usr_t          games
+drwxr-xr-x  root root system_u:object_r:usr_t          include
+drwxr-xr-x  root root system_u:object_r:lib_t          lib
+drwxr-xr-x  root root system_u:object_r:usr_t          libexec
+drwxr-xr-x  root root system_u:object_r:sbin_t         sbin
+drwxr-xr-x  root root system_u:object_r:usr_t          share
+drwxr-xr-x  root root system_u:object_r:src_t          src
+lrwxrwxrwx  root root root:object_r:usr_t              tomcat -> apache-tomcat-6.0.33
+drwxr-xr-x  root root user_u:object_r:httpd_sys_content_t www
+
+#将当前目录修改为默认安全上下文
+[root@linux193 www]# restorecon -Rv phpMyAdmin-3.4.7-all-languages
+
+#phpMyAdmin启动成功。
+
+#MySQL数据库为只读，不能编辑
+
+设置mysql密码
+/usr/bin/mysqladmin -u root password 'xxxx'
+
+修改下数据库的权限
+[root@localhost ~]# chown -R mysql:mysql /home/data/mysql/　 ← 改变数据库的归属为mysql
+
+[root@localhost ~]# chmod 700 /home/data/mysql/test/　 ← 改变数据库目录属性为700
+
+[root@localhost ~]# chmod 660 /home/data/mysql/test/*　 ← 改变数据库中数据的属性为660
+
+# restorecon -Rv mysql/*
+
+成功
+

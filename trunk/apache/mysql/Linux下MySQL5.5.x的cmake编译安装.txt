@@ -1,0 +1,122 @@
+Linux下MySQL5.5.x的cmake编译安装
+huangdijia 发表于 2011-11-21 分类 MySQL数据库技术 | 发表评论 
+一、 安装cmake
+
+# 如果是纯净的系统要做以下一些准备
+# Debian 系统
+apt-get -y install gcc libxml2-dev curl screen \
+libpng12-dev autoconf libpcre3-dev make cmake bzip2 \
+libevent-dev patch libjpeg62-dev libcurl4-openssl-dev \
+libfreetype6-dev g++ libtool libncurses5-dev psmisc lrzsz
+
+# Centos 系统
+yum -y install gcc libxml2-dev curl screen \
+libpng12-dev autoconf libpcre3-dev make bzip2 \
+libevent-dev patch libjpeg62-dev libcurl4-openssl-dev \
+libfreetype6-dev g++ libtool libncurses5-dev psmisc lrzsz
+
+# 如果cmake不存在，需要手动安装
+# 下载文件
+wget http://www.cmake.org/files/v2.8/cmake-2.8.5.tar.gz
+
+# 编译安装
+tar zxvf cmake-2.8.5.tar.gz
+cd cmake-2.8.5
+.boostarp
+make
+make install
+cmake –version
+
+二、 安装配置mysql
+
+# 下载源文件
+wget http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.17.tar.gz/from/ftp://ftp.ntu.edu.tw/pub/MySQL/
+# 或
+wget ftp://ftp.ntu.edu.tw/pub/MySQL/Downloads/MySQL-5.5/mysql-5.5.17.tar.gz
+
+# 创建用户和组
+# 建一个msyql的用户和组
+groupadd mysql
+useradd -g mysql mysql -s /usr/sbin/nologin
+
+# 创建安装目录
+mkdir -p /usr/local/webserver/mysql
+
+# 创建数据库目录
+mkdir -p /home/mysql/3306/data 
+
+# 解压
+tar -zxvf mysql-5.5.17.tar.gz
+cd mysql-5.5.17
+
+# 编译及安装mysql
+# cmake的时候，参数可以不用那么多，只要一个-DCMAKE_INSTALL_PREFIX=/usr/local/webserver/mysql就行了，我们可以在 my.cnf里面配置。[mysqld]中的内容，看看你copy后的my.cnf有没有这些设置，有就不用了在设置了。
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/webserver/mysql \
+-DMYSQL_DATADIR=/home/mysql/3306/data \
+-DDEFAULT_CHARSET=utf8 \
+-DWITH_READLINE=1 \
+-DWITH_SSL=system \
+-DWITH_EMBEDDED_SERVER=1 \
+-DENABLED_LOCAL_INFILE=1 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_MYISAM_STORAGE_ENGINE=1 \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_MEMORY_STORAGE_ENGINE=1 \
+-DWITH_DEBUG=0
+
+# 安装mysql
+make && make install
+
+# 如果需要更改配置
+make clean
+rm -f CMakeCache.txt
+
+# 复制配置文件
+cp support-files/my-medium.cnf /usr/local/webserver/mysql/my.cnf
+
+# 设置权限
+chmod +x /usr/local/webserver/mysql
+chown -R mysql.mysql /usr/local/webserver/mysql
+
+# 配置开机自启动
+cp /usr/local/webserver/mysql/support-files/mysql.server /etc/init.d/mysql
+chmod +x /etc/init.d/mysql
+chkconfig –list
+update-rc.d mysql defaults `/sbin/chkconfig –add mysql; /sbin/chkconfig mysql on`
+chkconfig –list mysql
+
+# 修改my.cnf配置
+vim /usr/local/webserver/mysql/my.cnf
+
+# [mysqld] 添加：
+datadir=/home/mysql/3306/data
+default-storage-engine=MyISAM
+
+# 以下可选：
+log-error = /home/mysql/3306/data/error.log
+pid-file = /home/mysql/3306/data/mysql.pid
+user = mysql
+tmpdir = /tmp 
+
+# 安装默认数据表
+/usr/local/webserver/mysql/scripts/mysql_install_db –basedir=/usr/local/webserver/mysql –datadir=/home/mysql/3306/data –user=mysql
+
+# 启动MySQL
+/usr/local/webserver/mysql/bin/mysqld_safe –defaults-file=/usr/local/webserver/mysql/my.cnf &
+
+# 或者使用
+# 最后的“&”表示在后台运行
+/etc/init.d/mysql start （service mysql start）
+
+# 测试MySQL是否启动
+
+# 1）查看是否有进程mysql
+ps -ef | grep mysql
+
+# 2）查看端口是否运行
+netstat -tnl | grep 3306
+
+# 3）读取mysql版本信息
+/usr/local/webserver/mysql/bin/mysqladmin version
+
+# 至此，MySQL安装完成

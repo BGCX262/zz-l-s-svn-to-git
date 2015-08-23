@@ -1,0 +1,40 @@
+20111027共享ir2420
+◆◆◆◆linux 服务端◆◆◆◆◆
+
+◆安装驱动（解压，安装rpm）
+
+◆system-config-printer管理或http://localhost:631登陆
+  添加ir2420
+  设置远程管理
+
+◆文本方式安装
+ cp /mnt/fat/CNCUPSIR2420ZK.ppd  /usr/share/cups/modle/   #若安装RPM，则省略此步骤
+
+ lpadmin -p ir2420 -v usb:/dev/usb/lp0 -m CNCUPSIR2420ZK.ppd -E
+ lpadmin -d ir2420       	  			  #设置默认打印机
+
+◆修改cups.conf(修改后system-config-printer将无法修改system选项）
+<Location />
+  # Allow shared printing...
+  Order allow,deny
+  # Allow @LOCAL
+ Allow From 127.0.0.1
+ Allow From 210.28.70.238
+ Allow From 210.28.70.239
+ Allow From 210.28.70.240
+ Allow From 192.167.1.0/24
+。。。
+<Location /admin>
+。。。
+Allow From 210.28.70.238
+Allow From 192.167.1.199
+。。。
+(好像不需要）最后加：Listen 0.0.0.0:6301
+
+◆修改/etc/cups/mime.convs（windows支持）
+# appliction/octet-stream  appliction/vnd.cups-raw  0 -
+取消注释
+
+◆修改/etc/cups/mime.types（windows支持）
+# appliction/octet-stream
+取消注释（可能已经取消）

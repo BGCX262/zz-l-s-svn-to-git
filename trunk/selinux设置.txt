@@ -1,0 +1,55 @@
+◆ls -Z
+◆chcon -R --reference=/var/www/html /opt/php
+◆restorecon -Rv /opt/php/err/404.htm
+◆cp 　　可以跟 -Z, --context=CONTEXT 在拷贝的时候指定目的地文件的security context
+◆find /opt/php -context *:*:httpd_sys_content_t -exec ls -Z {} \;
+
+◆run_init 
+◆ps -eZ 
+◆id  #命令id能用来确认自己的 security context 
+◆sestatus -v 
+◆Audit2allow 		
+◆semanage 		#策略管理工具
+◆
+◆root:object_r:mysqld_var_run_t
+◆
+
+
+◆newrole -r sysadm_r	#修改当前role
+
+ ◆ #selinux设定启用或禁用需要reboot后生效
+#通过setenforce 0|1可以切换Permissive|Enforcing临时设置selinux
+[root@linux193 selinux]# setenforce 0
+[root@linux193 selinux]# getenforce
+Permissive
+[root@linux193 selinux]# setenforce 1
+[root@linux193 selinux]# getenforce
+Enforcing
+
+ ◆[root@linux193 mydata]# sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /selinux
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy version:                 21
+Policy from config file:        targeted
+
+ ◆[root@linux193 mydata]# vi /etc/selinux/config
+SELINUX=enforcing	# permissive | disabled | enforcing
+
+ ◆[root@linux193 selinux]# vi /boot/grub/menu.lst
+	kernel /vmlinuz-2.6.18-274.7.1.el5 ro root=LABEL=/1 ...	# 不可以有"selinux=0"
+
+◆# audit2allow -a //查看究竟问题出在什么地方
+#============= mysqld_t ==============
+allow mysqld_t usr_t:dir write;
+allow mysqld_t usr_t:file { write append };
+然后 
+# cd /etc/selinux/targeted/modules/ 
+# audit2allow -M local -d 
+
+◆
+
+◆
+
+◆

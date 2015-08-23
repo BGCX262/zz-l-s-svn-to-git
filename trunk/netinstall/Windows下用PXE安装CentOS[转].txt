@@ -1,0 +1,64 @@
+Windows下用PXE安装CentOS[转]
+文件服务器（通过http提供Centos5安装文件） – windows （2000/xp/2003都行）
+tftp 服务器 -  tftpboot
+web 服务器 – hfs（小型web server）
+pxelinux.0  - pxelinux
+
+假设文件服务器ip地址是192.168.0.3，web安装的地址是http://192.168.0.3/centos，文件服务器和计划要安装系统的
+机器都在同一个物理网段内。将tftpd32.zip 解压到e:\tftpd32，将hfs.rar解开，随便放一个地方即可。
+
+step 1 – 解压
+
+将Centos5的DVD盘解压到e:\centos
+
+step 2 – 建立pxe有关文件目录
+
+建立e:\tftpd32\pxe目录
+
+从一个现成的linux系统里复制pxelinux.0文件（位于/usr/lib/syslinux下）或者使用本文附件，将此文件复制到
+e:\tftpd32\pxe目录里
+
+从e:\centos\images\pxeboot里将vmlinuz 和initrd.img 复制到e:\tftpd32\pxe里
+
+然后在e:\tftpd32\pxe里建立pxelinux.cfg目录，里面新建一个文件default
+
+内容：
+引用:
+prompt 1
+default centos
+timeout 100
+
+label centos
+kernel vmlinuz
+append initrd=initrd.img ramdisk_size=9216 noapic acpi=off
+保存后退出，记住：文件必须位于：e:\tftpd32\pxe\pxelinux.cfg\default
+
+step 3 – 配置tftpd32
+
+执行tftpd32.exe 设置Current directory 为e:\tftpd32\pxe，Server Interface是192.168.0.3
+
+点Tftp server 然后点下面的Settings，Base Directory同样设置为：e:\tftpd32\pxe
+
+然后点DHCP Server配置：
+引用:
+IP Pool address: 192.168.0.100
+Size of Pool: 100
+Boot file: pxelinux.0
+Default router: 192.168.0.3
+Mask: 255.255.255.0
+然后点save即可。此时不要关闭tftpd32.exe
+
+step 4 – 配置 web server
+
+执行hfs.exe 进入主界面，左边有一个房子图标（表示web的/根），点着房子鼠标右键，选Add folder from disk
+
+然后指向e:\centos，hfs会提示要你选real folder 还是virtual folder，这个按默认的回车即可。
+
+然后打开浏览器，访问http://192.168.0.3/centos 如果能看到文件列表就表示成功了
+
+step 5 – 开装！
+
+新服务器设置成PXE引导，然后启动时出现Boot：然后回车就是默认的安装了。引导内核后，然后就选http安装模式
+
+选好dhcp分配ip，并且http源指向192.168.0.3 ，路径centos 之后就一路安装吧。hfs有个好处，就是能看到当前请求
+
